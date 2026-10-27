@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-cream: #fff7f2;
+  --color-ink: #2b2420;
+  --color-berry: #e8517a;
+  --color-berry-dark: #c93b62;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: system-ui, -apple-system, 'PingFang HK', 'Noto Sans HK', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}

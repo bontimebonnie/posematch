@@ -22,3 +22,11 @@ npm run dev:phone    # 手機／iPad：用同一個 Wi-Fi，開 terminal 顯示�
 - `src/screens/Upload.tsx` — 揀 4 張相、排次序、save
 - `src/screens/Shoot.tsx` — 上面卡通、下面 camera，即影／3 秒倒數／重影／轉鏡頭
 - `src/screens/Result.tsx` — Canvas 砌 four-strip，儲存／分享
+
+## 部署
+
+Vercel project `posematch`，Root Directory 設咗做 `app`（因為 app 唔係喺 repo root）。push 上 `main` 就自動 build 同部署。
+
+## Agent skills
+
+`.claude/skills/` 係 [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) 嘅 symlink（實體喺 `.agents/skills/`），用 `npx skills add addyosmani/agent-skills` 更新。

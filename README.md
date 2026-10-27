@@ -2,6 +2,8 @@
 
 模仿卡通 pose 嘅 four-strip 影相 web app。
 
+Live: https://posematch-rose.vercel.app（push 上 `main` 會自動部署）
+
 ## 開發
 
 ```bash

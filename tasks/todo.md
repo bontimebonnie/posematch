@@ -4,7 +4,7 @@
 
 ## Phase 1: 測試基礎
 
-- [ ] Task 1: 加 Vitest，抽 `coverRect` 純函數並測試
+- [x] Task 1: 加 Vitest，抽 `coverRect` 純函數並測試
   - Acceptance: `npm test` 可以 run；`coverRect(sw, sh, w, h)` 回傳 `{sx, sy, cw, ch}`；`drawCover` 改用佢；有 test cover 橫圖入直框、直圖入橫框、比例一樣三種 case
   - Verify: `npm test` 綠；mock camera 影相結果同之前一樣
   - Files: `app/package.json`, `app/vite.config.ts`（test config）, `app/src/image.ts`, `app/src/__tests__/image.test.ts`

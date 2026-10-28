@@ -1,7 +1,7 @@
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // Phones only allow camera access over HTTPS, so `npm run dev:phone`
@@ -9,6 +9,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 const phone = process.env.PHONE === '1'
 
 export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.ts'],
+  },
   plugins: [
     react(),
     tailwindcss(),

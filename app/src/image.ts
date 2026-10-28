@@ -10,6 +10,15 @@ function sourceSize(src: Source): [number, number] {
   return [src.width as number, src.height as number]
 }
 
+// The source rect to copy so that a sw x sh image fills a w x h target,
+// centre-cropped like CSS object-fit: cover. Pure so it can be unit tested.
+export function coverRect(sw: number, sh: number, w: number, h: number) {
+  const scale = Math.max(w / sw, h / sh)
+  const cw = w / scale
+  const ch = h / scale
+  return { sx: (sw - cw) / 2, sy: (sh - ch) / 2, cw, ch }
+}
+
 // Draws `src` into the rect, center-cropped like CSS object-fit: cover.
 export function drawCover(
   ctx: CanvasRenderingContext2D,
@@ -21,11 +30,7 @@ export function drawCover(
   mirror = false,
 ) {
   const [sw, sh] = sourceSize(src)
-  const scale = Math.max(w / sw, h / sh)
-  const cw = w / scale
-  const ch = h / scale
-  const sx = (sw - cw) / 2
-  const sy = (sh - ch) / 2
+  const { sx, sy, cw, ch } = coverRect(sw, sh, w, h)
   ctx.save()
   if (mirror) {
     ctx.translate(x + w, y)

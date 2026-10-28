@@ -232,7 +232,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Library.tsx`, `app/src/ui/*`
   - Size: M · Depends: Task 26
 
-- [ ] Task 28: Import + Crop
+- [x] Task 28: Import + Crop
   - Acceptance: 同上；Crop 嘅三個掣層級清楚（一個 accent、兩個 secondary）
   - Verify: before／after 截圖；守門零違規
   - Files: `app/src/screens/Import.tsx`, `Crop.tsx`

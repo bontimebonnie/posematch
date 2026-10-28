@@ -83,9 +83,9 @@ export default function Crop({
       <Header
         title={files.length > 1 ? t('crop.title_n', { index: index + 1, total: files.length }) : t('crop.title')}
         onBack={onBack}
-        right={cutsFromThis > 0 ? <span className="text-sm text-ink/60">{t('crop.cut_count', { count: cutsFromThis })}</span> : null}
+        right={cutsFromThis > 0 ? <span className="text-label text-fg-muted">{t('crop.cut_count', { count: cutsFromThis })}</span> : null}
       />
-      <div className="relative mx-4 flex-1 overflow-hidden rounded-2xl bg-black">
+      <div className="relative mx-4 flex-1 overflow-hidden rounded-card bg-dark">
         {urls[index] && (
           <Cropper
             image={urls[index]}
@@ -101,17 +101,17 @@ export default function Crop({
           />
         )}
       </div>
-      <p className="px-4 pt-2 text-center text-xs text-ink/50">{t('crop.hint')}</p>
-      <div className="space-y-3 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <Button variant="secondary" onClick={cutAnother} disabled={busy || !area} className="flex w-full items-center justify-center gap-2">
+      <p className="px-4 pt-2 text-center text-body text-fg-muted">{t('crop.hint')}</p>
+      <div className="space-y-2 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <Button variant="secondary" onClick={cutAnother} disabled={busy || !area} className="w-full">
           <Plus width={20} height={20} strokeWidth={2.2} />
           {t('crop.cut_another')}
         </Button>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Button variant="secondary" onClick={skip} disabled={busy} className="flex-1">
             {cutsFromThis > 0 ? t('crop.enough') : t('crop.keep_whole')}
           </Button>
-          <Button onClick={cutAndNext} disabled={busy || !area} className="flex flex-1 items-center justify-center gap-2">
+          <Button onClick={cutAndNext} disabled={busy || !area} className="flex-1">
             {last ? t('crop.finish') : t('crop.cut_next')}
             {last ? <Check width={20} height={20} strokeWidth={2.2} /> : <NavArrowRight width={20} height={20} strokeWidth={2.2} />}
           </Button>

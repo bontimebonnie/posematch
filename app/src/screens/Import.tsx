@@ -45,29 +45,30 @@ export default function Import({
   return (
     <div className="flex h-full flex-col">
       <Header title={t('import.title', { count: items.length })} onBack={onBack} />
-      <div className="flex-1 space-y-5 overflow-y-auto px-4 pb-6">
-        <ul className="grid grid-cols-3 gap-2">
+      <div className="flex-1 space-y-6 overflow-y-auto px-4 pb-4">
+        <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
           {urls.map((u, i) => (
             <li key={u} className="relative">
-              <FitImage src={u} className="aspect-[3/2] w-full rounded-xl" />
+              <FitImage src={u} className="aspect-[3/2] w-full rounded-card ring-1 ring-line" />
               <IconButton
                 variant="scrim"
+                size="sm"
                 onClick={() => setItems((prev) => prev.filter((_, j) => j !== i))}
                 aria-label={t('common.remove')}
                 className="absolute top-1 right-1"
               >
-                <Xmark width={14} height={14} strokeWidth={3} />
+                <Xmark width={16} height={16} strokeWidth={3} />
               </IconButton>
             </li>
           ))}
         </ul>
         <div>
-          <span className="mb-1 block text-sm text-ink/60">{t('import.people_question')}</span>
+          <span className="mb-1 block text-label text-fg-muted">{t('import.people_question')}</span>
           <PersonToggle value={personCount} onChange={setPersonCount} />
         </div>
         <CharacterNameInput value={name} onChange={setName} names={names} />
       </div>
-      <div className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Button onClick={save} disabled={items.length === 0 || saving} className="w-full">
           {saving ? t('import.saving') : t('import.save')}
         </Button>

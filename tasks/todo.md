@@ -28,7 +28,7 @@
   - Files: `app/src/strip.ts`, `app/src/__tests__/strip.test.ts`
   - Size: S · Depends: Task 1
 
-- [ ] Task 4: Result 改用 `strip.ts` 輸出
+- [x] Task 4: Result 改用 `strip.ts` 輸出
   - Acceptance: `composeStrip` 用 `stripLayout` 畫；回傳 `{png: Blob, jpeg: Blob}`；Result 預覽顯示 4:5 整張圖；Save 用 JPEG
   - Verify: mock camera 走流程，download 嘅圖係 1080×1350
   - Files: `app/src/strip.ts`, `app/src/screens/Result.tsx`

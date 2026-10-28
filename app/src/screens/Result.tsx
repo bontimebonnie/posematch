@@ -1,32 +1,6 @@
 import { useEffect, useState } from 'react'
-import { canvasToBlob, CELL_RATIO, drawCover, loadImage } from '../image'
+import { composeStrip, type StripOutput } from '../strip'
 import { Button, Header } from '../ui'
-
-const CELL_W = 900
-const CELL_H = Math.round(CELL_W / CELL_RATIO)
-const GAP = 12
-
-// Composite the strip: four rows, cartoon on the left, photo on the right.
-async function composeStrip(cartoons: Blob[], photos: Blob[]): Promise<Blob> {
-  const rows = cartoons.length
-  const canvas = document.createElement('canvas')
-  canvas.width = CELL_W * 2 + GAP * 3
-  canvas.height = CELL_H * rows + GAP * (rows + 1)
-  const ctx = canvas.getContext('2d')!
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  const [cartoonImgs, photoImgs] = await Promise.all([
-    Promise.all(cartoons.map(loadImage)),
-    Promise.all(photos.map(loadImage)),
-  ])
-  for (let i = 0; i < rows; i++) {
-    const y = GAP + i * (CELL_H + GAP)
-    drawCover(ctx, cartoonImgs[i], GAP, y, CELL_W, CELL_H)
-    drawCover(ctx, photoImgs[i], GAP * 2 + CELL_W, y, CELL_W, CELL_H)
-  }
-  return canvasToBlob(canvas)
-}
 
 export default function Result({
   cartoons,
@@ -39,23 +13,25 @@ export default function Result({
   onRetake: () => void
   onHome: () => void
 }) {
-  const [strip, setStrip] = useState<{ blob: Blob; url: string } | null>(null)
+  const [strip, setStrip] = useState<(StripOutput & { url: string }) | null>(null)
 
   useEffect(() => {
     let url: string | undefined
-    composeStrip(cartoons, photos).then((blob) => {
-      url = URL.createObjectURL(blob)
-      setStrip({ blob, url })
+    let cancelled = false
+    composeStrip(cartoons, photos).then((out) => {
+      if (cancelled) return
+      url = URL.createObjectURL(out.jpeg)
+      setStrip({ ...out, url })
     })
     return () => {
+      cancelled = true
       if (url) URL.revokeObjectURL(url)
     }
   }, [cartoons, photos])
 
-  const share = async () => {
+  const save = async () => {
     if (!strip) return
-    const filename = `post-match-${Date.now()}.jpg`
-    const file = new File([strip.blob], filename, { type: 'image/jpeg' })
+    const file = new File([strip.jpeg], `post-match-${Date.now()}.jpg`, { type: 'image/jpeg' })
     if (navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ files: [file] })
@@ -66,7 +42,7 @@ export default function Result({
     }
     const a = document.createElement('a')
     a.href = strip.url
-    a.download = filename
+    a.download = file.name
     a.click()
   }
 
@@ -84,7 +60,7 @@ export default function Result({
         <Button variant="secondary" onClick={onRetake} className="flex-1">
           重新影過
         </Button>
-        <Button onClick={share} disabled={!strip} className="flex-1">
+        <Button onClick={save} disabled={!strip} className="flex-1">
           儲存 / 分享
         </Button>
       </div>

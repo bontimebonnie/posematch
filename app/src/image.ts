@@ -42,6 +42,36 @@ export function drawCover(
   ctx.restore()
 }
 
+// The rect a sw x sh image occupies when scaled to fit inside the target
+// (CSS object-fit: contain), centred. Integer output for crisp drawing.
+export function fitRect(sw: number, sh: number, x: number, y: number, w: number, h: number) {
+  const scale = Math.min(w / sw, h / sh)
+  const fw = Math.round(sw * scale)
+  const fh = Math.round(sh * scale)
+  return { x: x + Math.round((w - fw) / 2), y: y + Math.round((h - fh) / 2), w: fw, h: fh }
+}
+
+// Draws `src` fully visible inside the rect; whatever the image doesn't
+// cover is filled with a blurred, slightly darkened, zoomed copy of itself
+// (the usual "blur fill" look). A source already at the target ratio ends
+// up identical to drawCover.
+export function drawFit(ctx: CanvasRenderingContext2D, src: Source, x: number, y: number, w: number, h: number) {
+  const [sw, sh] = sourceSize(src)
+  const fg = fitRect(sw, sh, x, y, w, h)
+  if (fg.w !== w || fg.h !== h) {
+    ctx.save()
+    ctx.beginPath()
+    ctx.rect(x, y, w, h)
+    ctx.clip()
+    ctx.filter = `blur(${Math.round(w / 40)}px) brightness(0.9)`
+    // Overdraw past the clip so the blur has no transparent fringe.
+    const pad = Math.round(w / 10)
+    drawCover(ctx, src, x - pad, y - pad, w + pad * 2, h + pad * 2)
+    ctx.restore()
+  }
+  ctx.drawImage(src, fg.x, fg.y, fg.w, fg.h)
+}
+
 export function loadImage(blob: Blob): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()

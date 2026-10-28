@@ -84,7 +84,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 1: 填邊 + 取景框
 
-- [ ] Task 10: `fitRect` + `drawFit` + 測試
+- [x] Task 10: `fitRect` + `drawFit` + 測試
   - Acceptance: `fitRect(sw, sh, w, h)` 回傳 contain 之後嘅目標矩形 `{x, y, w, h}`（置中）；`drawFit(ctx, src, x, y, w, h)` 先畫放大 + blur + 調暗嘅背景（cover），再畫 contain 嘅前景；3:2 相唔會出現邊
   - Verify: fitRect 測 橫／直／啱比例 三 case；mock 一張 1.2:1 圖，strip 輸出肉眼見到完整 + 模糊邊
   - Files: `app/src/image.ts`, `app/src/__tests__/image.test.ts`

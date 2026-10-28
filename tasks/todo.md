@@ -152,13 +152,15 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/clipboard.ts`, `app/src/__tests__/clipboard.test.ts`, `app/src/screens/Library.tsx`
   - Size: S · Depends: Task 16
 
-- [ ] Task 19: Share Target
+- [x] Task 19: Share Target
   - Acceptance: manifest `share_target`（POST, multipart, `files` image/*）；`sw.ts`（injectManifest）接 POST → 存 Cache → redirect `/?import=share`；app 啟動見到 param 由 cache 攞檔案入 Import 並清除；precache 照舊
   - Verify: 桌面 Chrome 安裝 PWA 後由其他 app share 圖片；iPhone 由 Pinterest share（Bonnie）
   - Files: `app/vite.config.ts`, `app/src/sw.ts`, `app/src/shareTarget.ts`, `app/src/App.tsx`, `app/tsconfig.app.json`
   - Size: M · Depends: Task 16
 
 ### Checkpoint: iPhone Pinterest 流程
+- [x] 桌面驗證：crop 多切、paste event、SW 接 POST → cache → `?import=share` → Crop（vite preview + 真 service worker）
+- [x] 部署
 - [ ] Bonnie：Pinterest 複製→貼上 同 Share→Post Match 兩條路都入到 library
 
 ## Phase 4: 雙語

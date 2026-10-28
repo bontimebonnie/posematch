@@ -19,6 +19,10 @@ export default defineConfig({
     ...(phone ? [basicSsl()] : []),
     VitePWA({
       registerType: 'autoUpdate',
+      // Own service worker so it can handle the Web Share Target POST.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Post Match',
@@ -30,6 +34,12 @@ export default defineConfig({
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
+        share_target: {
+          action: '/share-target',
+          method: 'POST',
+          enctype: 'multipart/form-data',
+          params: { files: [{ name: 'files', accept: ['image/*'] }] },
+        },
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },

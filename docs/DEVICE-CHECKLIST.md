@@ -90,3 +90,15 @@
 （任何上面冇提到嘅嘢）
 
 -
+
+---
+
+## F. Phase A2 — Pinterest 入相（iPhone）
+
+**先由主畫面 PWA 開一次 app**（Share Target 要安裝咗先會出現喺 Share sheet；舊版已安裝嘅話要刪除再加一次主畫面，等新 service worker 生效）。
+
+- [ ] Pinterest → 一張相 → ⋯ → 「複製圖片」→ 開 Post Match → 撳「貼上」icon → 入到裁相畫面
+- [ ] Pinterest → 一張相 → Share → Share sheet 見到「Post Match」→ 揀佢 → app 開咗並入到裁相畫面
+- [ ] 裁相：拖動、雙指縮放正常；「再切一張」由一張 strip 切出 4 個 pose；「唔裁」保留原相
+- [ ] 裁完 → 填人數／角色名 → 入 library → 由 library 揀呢 4 張影到 strip
+- [ ] 相簿 app → 揀相 → Share → Post Match（多張一齊 share）

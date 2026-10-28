@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ImportItem } from './db'
 import { getLibraryFilter } from './settings'
+import { launchedFromShare, takeSharedFiles } from './shareTarget'
 import Crop from './screens/Crop'
 import Import from './screens/Import'
 import Library from './screens/Library'
@@ -17,6 +18,14 @@ type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'library' })
   const library = () => setScreen({ name: 'library' })
+
+  // Opened from the OS share sheet: go straight to cropping the shared images.
+  useEffect(() => {
+    if (!launchedFromShare()) return
+    takeSharedFiles().then((files) => {
+      if (files.length) setScreen({ name: 'crop', files })
+    })
+  }, [])
 
   return (
     <div className="mx-auto flex h-full max-w-xl flex-col">

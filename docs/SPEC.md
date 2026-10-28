@@ -1,6 +1,6 @@
 # Spec: Post Match
 
-> 版本 0.1 · 2026-10-27 · 狀態：等待 approve
+> 版本 0.2 · 2026-10-27 · 狀態：等待 approve（v0.1 已 approve 並做完 Phase A Task 1–8；v0.2 加入真機試完之後嘅改動）
 
 ## Objective
 
@@ -16,23 +16,45 @@
 ## 做法次序（你提出嘅）
 
 ```
-Phase A  基本功能 — 真機測試、補齊 spec 入面嘅功能、加測試
-Phase B  Design — 定 design guideline、重整 UI 跟 8pt grid、再加圖案／element
-Phase C  後話 — 裝飾框、3 人模式、pose 偵測
+Phase A   基本功能 — 真機測試、補齊 spec 入面嘅功能、加測試        ✅ Task 1–8 完成
+Phase A2  真機試完嘅改動 — 雙語、library 重整、貼上／share、crop、填邊   ← v0.2 新增
+Phase B   Design — 定 design guideline、重整 UI 跟 8pt grid、再加圖案／element
+Phase C   後話 — 裝飾框、3 人模式、pose 偵測、AI 填邊
 ```
 
 Phase A 唔做視覺美化；Phase B 唔改功能。
 
 ## 功能需求（Phase A）
 
-### A1. 揀人數
-- 首頁揀 1 人／2 人（之後可加 3 人）。
-- Library 只顯示對應人數嘅系列。
+### A1. 語言（v0.2）
+- 兩個語言：**English** 同 **繁體中文（台灣書面語）**。唔用廣東話口語。
+- 跟手機語言自動揀，設定頁可以手動轉，記住選擇。
+- 所有文字抽做 `locales/en.json`、`locales/zh-TW.json`，code 入面唔出現硬寫文字。
+- 文案用 `design:ux-copy` skill 寫：簡短、動詞開頭、一致嘅用詞表（見 Open Questions）。
+- App 名「Post Match」兩種語言都保留英文。
 
-### A2. Library
-- Upload 一套 4 張卡通相為一個「系列」，連同人數、名稱 save 入 IndexedDB。
-- 可以排次序、刪除系列。
-- 相只存喺本機；唔同步、唔上 cloud。
+### A2. Library（v0.2 重整）
+- Library 存**所有** upload 過嘅相，每張相獨立一條記錄，唔再有「一套 4 張」嘅系列。
+- 每張相帶：**人數（1 或 2）**、**角色名**（自由輸入文字，例如 "Tom & Jerry"，有自動完成以前輸入過嘅名）。
+- Library 畫面：一個 grid，頂部可以按人數同角色名篩選；可以多選刪除；可以改單張相嘅人數／角色名。
+- **揀相模式**：撳「開始影相」入去揀 4 張（跟篩選），點選次序就係影相次序，可以調。揀夠 4 張先可以開始。
+- 相永久存喺本機（IndexedDB），唔同步。**iOS 注意**：Safari 同「加至主畫面」係兩個獨立儲存空間；app 要喺 Safari 入面提示「加至主畫面後請由主畫面開啟」。
+
+### A2a. 相點樣入 Library（v0.2）
+三個入口，全部入 library 之前都經過 A2b 嘅 crop 畫面：
+1. **揀檔案**（而家有）。
+2. **貼上**：library 頁有「貼上」掣，用 `navigator.clipboard.read()`；桌面亦支援 ⌘V。Pinterest「複製圖片」之後直接貼。
+3. **Share Target**（PWA）：喺 Pinterest／相簿／Safari 嘅 Share sheet 揀「Post Match」，相直接送入 app。需要 service worker 處理 POST（vite-plugin-pwa `injectManifest`）。iOS 16.4+ 支援。
+
+### A2b. Crop（v0.2）
+- 每張相入 library 之前經過 crop 畫面：拖動／縮放，框鎖 3:2 橫向。
+- **「再切一張」**：同一張來源相可以切多次，每次切出嚟都係獨立一張相（用嚟由人哋嘅 strip 切出 4 個 pose、或者淨係要卡通嗰半邊）。
+- 唔做 rotate。
+- 切完先填人數同角色名（一次填，套用到由同一張來源切出嚟嘅所有相）。
+
+### A2c. 非 3:2 填邊（v0.2）
+- Crop 時可以揀「唔裁，填邊」：相用 contain 放入 3:2 框，空位用**模糊放大背景**填（同一張相放大 + blur + 稍微調暗）。
+- AI outpaint（用外部 API 生成邊位）列入 Phase C。
 
 ### A3. 影相
 - 畫面上：參考卡通圖；下：camera。
@@ -63,15 +85,18 @@ Phase A 唔做視覺美化；Phase B 唔改功能。
 - 自動 pose 偵測／評分
 - 裝飾框、貼紙（Phase C）
 - 3 人模式（Phase C；資料結構已留位）
-- 自由夾唔同系列嘅相（資料結構已留位）
 - 已影 strip 嘅歷史記錄
+- AI 填邊（Phase C）
+- 相嘅 rotate
 
 ## Tech Stack
 
 - Vite 8 + React 19 + TypeScript 6
 - Tailwind CSS 4（design token 用 `@theme`）
 - Dexie 4（IndexedDB）+ dexie-react-hooks
-- vite-plugin-pwa 2
+- vite-plugin-pwa 2（v0.2 轉用 `injectManifest` 模式以支援 Share Target）
+- react-i18next + i18next（v0.2）
+- react-easy-crop（v0.2；要 approve 先加）
 - 測試：Vitest（要加）
 - 部署：Vercel，GitHub `main` 自動部署，Root Directory = `app`
 
@@ -96,7 +121,9 @@ app/
     image.ts           Canvas helper：drawCover、loadImage、canvasToBlob
     useObjectUrls.ts   Blob → object URL hook
     ui.tsx             共用 Button / Header / PersonToggle
-    screens/           Home / Upload / Shoot / Result
+    screens/           Home / Library / Import(crop) / Shoot / Result / Settings
+    locales/           en.json、zh-TW.json
+    sw.ts              service worker（precache + share target）
     __tests__/         Vitest（要加）
   public/              icons、manifest 來源
 docs/SPEC.md           呢份文件
@@ -119,7 +146,7 @@ export default function Shoot({ cartoons, onBack, onDone }: {
 ```
 
 - 無 semicolon、single quote、2 空格（跟 Vite template）。
-- 用家見到嘅文字用廣東話；code、comment 用英文。
+- 用家見到嘅文字全部經 i18n（en／zh-TW），唔喺 code 硬寫；code、comment 用英文。
 - 顏色、spacing 一律用 token（`bg-berry`、`p-4`），唔 hardcode hex。
 - Spacing 跟 8pt grid：Tailwind 只用 2、4、6、8、12、16（= 8、16、24、32、48、64px）；內部細位可用 1（4px）。
 
@@ -138,6 +165,17 @@ export default function Shoot({ cartoons, onBack, onDone }: {
 - **Ask first**：加 npm dependency；改 Dexie schema version；改 strip 輸出比例；改 camera 比例。
 - **Never**：commit `.vercel/`、token；自動將相上傳到任何 server；刪除 failing test。
 
+## Success Criteria（Phase A2 完成）
+
+- [ ] 轉語言之後所有畫面冇漏網嘅舊文字；zh-TW 文案經你睇過
+- [ ] Library 可以按人數同角色名篩選；由 library 揀任意 4 張開始影相
+- [ ] iPhone：Pinterest 複製圖片 → app 貼上 → crop → 入 library
+- [ ] iPhone：Pinterest Share sheet 見到「Post Match」，分享後相出現喺 crop 畫面
+- [ ] 一張 strip 來源相可以切出 4 張獨立嘅相
+- [ ] 非 3:2 嘅相用填邊模式後，成果 strip 冇白位
+- [ ] 舊版 library 嘅相（一套 4 張）升級後仍然喺度，自動變成獨立相 + 角色名 = 原本系列名
+- [ ] `npm test`、build、lint 零錯誤
+
 ## Success Criteria（Phase A 完成）
 
 - [ ] iPhone、iPad、桌面各走一次完整流程成功
@@ -147,7 +185,21 @@ export default function Shoot({ cartoons, onBack, onDone }: {
 - [ ] Vitest 有 cover `image.ts`、`db.ts`，`npm test` 通過
 - [ ] `npm run build`、`npm run lint` 零錯誤
 
-## 我假設咗嘅嘢（唔啱就話）
+## v0.2 假設（唔啱就話）
+
+1. App 名「Post Match」唔翻譯。
+2. Crop 唔使 rotate。
+3. 填邊先做模糊，AI 之後。
+4. 角色名係自由文字（唔係固定清單），靠自動完成保持一致。
+5. 舊資料升級：原本每個系列嘅 4 張相變成 4 張獨立相，角色名 = 系列名。
+
+## v0.2 Open Questions
+
+1. **真機 checklist D 部分未填**：Copy Image 喺 iPhone 貼到入 IG 未？儲存入相簿成功未？Camera 3:2 框影相時好唔好用？呢三樣決定 Task 9。
+2. 用詞表：「Library」中文叫「圖庫」？「Strip」叫「拼圖」定「照片條」？「Shoot」叫「拍攝」？我會用 ux-copy 出一版俾你揀。
+3. 筛選要唔要記住上次揀咗乜（例如上次揀「2 人 + Tom & Jerry」）？我估要。
+
+## v0.1 假設（唔啱就話）
 
 1. IG 目標係 **feed post 4:5**，唔係 story 9:16。
 2. Strip 輸出用 **白色底** 留白（Phase C 先加框）。
@@ -155,7 +207,7 @@ export default function Shoot({ cartoons, onBack, onDone }: {
 4. Copy Image 輸出 **PNG**（clipboard 只支援 PNG）；Save 用 JPEG。
 5. Phase B 嘅 design guideline 由你定方向（顏色、字體、圓角、圖案風格），我負責寫成 token 同 component。
 
-## Open Questions
+## v0.1 Open Questions
 
 1. 輸出比例：4:5 feed 啱唔啱？定係想同時出 9:16 story 版？
 2. Phase B 開始之前，你有冇現成嘅 reference（Figma、截圖、品牌色）可以俾我？

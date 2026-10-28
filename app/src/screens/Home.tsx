@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Plus, Xmark } from 'iconoir-react'
 import { useEffect, useState } from 'react'
 import { db, deleteSet, loadSetImages, type CartoonSet, type PersonCount } from '../db'
-import { Button, Header, PersonToggle } from '../ui'
+import { Button, FitImage, Header, PersonToggle } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
 
 export default function Home({
@@ -75,7 +75,7 @@ function SetCard({ set, onPick }: { set: CartoonSet; onPick: (cartoons: Blob[]) 
       <button onClick={() => onPick(blobs)} className="block w-full text-left" disabled={!blobs.length}>
         <div className="grid grid-cols-2 gap-0.5 bg-ink/10">
           {urls.map((u, i) => (
-            <img key={i} src={u} className="aspect-[3/2] w-full object-cover" alt="" />
+            <FitImage key={i} src={u} className="aspect-[3/2] w-full" />
           ))}
         </div>
         <div className="truncate px-3 py-2 text-sm font-semibold">{set.name}</div>

@@ -5,7 +5,7 @@ import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
 import { describeCameraError } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
-import { Button, Header } from '../ui'
+import { Button, FitImage, Header } from '../ui'
 
 type Facing = 'user' | 'environment'
 const COUNTDOWN_SECONDS = 3
@@ -137,9 +137,7 @@ export default function Shoot({
 
       <div className="flex flex-1 flex-col gap-3 overflow-hidden px-4">
         {/* Reference cartoon on top */}
-        <div className="overflow-hidden rounded-2xl bg-black ring-1 ring-ink/10">
-          <img src={cartoonUrls[index]} className="aspect-[3/2] w-full object-cover" alt="參考卡通圖" />
-        </div>
+        <FitImage src={cartoonUrls[index]} alt="參考卡通圖" className="aspect-[3/2] w-full rounded-2xl ring-1 ring-ink/10" />
 
         {/* Camera (or the captured preview) below */}
         <div className="relative aspect-[3/2] overflow-hidden rounded-2xl bg-black">

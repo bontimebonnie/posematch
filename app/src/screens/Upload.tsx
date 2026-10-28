@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { SHOTS_PER_SET, saveSet, type PersonCount } from '../db'
 import { downscaleImage } from '../image'
 import { useObjectUrls } from '../useObjectUrls'
-import { Button, Header, PersonToggle } from '../ui'
+import { Button, FitImage, Header, PersonToggle } from '../ui'
 
 export default function Upload({
   personCount: initialCount,
@@ -78,7 +78,7 @@ export default function Upload({
           <ul className="grid grid-cols-2 gap-3">
             {urls.map((u, i) => (
               <li key={u} className="relative overflow-hidden rounded-xl bg-white ring-1 ring-ink/10">
-                <img src={u} className="aspect-[3/2] w-full object-cover" alt="" />
+                <FitImage src={u} className="aspect-[3/2] w-full" />
                 <span className="absolute top-1.5 left-1.5 rounded-full bg-black/60 px-2 text-xs font-bold text-white">
                   {i + 1}
                 </span>

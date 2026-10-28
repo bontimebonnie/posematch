@@ -1,4 +1,4 @@
-import { canvasToBlob, CELL_RATIO, drawCover, loadImage } from './image'
+import { canvasToBlob, CELL_RATIO, drawCover, drawFit, loadImage } from './image'
 
 // Output targets an Instagram feed post (4:5). The strip sits centred on the
 // canvas; the padding around it is where Phase C decorations will go.
@@ -62,7 +62,9 @@ export async function composeStrip(cartoons: Blob[], photos: Blob[]): Promise<St
     Promise.all(photos.map(loadImage)),
   ])
   layout.rows.forEach(({ cartoon, photo }, i) => {
-    drawCover(ctx, cartoonImgs[i], cartoon.x, cartoon.y, cartoon.w, cartoon.h)
+    // Cartoons can be any shape, so show them whole with blur fill; photos
+    // were captured at the cell ratio already, so cover is a no-op crop.
+    drawFit(ctx, cartoonImgs[i], cartoon.x, cartoon.y, cartoon.w, cartoon.h)
     drawCover(ctx, photoImgs[i], photo.x, photo.y, photo.w, photo.h)
   })
   const [png, jpeg] = await Promise.all([canvasToBlob(canvas, 'image/png'), canvasToBlob(canvas, 'image/jpeg')])

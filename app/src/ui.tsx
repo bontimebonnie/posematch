@@ -36,6 +36,17 @@ export function Header({ title, onBack, right }: { title: string; onBack?: () =>
   )
 }
 
+// An image shown fully (object-fit: contain) with the leftover area filled by
+// a blurred, darkened copy of itself. Same look as drawFit() in image.ts.
+export function FitImage({ src, alt = '', className = '' }: { src: string; alt?: string; className?: string }) {
+  return (
+    <div className={`relative overflow-hidden bg-ink/10 ${className}`}>
+      <img src={src} aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-md brightness-90" />
+      <img src={src} alt={alt} className="relative h-full w-full object-contain" />
+    </div>
+  )
+}
+
 export function PersonToggle({ value, onChange }: { value: 1 | 2; onChange: (v: 1 | 2) => void }) {
   return (
     <div className="grid grid-cols-2 gap-2 rounded-full bg-white p-1 ring-1 ring-ink/10">

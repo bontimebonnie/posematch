@@ -90,7 +90,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/image.ts`, `app/src/__tests__/image.test.ts`
   - Size: S · Depends: —
 
-- [ ] Task 11: 三個地方改用填邊
+- [x] Task 11: 三個地方改用填邊
   - Acceptance: Library 縮圖、Shoot 參考圖用 CSS（`object-contain` + 同一張圖做 blur 背景層）；`composeStrip` 用 `drawFit` 畫卡通格；真人格維持 cover（camera 本身係 3:2 裁好）
   - Verify: mock camera 走流程，用 1.2:1 貼圖，三個地方都完整
   - Files: `app/src/screens/Home.tsx`, `app/src/screens/Shoot.tsx`, `app/src/strip.ts`, `app/src/ui.tsx`（新 `FitImage` component）

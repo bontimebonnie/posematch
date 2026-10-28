@@ -21,7 +21,10 @@ export default function Upload({
 
   const addFiles = (list: FileList | null) => {
     if (!list) return
-    setFiles((prev) => [...prev, ...Array.from(list)].slice(0, SHOTS_PER_SET))
+    // Snapshot now: the input's value is reset right after this, which
+    // empties the live FileList before the state updater runs.
+    const added = Array.from(list)
+    setFiles((prev) => [...prev, ...added].slice(0, SHOTS_PER_SET))
   }
   const removeAt = (i: number) => setFiles((prev) => prev.filter((_, j) => j !== i))
   const move = (i: number, dir: -1 | 1) =>

@@ -47,9 +47,10 @@
   - Size: S · Depends: —
 
 ### Checkpoint: 功能補完
-- [ ] 瀏覽器 mock camera 走晒流程，輸出 1080×1350，copy 同 save 都得
-- [ ] `npm test`、build、lint 全綠
-- [ ] Commit + push，Vercel 自動部署成功
+- [x] 瀏覽器 mock camera 走晒流程，輸出 1080×1350（copy 喺預覽窗被 permission 擋住，留待 Task 8 真機／桌面驗證）
+- [x] `npm test`、build、lint 全綠
+- [x] Commit + push，Vercel 自動部署成功
+- 期間修咗兩個 bug：Upload 揀相後 FileList 被清空（state 永遠 0 張）；Shoot 每次 render 新 array 傳入 useObjectUrls 造成無限 re-render
 
 ## Phase 3: 真機同錯誤處理
 

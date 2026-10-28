@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SHOTS_PER_SET } from '../db'
 import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
 import { getMirror, setMirror } from '../settings'
@@ -29,7 +29,8 @@ export default function Shoot({
   const [photos, setPhotos] = useState<Blob[]>([])
   const [preview, setPreview] = useState<Blob | null>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
-  const previewUrls = useObjectUrls(preview ? [preview] : [])
+  const previewBlobs = useMemo(() => (preview ? [preview] : []), [preview])
+  const previewUrls = useObjectUrls(previewBlobs)
 
   const index = photos.length
   // Mirroring only makes sense for the selfie camera; the preference is

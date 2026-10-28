@@ -60,7 +60,7 @@
   - Files: `app/src/screens/Shoot.tsx`, `app/src/screens/Upload.tsx`, `app/src/screens/Result.tsx`, `app/src/image.ts`
   - Size: M · Depends: Task 5, 6
 
-- [ ] Task 8: 真機 checklist
+- [x] Task 8: 真機 checklist
   - Acceptance: `docs/DEVICE-CHECKLIST.md` 列出 iPhone Safari／iPad／桌面 Chrome 每項要試嘅嘢（前鏡、轉鏡、倒數、mirror、重影、save 入相簿、copy 貼入 IG、加到主畫面、離線開啟）；**同時重新檢視 SPEC.md「我假設咗嘅嘢」1–5 同「Open Questions」1–3，每條寫返真機試完嘅決定**；Bonnie 行完每項打剔或寫問題
   - Verify: checklist 有 Bonnie 填返嘅結果
   - Files: `docs/DEVICE-CHECKLIST.md`

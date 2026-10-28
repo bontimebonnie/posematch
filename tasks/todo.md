@@ -184,5 +184,8 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Size: S · Depends: Task 21
 
 ### Checkpoint: Phase A2 完成
+- [x] 桌面：EN ↔ 繁中 切換、記住選擇、`<html lang>` 跟住變；兩個 locale key 一致；全部畫面冇硬寫文字
+- [x] 部署
+- [ ] Bonnie review 繁中文案（docs/COPY.md 用詞表 + app 內逐個畫面）
 - [ ] SPEC v0.2 Success Criteria 全剔
 - [ ] Review 後開 Phase B（design）spec

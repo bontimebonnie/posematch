@@ -72,16 +72,16 @@ export default function Result({
       <Header title={t('result.title')} onBack={onHome} />
       <div className="flex flex-1 items-start justify-center overflow-y-auto px-4">
         {strip ? (
-          <img src={strip.url} className="max-h-full w-auto max-w-full rounded-xl shadow-lg" alt={t('result.alt')} />
+          <img src={strip.url} className="max-h-full w-auto max-w-full rounded-card ring-1 ring-line" alt={t('result.alt')} />
         ) : (
-          <p className="pt-10 text-ink/50">{t('result.composing')}</p>
+          <p className="pt-12 text-body text-fg-muted">{t('result.composing')}</p>
         )}
       </div>
-      <div className="relative px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="relative px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {toast && (
-          <Toast className="absolute -top-10 left-1/2 -translate-x-1/2">{toast}</Toast>
+          <Toast className="absolute -top-12 left-1/2 -translate-x-1/2">{toast}</Toast>
         )}
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Button variant="secondary" onClick={onRetake} className="flex-1">
             {t('result.retake')}
           </Button>
@@ -98,7 +98,7 @@ export default function Result({
             {t('result.save')}
           </Button>
         </div>
-        {!copySupported && <p className="mt-2 text-center text-xs text-ink/50">{t('result.copy_unsupported')}</p>}
+        {!copySupported && <p className="mt-2 text-center text-body text-fg-muted">{t('result.copy_unsupported')}</p>}
       </div>
     </div>
   )

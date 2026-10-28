@@ -7,7 +7,7 @@ import { cameraErrorKey } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
 import { useViewfinderRatio } from '../useViewfinderRatio'
-import { Button, Countdown, FitImage, Header, Scrim } from '../ui'
+import { Button, Chip, Countdown, FitImage, Header, Scrim } from '../ui'
 
 type Facing = 'user' | 'environment'
 const COUNTDOWN_SECONDS = 3
@@ -123,39 +123,29 @@ export default function Shoot({
         title={t('shoot.title', { index: index + 1, total: SHOTS_PER_SET })}
         onBack={onBack}
         right={
-          <div className="flex gap-2">
-            <button
-              onClick={toggleMirror}
-              disabled={facing !== 'user'}
-              aria-pressed={mirror}
-              className={`rounded-full px-3 py-1.5 text-sm ring-1 ring-ink/15 disabled:opacity-40 ${
-                mirror ? 'bg-ink text-white' : 'bg-white'
-              }`}
-            >
+          <div className="flex items-center gap-2">
+            <Chip selected={mirror} tint={1} disabled={facing !== 'user'} onClick={toggleMirror}>
               {mirror ? t('shoot.mirror_on') : t('shoot.mirror_off')}
-            </button>
-            <button
-              onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')}
-              className="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
-            >
+            </Chip>
+            <Button variant="secondary" size="md" onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')} className="gap-1">
               <Flip width={16} height={16} />
               {t('shoot.flip')}
-            </button>
+            </Button>
           </div>
         }
       />
 
-      <div className="flex flex-1 flex-col gap-3 overflow-hidden px-4">
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden px-4">
         {/* Reference cartoon on top */}
         <FitImage
           src={cartoonUrls[index]}
           alt={t('shoot.reference_alt')}
-          className="w-full rounded-2xl ring-1 ring-ink/10"
+          className="w-full rounded-card ring-1 ring-line"
           style={{ aspectRatio: viewRatio }}
         />
 
         {/* Camera (or the captured preview) below */}
-        <div className="relative overflow-hidden rounded-2xl bg-black" style={{ aspectRatio: viewRatio }}>
+        <div className="relative overflow-hidden rounded-card bg-dark" style={{ aspectRatio: viewRatio }}>
           <video
             ref={video}
             autoPlay
@@ -167,7 +157,7 @@ export default function Shoot({
           {!preview && <Scrim keptFraction={keptFraction} />}
           {countdown !== null && <Countdown seconds={countdown} />}
           {cameraError && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-sm text-white">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-body text-on-dark">
               <p>{cameraError}</p>
               <Button variant="secondary" onClick={retryCamera}>
                 {t('shoot.retry')}
@@ -181,19 +171,19 @@ export default function Shoot({
           {Array.from({ length: SHOTS_PER_SET }, (_, i) => (
             <div
               key={i}
-              className={`h-1.5 flex-1 rounded-full ${i < index ? 'bg-berry' : i === index ? 'bg-ink' : 'bg-ink/15'}`}
+              className={`h-1 flex-1 rounded-pill ${i < index ? 'bg-accent-pressed' : i === index ? 'bg-fg' : 'bg-line'}`}
             />
           ))}
         </div>
       </div>
 
-      <div className="flex gap-3 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="flex gap-2 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {preview ? (
           <>
             <Button variant="secondary" onClick={() => setPreview(null)} className="flex-1">
               {t('shoot.retake')}
             </Button>
-            <Button onClick={keep} className="flex flex-1 items-center justify-center gap-2">
+            <Button onClick={keep} className="flex-1">
               {index + 1 === SHOTS_PER_SET ? t('common.done') : t('common.next')}
               {index + 1 === SHOTS_PER_SET ? <Check width={20} height={20} strokeWidth={2.2} /> : <ArrowRight width={20} height={20} strokeWidth={2.2} />}
             </Button>
@@ -203,7 +193,7 @@ export default function Shoot({
             <Button variant="secondary" onClick={capture} disabled={!!cameraError || countdown !== null} className="flex-1">
               {t('shoot.capture')}
             </Button>
-            <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex flex-1 items-center justify-center gap-2">
+            <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex-1">
               <Timer width={20} height={20} strokeWidth={2.2} />
               {t('shoot.countdown', { seconds: COUNTDOWN_SECONDS })}
             </Button>

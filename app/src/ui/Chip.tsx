@@ -12,12 +12,25 @@ const tints: Record<Tint, string> = {
 
 // A small filter pill. When selected it fills with a pastel tint (or cocoa
 // when no tint is given); unselected chips are white with a thin line.
-export function Chip({ selected, tint, onClick, children }: { selected: boolean; tint?: Tint; onClick: () => void; children: ReactNode }) {
+export function Chip({
+  selected,
+  tint,
+  disabled,
+  onClick,
+  children,
+}: {
+  selected: boolean
+  tint?: Tint
+  disabled?: boolean
+  onClick: () => void
+  children: ReactNode
+}) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       aria-pressed={selected}
-      className={`inline-flex h-chip shrink-0 items-center gap-1 rounded-pill px-4 text-label transition-colors duration-fast ${focusRing} ${
+      className={`inline-flex h-chip shrink-0 items-center gap-1 rounded-pill px-4 text-label transition-colors duration-fast disabled:opacity-40 ${focusRing} ${
         selected ? (tint ? `${tints[tint]} text-fg` : 'bg-fg text-on-dark') : 'bg-surface-raised text-fg-muted ring-1 ring-line active:bg-surface'
       }`}
     >

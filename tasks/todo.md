@@ -238,7 +238,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Import.tsx`, `Crop.tsx`
   - Size: S · Depends: Task 27
 
-- [ ] Task 29: Shoot + Result
+- [x] Task 29: Shoot + Result
   - Acceptance: 取景畫面用 `on-dark`／`scrim`；快門 72；倒數 display 級；Result 標題 display 級、儲存係唯一 accent 掣
   - Verify: before／after 截圖（mock camera）；strip 輸出測試不變
   - Files: `app/src/screens/Shoot.tsx`, `Result.tsx`

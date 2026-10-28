@@ -30,3 +30,19 @@ describe('copyImage', () => {
     expect(items.items['image/png']).toBe(png)
   })
 })
+
+describe('readImagesFromClipboard', () => {
+  it('returns only image items as files', async () => {
+    const { readImagesFromClipboard } = await import('../clipboard')
+    const png = new Blob(['p'], { type: 'image/png' })
+    const read = vi.fn().mockResolvedValue([
+      { types: ['text/plain'], getType: vi.fn() },
+      { types: ['text/html', 'image/png'], getType: vi.fn().mockResolvedValue(png) },
+    ])
+    vi.stubGlobal('navigator', { clipboard: { read } })
+    const files = await readImagesFromClipboard()
+    expect(files).toHaveLength(1)
+    expect(files[0].type).toBe('image/png')
+    expect(files[0].name).toBe('pasted-1.png')
+  })
+})

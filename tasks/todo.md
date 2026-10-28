@@ -146,7 +146,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Crop.tsx`, `app/src/screens/Import.tsx`, `app/package.json`（react-easy-crop，**Ask first**）
   - Size: M · Depends: Task 16
 
-- [ ] Task 18: 貼上入口
+- [x] Task 18: 貼上入口
   - Acceptance: Library 有「貼上」掣 → `navigator.clipboard.read()` 攞 image/* → 入 Import；桌面 `paste` event 同樣；唔支援／拒絕 → 提示用 Share
   - Verify: 桌面 Chrome 複製一張圖 → 貼上 → Import 出現；unit test mock clipboard.read
   - Files: `app/src/clipboard.ts`, `app/src/__tests__/clipboard.test.ts`, `app/src/screens/Library.tsx`

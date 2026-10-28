@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Camera, Check, EditPencil, NavArrowLeft, NavArrowRight, Plus, Trash, Xmark } from 'iconoir-react'
-import { useMemo, useRef, useState } from 'react'
+import { Camera, Check, EditPencil, NavArrowLeft, NavArrowRight, PasteClipboard, Plus, Trash, Xmark } from 'iconoir-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { canPasteImage, imagesFromPasteEvent, readImagesFromClipboard } from '../clipboard'
 import { db, deleteImages, listCharacterNames, SHOTS_PER_SET, updateImage, type PersonCount, type StoredImage } from '../db'
 import { getLibraryFilter, setLibraryFilter, type LibraryFilter } from '../settings'
 import { Button, FitImage, Header, PersonToggle } from '../ui'
@@ -24,6 +25,34 @@ export default function Library({
   const [selected, setSelected] = useState<number[]>([]) // select: any order; pick: shoot order
   const [editing, setEditing] = useState<StoredImage | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
+  const [toast, setToast] = useState<string | null>(null)
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(null), 2500)
+    return () => clearTimeout(t)
+  }, [toast])
+
+  const paste = async () => {
+    try {
+      const files = await readImagesFromClipboard()
+      if (files.length === 0) setToast('剪貼簿入面冇圖片')
+      else onImport(files)
+    } catch {
+      setToast('貼唔到。試下用 Share → Post Match')
+    }
+  }
+  // Desktop Cmd/Ctrl+V anywhere on the library.
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const files = imagesFromPasteEvent(e)
+      if (files.length) {
+        e.preventDefault()
+        onImport(files)
+      }
+    }
+    document.addEventListener('paste', onPaste)
+    return () => document.removeEventListener('paste', onPaste)
+  }, [onImport])
 
   const names = useLiveQuery(listCharacterNames, [], [] as string[])
   // A remembered name whose last image was deleted just stops filtering.
@@ -150,12 +179,20 @@ export default function Library({
 
       {/* Bottom bar */}
       <div className="px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        {toast && (
+          <div className="mb-3 rounded-full bg-ink px-4 py-2 text-center text-sm text-white">{toast}</div>
+        )}
         {mode === 'browse' && (
           <div className="flex gap-3">
             <Button variant="secondary" onClick={() => fileInput.current?.click()} className="flex flex-1 items-center justify-center gap-2">
               <Plus width={20} height={20} strokeWidth={2.2} />
               加入圖片
             </Button>
+            {canPasteImage() && (
+              <Button variant="secondary" onClick={paste} aria-label="貼上" className="flex items-center justify-center px-4">
+                <PasteClipboard width={20} height={20} strokeWidth={2.2} />
+              </Button>
+            )}
             <Button
               onClick={() => setMode('pick')}
               disabled={(images?.length ?? 0) === 0}

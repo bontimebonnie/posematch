@@ -1,13 +1,11 @@
-// @vitest-environment node
-import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 // Guards docs/DESIGN-SPEC.md §4.1 / §9: every class in the app comes from the
 // token scale. Off-grid spacing, raw palette colours, Tailwind's default type
 // and radius scales, and arbitrary values are all refused.
 
-const SRC = join(__dirname, '..')
+// Every component and screen source, read as text at test time.
+const SOURCES = import.meta.glob<string>(['../**/*.tsx'], { query: '?raw', import: 'default', eager: true })
 
 const BANNED: { name: string; re: RegExp }[] = [
   // spacing: only 1 2 4 6 8 12 16 (4/8/16/24/32/48/64px)
@@ -20,22 +18,13 @@ const BANNED: { name: string; re: RegExp }[] = [
   { name: 'arbitrary value', re: /(?<![\w-])(?!aspect-)[a-z-]+-\[(?!max\(1rem,env\()[^\]]+\](?![\w-])/ },
 ]
 
-function tsxFiles(dir: string): string[] {
-  return readdirSync(dir).flatMap((name) => {
-    const p = join(dir, name)
-    if (statSync(p).isDirectory()) return name === '__tests__' ? [] : tsxFiles(p)
-    return name.endsWith('.tsx') ? [p] : []
-  })
-}
-
-export function findViolations(files = tsxFiles(SRC)): string[] {
+export function findViolations(sources: Record<string, string> = SOURCES): string[] {
   const out: string[] = []
-  for (const file of files) {
-    const lines = readFileSync(file, 'utf8').split('\n')
-    lines.forEach((line, i) => {
+  for (const [file, text] of Object.entries(sources)) {
+    text.split('\n').forEach((line, i) => {
       for (const { name, re } of BANNED) {
         const m = line.match(re)
-        if (m) out.push(`${relative(SRC, file)}:${i + 1}  ${name}: ${m[0]}`)
+        if (m) out.push(`${file.replace('../', '')}:${i + 1}  ${name}: ${m[0]}`)
       }
     })
   }
@@ -57,8 +46,8 @@ describe('design tokens gate', () => {
     expect(BANNED.filter((b) => b.re.test(ok)).map((b) => b.name)).toEqual([])
   })
 
-  // Enforced from Task 30 on; until then run with DESIGN_GATE=1 to list the backlog.
-  it.skipIf(!process.env.DESIGN_GATE)('src/**/*.tsx uses only token classes', () => {
+  // Enforced from Task 30 on; until then run with VITE_DESIGN_GATE=1 to list the backlog.
+  it.skipIf(!import.meta.env.VITE_DESIGN_GATE)('src/**/*.tsx uses only token classes', () => {
     expect(findViolations()).toEqual([])
   })
 })

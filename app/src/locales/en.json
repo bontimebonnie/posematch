@@ -1,0 +1,86 @@
+{
+  "common": {
+    "back": "Back",
+    "close": "Close",
+    "remove": "Remove",
+    "delete": "Delete",
+    "save": "Save",
+    "done": "Done",
+    "next": "Next",
+    "people_one": "{{count}} person",
+    "people_other": "{{count}} people",
+    "language": "Language"
+  },
+  "library": {
+    "title": "Post Match",
+    "select": "Select",
+    "selected": "{{count}} selected",
+    "pick_title": "Pick {{count}} of {{total}}",
+    "filter_all": "All",
+    "filter_all_characters": "All characters",
+    "empty_title": "No pictures yet",
+    "empty_body": "Add your first picture to get started.",
+    "add": "Add pictures",
+    "paste": "Paste",
+    "shoot": "Start shooting",
+    "start": "Start",
+    "delete_count": "Delete {{count}}",
+    "confirm_delete_one": "Delete this picture? This can't be undone.",
+    "confirm_delete_other": "Delete {{count}} pictures? This can't be undone.",
+    "paste_empty": "No image on the clipboard",
+    "paste_failed": "Couldn't paste. Try Share → Post Match instead.",
+    "move_earlier": "Move earlier",
+    "move_later": "Move later",
+    "edit": "Edit",
+    "character_label": "Character name",
+    "character_hint": "e.g. Tom & Jerry",
+    "character_placeholder": "Optional"
+  },
+  "import": {
+    "title_one": "Add {{count}} picture",
+    "title_other": "Add {{count}} pictures",
+    "people_question": "How many characters are in the picture?",
+    "save": "Add to library",
+    "saving": "Saving…",
+    "save_failed": "Couldn't save: {{message}}"
+  },
+  "crop": {
+    "title": "Crop",
+    "title_n": "Crop {{index}} of {{total}}",
+    "cut_count": "{{count}} cut",
+    "hint": "Drag and pinch to frame the part you want",
+    "cut_another": "Cut another from this picture",
+    "keep_whole": "Keep whole",
+    "enough": "That's all",
+    "cut_next": "Cut and continue",
+    "finish": "Finish"
+  },
+  "shoot": {
+    "title": "Shot {{index}} of {{total}}",
+    "mirror_on": "Mirror on",
+    "mirror_off": "Mirror off",
+    "flip": "Flip camera",
+    "reference_alt": "Reference pose",
+    "retry": "Try again",
+    "retake": "Retake",
+    "capture": "Take photo",
+    "countdown": "{{seconds}}s timer"
+  },
+  "camera": {
+    "denied": "Camera access is off. Allow it in your browser settings, then tap Try again.",
+    "not_found": "No camera found. Try flipping the camera.",
+    "busy": "Another app is using the camera. Close it, then tap Try again.",
+    "unknown": "Couldn't open the camera ({{message}})"
+  },
+  "result": {
+    "title": "Your strip is ready!",
+    "alt": "Finished four-strip",
+    "composing": "Putting your strip together…",
+    "retake": "Retake all",
+    "copy": "Copy image",
+    "save": "Save",
+    "copied": "Copied. Paste it straight into Instagram.",
+    "copy_failed": "Couldn't copy. Use Save instead.",
+    "copy_unsupported": "This browser can't copy images. Use Save."
+  }
+}

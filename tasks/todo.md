@@ -186,6 +186,76 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 ### Checkpoint: Phase A2 完成
 - [x] 桌面：EN ↔ 繁中 切換、記住選擇、`<html lang>` 跟住變；兩個 locale key 一致；全部畫面冇硬寫文字
 - [x] 部署
-- [ ] Bonnie review 繁中文案（docs/COPY.md 用詞表 + app 內逐個畫面）
-- [ ] SPEC v0.2 Success Criteria 全剔
-- [ ] Review 後開 Phase B（design）spec
+- [x] Bonnie review 繁中文案（docs/COPY.md 用詞表 + app 內逐個畫面）
+- [x] SPEC v0.2 Success Criteria 全剔
+- [x] Review 後開 Phase B（design）spec
+
+---
+
+# Post Match — Phase B Tasks（Design）
+
+對應 [tasks/plan.md](plan.md) Phase B、[docs/DESIGN-SPEC.md](../docs/DESIGN-SPEC.md) v0.2。一個 task 一個 commit。
+
+## Phase 1: Token
+
+- [ ] Task 23: index.css 新 token
+  - Acceptance: `@theme` 有 DESIGN-SPEC §4.1–4.7 全部 token；原色層係 Chiikawa 色板；語意層用 color-mix；字體 fallback `PingFang TC, Noto Sans TC`；舊 `berry` 刪走（暫時 alias 去 accent 等 B3 換完先刪）；app 開到、build 綠
+  - Verify: browser pane 將 Chiikawa 圖同 Library 併排截圖入 `docs/design/palette.png`，Bonnie 睇一眼
+  - Files: `app/src/index.css`, `docs/design/palette.png`
+  - Size: S · Depends: —
+
+- [ ] Task 24: design-tokens 守門測試
+  - Acceptance: `__tests__/design-tokens.test.ts` 掃 `src/**/*.tsx`，禁用：spacing `0.5 1.5 2.5 3 3.5 5 7 9 10 11 14`、`rounded-(lg|xl|2xl|3xl)`、`(bg|text|ring|border)-(ink|black|white)(/\d+)?`、`text-(xs|sm|base|lg|xl|2xl)`、任意值 `[...]`（`env(` 白名單）；fail message 列出 file:line；暫時 `test.todo`／skip 直至 Task 30
+  - Verify: 跑一次見到完整違規清單（而家應該 ~60 處）
+  - Files: `app/src/__tests__/design-tokens.test.ts`
+  - Size: S · Depends: Task 23
+
+## Phase 2: Component（純搬動，零視覺改動）
+
+- [ ] Task 25: 抽 ui/ 第一批
+  - Acceptance: `ui/Button.tsx` `IconButton.tsx` `Header.tsx` `FitImage.tsx` `SegmentedControl.tsx` `Chip.tsx` `Badge.tsx` `Toast.tsx` + `ui/index.ts`；`ui.tsx` 刪走；PersonToggle 變 SegmentedControl 嘅一個用法；screens 改 import；畫面樣貌不變
+  - Verify: build + lint + test 綠；browser pane 走一次流程
+  - Files: `app/src/ui/*`, `app/src/screens/*.tsx`
+  - Size: M · Depends: Task 23
+
+- [ ] Task 26: 抽 ui/ 第二批
+  - Acceptance: `Tile.tsx` `Tray.tsx` `Sheet.tsx` `TextField.tsx` `EmptyState.tsx` `Scrim.tsx` `Countdown.tsx` `Shutter.tsx`；Library.tsx < 200 行；畫面樣貌不變
+  - Verify: 同上
+  - Files: `app/src/ui/*`, `app/src/screens/Library.tsx`, `Shoot.tsx`
+  - Size: M · Depends: Task 25
+
+## Phase 3: 畫面套用
+
+- [ ] Task 27: Library
+  - Acceptance: 全部 class 用語意 token；spacing 喺 grid；chip／tile／sheet／tray／空狀態跟 DESIGN-SPEC §3 §5；主要動作粉紅 pill 配深字；單人／雙人 chip 用 tint-1／tint-2
+  - Verify: `docs/design/library-before.png` / `-after.png`（390 寬）；守門測試 Library 零違規
+  - Files: `app/src/screens/Library.tsx`, `app/src/ui/*`
+  - Size: M · Depends: Task 26
+
+- [ ] Task 28: Import + Crop
+  - Acceptance: 同上；Crop 嘅三個掣層級清楚（一個 accent、兩個 secondary）
+  - Verify: before／after 截圖；守門零違規
+  - Files: `app/src/screens/Import.tsx`, `Crop.tsx`
+  - Size: S · Depends: Task 27
+
+- [ ] Task 29: Shoot + Result
+  - Acceptance: 取景畫面用 `on-dark`／`scrim`；快門 72；倒數 display 級；Result 標題 display 級、儲存係唯一 accent 掣
+  - Verify: before／after 截圖（mock camera）；strip 輸出測試不變
+  - Files: `app/src/screens/Shoot.tsx`, `Result.tsx`
+  - Size: M · Depends: Task 28
+
+- [ ] Task 30: 收尾
+  - Acceptance: 守門測試由 skip 轉正式、全綠；browser pane 掃所有 button ≥ 44×44；`prefers-reduced-motion` 動畫 0ms；5 個畫面 before／after 齊；DESIGN-SPEC §12 可剔嘅全剔
+  - Verify: `npm test` 全綠；故意加 `px-3` 會 fail
+  - Files: `app/src/__tests__/design-tokens.test.ts`, `app/src/index.css`, `docs/design/*`, `docs/DESIGN-SPEC.md`
+  - Size: S · Depends: Task 29
+
+### Checkpoint: Phase B 基礎
+- [ ] 部署
+- [ ] Bonnie iPhone 過 5 個畫面；色板同 Chiikawa 圖對照
+- [ ] 答 DESIGN-SPEC §13 Q3–7，開 Phase 4
+
+## Phase 4: Decor（等 checkpoint 答完先細寫）
+
+- [ ] Task 31: decor token + 第一個 element
+- [ ] Task 32: 第二、三個 element

@@ -129,3 +129,60 @@
 
 - 取景框改 4:3 係咪 OK？（Ask first 項目）
 - 用詞表（Task 20 出嚟你揀）
+
+---
+
+# Implementation Plan: Post Match — Phase B（Design）
+
+對應 [docs/DESIGN-SPEC.md](../docs/DESIGN-SPEC.md) v0.2。Phase B 唔改功能、唔改 strip 輸出。
+
+## Overview
+
+由底向上：先定 token（CSS 一個檔），再抽 component（`ui/`），再逐個畫面套用，最後加守門測試，真機 checkpoint。之後先開 decor（圖案／element），因為 decor 要有穩定嘅 token 同 component 先有嘢可以掛。
+
+## Architecture Decisions
+
+- **Token 只放 `@theme`**：Tailwind 4 由 `--color-*`、`--spacing-*`、`--radius-*`、`--text-*` 自動生成 class，唔寫 tailwind.config。語意色用 `color-mix()` 由原色推出，改一個原色全 app 跟住變。
+- **語意層同原色層分開**：component 只 import 語意 class（`bg-accent`、`text-fg-muted`）；原色（`pink`、`sky`）只喺 `index.css` 同 decor 用。
+- **Component 先抽後改**：B2 將現有 JSX 原封搬去 `ui/`，B3 先改外觀。咁 B2 嘅 diff 係純搬動，容易 review；B3 嘅 diff 先係視覺改動。
+- **守門測試用 regex 掃 source**：唔裝 Tailwind lint plugin（唔加 dependency），一個 Vitest 檔掃 `src/**/*.tsx` 禁用 class 即可。
+- **截圖做視覺 regression**：browser pane 390 寬，每個畫面 before／after PNG 入 `docs/design/`，人眼對照。唔做 pixel diff。
+- **Decor 延後到 B5**：等 B1–B4 真機 OK 先定 `--decor-*`，避免 token 未穩定就加嘢。
+
+## Task List
+
+### Phase 1: Token
+- [ ] Task 23: `index.css` 新 token（色板、spacing、字級、圓角、尺寸、動效、陰影）+ 字體 fallback 改 TC
+- [ ] Task 24: `design-tokens.test.ts` 守門測試（先 fail，列出所有違規）
+
+### Phase 2: Component
+- [ ] Task 25: 抽 `ui/`（Button、IconButton、Header、FitImage、SegmentedControl、Chip、Badge、Toast）— 純搬動
+- [ ] Task 26: 抽 `ui/`（Tile、Tray、Sheet、TextField、EmptyState、Scrim、Countdown、Shutter）— 純搬動
+
+### Phase 3: 畫面套用
+- [ ] Task 27: Library 套 token + component（含 EditSheet、PickTray、空狀態）
+- [ ] Task 28: Import + Crop 套 token + component
+- [ ] Task 29: Shoot + Result 套 token + component
+- [ ] Task 30: 守門測試轉綠、44pt 掃、reduced-motion、before／after 截圖
+
+### Checkpoint: Phase B 基礎（真機）
+- [ ] Bonnie iPhone 過 5 個畫面；色板同 Chiikawa 圖併排對照
+- [ ] 28 舊測試 + 新測試綠；strip 輸出不變
+
+### Phase 4: Decor
+- [ ] Task 31: `--decor-*` token + 第一個 element（Bonnie 揀：空狀態插圖／完成頁慶祝／圖庫紋理）
+- [ ] Task 32: 第二、三個 element（視乎 Bonnie reference）
+
+### Checkpoint: Phase B 完成（真機）
+
+## Risks and Mitigations
+
+- **目測色值同圖有偏差** → Task 23 喺 browser pane 將圖同 app 併排截圖，Bonnie 確認先入 commit。
+- **粉彩底字對比唔夠** → 全部粉彩配 cocoa 深字，Task 30 用 browser pane 計 contrast，< 4.5 即改。
+- **搬 component 時改咗行為** → B2 純搬動、零視覺改動，跑現有流程一次；B3 先改樣。
+- **守門測試太嚴阻住開發** → 禁用表只限 spec §4.1／§9 列明嘅，safe-area `env()` 任意值白名單。
+- **Library.tsx 387 行拆唔乾淨** → 目標 < 200 行；拆唔到就留低 EditSheet 喺 screens/，唔強求。
+
+## Open Questions
+
+- 字體（system vs 標題 web font）、decor 想要邊三樣、header 要唔要 logo、平板兩欄——見 DESIGN-SPEC §13 Q3–7，B5 之前要答。

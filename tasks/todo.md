@@ -10,15 +10,15 @@
   - Files: `app/package.json`, `app/vite.config.ts`（test config）, `app/src/image.ts`, `app/src/__tests__/image.test.ts`
   - Size: S · Depends: —
 
-- [ ] Task 2: 用 fake-indexeddb 測 `db.ts`
+- [x] Task 2: 用 fake-indexeddb 測 `db.ts`
   - Acceptance: `saveSet` 存 4 張相 + 1 個 set 並回傳 set；`loadSetImages` 次序同 `imageIds` 一致；`deleteSet` 連相一齊刪
   - Verify: `npm test` 綠
   - Files: `app/src/__tests__/db.test.ts`, `app/package.json`（devDep: fake-indexeddb）
   - Size: S · Depends: Task 1
 
 ### Checkpoint: 測試基礎
-- [ ] `npm test`、`npm run build`、`npm run lint` 全綠
-- [ ] Commit + push
+- [x] `npm test`、`npm run build`、`npm run lint` 全綠
+- [x] Commit + push
 
 ## Phase 2: 功能補完
 

@@ -204,7 +204,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/index.css`, `docs/design/palette.png`
   - Size: S · Depends: —
 
-- [ ] Task 24: design-tokens 守門測試
+- [x] Task 24: design-tokens 守門測試
   - Acceptance: `__tests__/design-tokens.test.ts` 掃 `src/**/*.tsx`，禁用：spacing `0.5 1.5 2.5 3 3.5 5 7 9 10 11 14`、`rounded-(lg|xl|2xl|3xl)`、`(bg|text|ring|border)-(ink|black|white)(/\d+)?`、`text-(xs|sm|base|lg|xl|2xl)`、任意值 `[...]`（`env(` 白名單）；fail message 列出 file:line；暫時 `test.todo`／skip 直至 Task 30
   - Verify: 跑一次見到完整違規清單（而家應該 ~60 處）
   - Files: `app/src/__tests__/design-tokens.test.ts`

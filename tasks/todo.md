@@ -22,7 +22,7 @@
 
 ## Phase 2: 功能補完
 
-- [ ] Task 3: `strip.ts` — 4:5 layout 純函數 + 測試
+- [x] Task 3: `strip.ts` — 4:5 layout 純函數 + 測試
   - Acceptance: `stripLayout({rows: 4})` 回傳畫布 1080×1350 同每格 `{x, y, w, h}`；每格 3:2；strip 水平置中、垂直置中；格與格之間有統一 gap；全部數值整數
   - Verify: test 檢查 1080×1350、8 個格冇重疊、冇出界、左右對稱
   - Files: `app/src/strip.ts`, `app/src/__tests__/strip.test.ts`

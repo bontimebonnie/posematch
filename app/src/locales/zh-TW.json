@@ -1,0 +1,86 @@
+{
+  "common": {
+    "back": "返回",
+    "close": "關閉",
+    "remove": "移除",
+    "delete": "刪除",
+    "save": "儲存",
+    "done": "完成",
+    "next": "下一張",
+    "people_one": "{{count}} 人",
+    "people_other": "{{count}} 人",
+    "language": "語言"
+  },
+  "library": {
+    "title": "Post Match",
+    "select": "選取",
+    "selected": "已選 {{count}} 張",
+    "pick_title": "已選 {{count}} / {{total}} 張",
+    "filter_all": "全部",
+    "filter_all_characters": "所有角色",
+    "empty_title": "還沒有圖片",
+    "empty_body": "新增第一張圖片，開始使用。",
+    "add": "新增圖片",
+    "paste": "貼上",
+    "shoot": "開始拍攝",
+    "start": "開始",
+    "delete_count": "刪除 {{count}} 張",
+    "confirm_delete_one": "要刪除這張圖片嗎？刪除後無法復原。",
+    "confirm_delete_other": "要刪除 {{count}} 張圖片嗎？刪除後無法復原。",
+    "paste_empty": "剪貼簿裡沒有圖片",
+    "paste_failed": "無法貼上，請改用「分享 → Post Match」。",
+    "move_earlier": "往前移",
+    "move_later": "往後移",
+    "edit": "編輯",
+    "character_label": "角色名稱",
+    "character_hint": "例如 Tom & Jerry",
+    "character_placeholder": "選填"
+  },
+  "import": {
+    "title_one": "新增 {{count}} 張圖片",
+    "title_other": "新增 {{count}} 張圖片",
+    "people_question": "圖片裡有幾個角色？",
+    "save": "加入圖庫",
+    "saving": "儲存中…",
+    "save_failed": "無法儲存：{{message}}"
+  },
+  "crop": {
+    "title": "裁切",
+    "title_n": "裁切 {{index}} / {{total}}",
+    "cut_count": "已裁 {{count}} 張",
+    "hint": "拖曳並用兩指縮放，框住想要的範圍",
+    "cut_another": "從這張再裁一張",
+    "keep_whole": "保留整張",
+    "enough": "完成這張",
+    "cut_next": "裁切並繼續",
+    "finish": "完成"
+  },
+  "shoot": {
+    "title": "第 {{index}} / {{total}} 張",
+    "mirror_on": "鏡像 開",
+    "mirror_off": "鏡像 關",
+    "flip": "切換鏡頭",
+    "reference_alt": "參考姿勢",
+    "retry": "重試",
+    "retake": "重拍",
+    "capture": "拍照",
+    "countdown": "{{seconds}} 秒倒數"
+  },
+  "camera": {
+    "denied": "相機權限已關閉。請到瀏覽器設定開啟，再點「重試」。",
+    "not_found": "找不到相機，試試切換鏡頭。",
+    "busy": "相機正被其他應用程式使用，請關閉後再點「重試」。",
+    "unknown": "無法開啟相機（{{message}}）"
+  },
+  "result": {
+    "title": "拼圖完成了！",
+    "alt": "完成的四格拼圖",
+    "composing": "正在合成拼圖…",
+    "retake": "重新拍攝",
+    "copy": "複製圖片",
+    "save": "儲存",
+    "copied": "已複製，可以直接貼到 Instagram。",
+    "copy_failed": "無法複製，請改用「儲存」。",
+    "copy_unsupported": "這個瀏覽器不支援複製圖片，請使用「儲存」。"
+  }
+}

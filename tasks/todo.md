@@ -75,3 +75,111 @@
 ### Checkpoint: Phase A 完成
 - [ ] SPEC.md Success Criteria 全部打剔
 - [ ] Review 之後開 Phase B（design）嘅 spec
+
+---
+
+# Post Match — Phase A2 Tasks
+
+Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && npm test && npm run build && npm run lint`，commit 一次。
+
+## Phase 1: 填邊 + 取景框
+
+- [ ] Task 10: `fitRect` + `drawFit` + 測試
+  - Acceptance: `fitRect(sw, sh, w, h)` 回傳 contain 之後嘅目標矩形 `{x, y, w, h}`（置中）；`drawFit(ctx, src, x, y, w, h)` 先畫放大 + blur + 調暗嘅背景（cover），再畫 contain 嘅前景；3:2 相唔會出現邊
+  - Verify: fitRect 測 橫／直／啱比例 三 case；mock 一張 1.2:1 圖，strip 輸出肉眼見到完整 + 模糊邊
+  - Files: `app/src/image.ts`, `app/src/__tests__/image.test.ts`
+  - Size: S · Depends: —
+
+- [ ] Task 11: 三個地方改用填邊
+  - Acceptance: Library 縮圖、Shoot 參考圖用 CSS（`object-contain` + 同一張圖做 blur 背景層）；`composeStrip` 用 `drawFit` 畫卡通格；真人格維持 cover（camera 本身係 3:2 裁好）
+  - Verify: mock camera 走流程，用 1.2:1 貼圖，三個地方都完整
+  - Files: `app/src/screens/Home.tsx`, `app/src/screens/Shoot.tsx`, `app/src/strip.ts`, `app/src/ui.tsx`（新 `FitImage` component）
+  - Size: S · Depends: Task 10
+
+- [ ] Task 12: 手機直向取景框 4:3
+  - Acceptance: viewport 直向且闊度 < 768 時，camera 框同參考圖框都係 4:3；capture 仍中央裁出 3:2；桌面／橫向維持 3:2；有一個 `VIEWFINDER_RATIO` 單一來源
+  - Verify: 瀏覽器 mobile viewport 見到 4:3 框；輸出 strip 仍 1080×1350 格 3:2
+  - Files: `app/src/screens/Shoot.tsx`, `app/src/image.ts`
+  - Size: S · Depends: Task 10
+  - **Ask first**: 比例改動，等 Bonnie approve plan 先做
+
+### Checkpoint: 真機再試
+- [ ] 部署；Bonnie iPhone 確認 貼圖完整 + 取景框見到人
+- [ ] 同時答返 checklist D：Copy Image、儲存相簿 兩樣
+
+## Phase 2: Library 重整
+
+- [ ] Task 13: Dexie v2 schema + 升級 + 測試
+  - Acceptance: `images` 加 `personCount: 1|2`、`characterName: string`、`sourceId?: string`、index `[personCount+characterName]`；`sets` 喺 v2 upgrade 展開（每張相攞 set 嘅 personCount，characterName = set.name）後刪除 table；`listCharacterNames()` 回傳去重名單
+  - Verify: test 用 Dexie v1 定義入 2 個 set，關閉，開 v2，8 張相帶正確欄位，`sets` 唔存在
+  - Files: `app/src/db.ts`, `app/src/__tests__/db.test.ts`
+  - Size: M · Depends: —
+
+- [ ] Task 14: Library grid
+  - Acceptance: Home 變成 Library：頂部 人數 toggle + 角色名 chips（由 `listCharacterNames`）；grid 顯示篩選結果；長按／「選取」進入多選，可刪除；點一張可以改人數／角色名；篩選記住上次（localStorage）
+  - Verify: 入 6 張相 2 個角色名，篩選正確；刪 2 張後 count 啱；reload 篩選仍在
+  - Files: `app/src/screens/Library.tsx`（取代 Home）, `app/src/App.tsx`, `app/src/settings.ts`, `app/src/ui.tsx`
+  - Size: M · Depends: Task 13
+
+- [ ] Task 15: 揀相模式
+  - Acceptance: Library 有「開始拍攝」→ 進入揀相模式；點相出現 1–4 序號，再點取消；底部顯示已揀 4 格可拖／調次序；揀夠 4 張「開始」先可用；交 `Blob[]` 畀 Shoot
+  - Verify: 揀 4 張次序 3-1-4-2，Shoot 第 1 張係第 3 張相
+  - Files: `app/src/screens/Library.tsx`, `app/src/App.tsx`
+  - Size: M · Depends: Task 14
+
+- [ ] Task 16: Import pipeline（檔案入口）
+  - Acceptance: `Import` 畫面接收 `File[]`：逐張顯示（暫時無 crop）→ 填人數 + 角色名（自動完成）一次套用全部 → 入 library → 返 Library grid；舊 Upload 畫面刪除；相仍 downscale 1600
+  - Verify: 揀 3 張檔案，填 "Chiikawa"，grid 見到 3 張帶該名
+  - Files: `app/src/screens/Import.tsx`, `app/src/App.tsx`, 刪 `app/src/screens/Upload.tsx`
+  - Size: M · Depends: Task 14
+
+### Checkpoint: Library
+- [ ] 舊資料升級完整；grid → 揀 4 張 → strip
+- [ ] 部署，Bonnie 確認
+
+## Phase 3: Crop + 入相
+
+- [ ] Task 17: Crop 畫面
+  - Acceptance: Import 每張相先入 crop：拖動／雙指縮放，框鎖 3:2；「跳過」= 唔裁（之後填邊）；「再切一張」將當前裁出嚟加入隊列並留喺同一來源相；裁出嚟嘅相帶同一 `sourceId`
+  - Verify: 一張 4 格 strip 切 4 次 → library 4 張獨立相
+  - Files: `app/src/screens/Crop.tsx`, `app/src/screens/Import.tsx`, `app/package.json`（react-easy-crop，**Ask first**）
+  - Size: M · Depends: Task 16
+
+- [ ] Task 18: 貼上入口
+  - Acceptance: Library 有「貼上」掣 → `navigator.clipboard.read()` 攞 image/* → 入 Import；桌面 `paste` event 同樣；唔支援／拒絕 → 提示用 Share
+  - Verify: 桌面 Chrome 複製一張圖 → 貼上 → Import 出現；unit test mock clipboard.read
+  - Files: `app/src/clipboard.ts`, `app/src/__tests__/clipboard.test.ts`, `app/src/screens/Library.tsx`
+  - Size: S · Depends: Task 16
+
+- [ ] Task 19: Share Target
+  - Acceptance: manifest `share_target`（POST, multipart, `files` image/*）；`sw.ts`（injectManifest）接 POST → 存 Cache → redirect `/?import=share`；app 啟動見到 param 由 cache 攞檔案入 Import 並清除；precache 照舊
+  - Verify: 桌面 Chrome 安裝 PWA 後由其他 app share 圖片；iPhone 由 Pinterest share（Bonnie）
+  - Files: `app/vite.config.ts`, `app/src/sw.ts`, `app/src/shareTarget.ts`, `app/src/App.tsx`, `app/tsconfig.app.json`
+  - Size: M · Depends: Task 16
+
+### Checkpoint: iPhone Pinterest 流程
+- [ ] Bonnie：Pinterest 複製→貼上 同 Share→Post Match 兩條路都入到 library
+
+## Phase 4: 雙語
+
+- [ ] Task 20: 用詞表 + en.json
+  - Acceptance: 用 `design:ux-copy` 出用詞表（Library／Strip／Shoot／Character name／Fill edges 等）同所有 key 嘅英文；Bonnie review
+  - Verify: Bonnie approve
+  - Files: `docs/COPY.md`, `app/src/locales/en.json`
+  - Size: S · Depends: Task 17–19 完成（畫面齊）
+
+- [ ] Task 21: 接 i18n
+  - Acceptance: react-i18next（**Ask first** dependency）；所有畫面文字用 `t()`；語言跟 `navigator.language`（zh* → zh-TW，否則 en）；設定頁可以轉並記住；`<html lang>` 跟住變
+  - Verify: grep `src` 冇中文字串；轉語言所有畫面即時變
+  - Files: `app/src/i18n.ts`, `app/src/screens/Settings.tsx`, 全部 screens
+  - Size: L（多 file 但機械式）· Depends: Task 20
+
+- [ ] Task 22: zh-TW.json
+  - Acceptance: 台灣繁體書面語，跟用詞表；Bonnie review
+  - Verify: Bonnie approve；全畫面 zh-TW 截圖
+  - Files: `app/src/locales/zh-TW.json`
+  - Size: S · Depends: Task 21
+
+### Checkpoint: Phase A2 完成
+- [ ] SPEC v0.2 Success Criteria 全剔
+- [ ] Review 後開 Phase B（design）spec

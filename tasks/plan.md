@@ -56,3 +56,76 @@
 
 - 要唔要同時出 9:16 story 版？（spec Open Q1，而家假設唔使）
 - Task 9 嘅內容要等真機試完先知。
+
+---
+
+# Implementation Plan: Post Match — Phase A2（真機試完嘅改動）
+
+對應 [docs/SPEC.md](../docs/SPEC.md) v0.2 A1–A2c。Phase A Task 9（真機修正）併入呢個 phase。
+
+## Overview
+
+五樣嘢：填邊（最細、最急，因為而家會裁走 character）→ library 重整（資料模型變，其他功能都踩住佢）→ crop → 貼上／Share Target → 雙語。雙語放最後，因為前面會新增好多畫面同文字，一次過抽先唔使做兩次。
+
+## Architecture Decisions
+
+- **先改 draw 層，再改資料層**：`drawFit`（contain + blur fill）係純 canvas 邏輯，唔碰資料，可以第一日就上線解決裁相問題。
+- **Dexie schema v2**：`images` 加 `personCount`、`characterName`、`sourceId`（由同一張來源切出嚟嘅相共用）；`sets` table 用 Dexie upgrade hook 展開做獨立相後刪除。升級係一次性、不可逆，所以要有測試。
+- **Import 係一個 pipeline，唔係一個畫面**：三個入口（檔案／貼上／share target）全部產生 `File[]`，交畀同一個 `Import` 畫面（crop → 填資料 → 入 library）。Share Target 只係多一個入口。
+- **Share Target 要自己寫 service worker**：vite-plugin-pwa 由 `generateSW` 轉 `injectManifest`，`sw.ts` 處理 `POST /share-target`，將 FormData 入面嘅檔案存入 Cache API，再 redirect 去 `/?import=share`，app 開咗之後由 cache 攞返。
+- **i18n 用 react-i18next**，key 用 `screen.element` 命名（`shoot.retake`），兩個 json 由 ux-copy skill 出，英文先寫，再出台灣繁中。
+- **Camera 取景框**（Task 9 嘅發現）：直向手機 3:2 太矮。改做取景框 **4:3**，輸出時再中央裁做 3:2；參考圖同樣以 4:3 顯示（contain + 填邊）。桌面維持 3:2。呢個決定要你 approve（SPEC Ask first：改 camera 比例）。
+
+## Task List
+
+### Phase 1: 填邊 + 取景框（即刻解決真機問題）
+- [ ] Task 10: `fitRect` + `drawFit`（contain + blur fill）+ 測試
+- [ ] Task 11: 縮圖、參考圖、strip 改用 `drawFit`／CSS contain + blur 背景
+- [ ] Task 12: 手機直向取景框改 4:3（輸出仍裁 3:2）
+
+### Checkpoint: 真機再試
+- [ ] 1.2:1 貼圖完整顯示；iPhone 取景框見到個人
+- [ ] 部署，Bonnie 用 iPhone 確認
+
+### Phase 2: Library 重整
+- [ ] Task 13: Dexie v2 schema + 升級 + 測試
+- [ ] Task 14: Library grid（篩選人數／角色名、改資料、多選刪除）
+- [ ] Task 15: 揀相模式（揀 4 張、調次序 → Shoot）
+- [ ] Task 16: 舊 Upload 改做 Import pipeline（檔案入口 + 填人數／角色名，暫時未有 crop）
+
+### Checkpoint: Library
+- [ ] 舊資料升級後完整；由 grid 揀 4 張影到 strip
+- [ ] 部署
+
+### Phase 3: Crop + 入相
+- [ ] Task 17: Crop 畫面（鎖 3:2，「再切一張」）
+- [ ] Task 18: 貼上入口（clipboard.read + paste event）
+- [ ] Task 19: Share Target（injectManifest sw.ts + manifest share_target + `/?import=share`）
+
+### Checkpoint: iPhone Pinterest 流程
+- [ ] Pinterest 複製 → 貼上 → crop → library；Pinterest Share → Post Match → crop → library
+
+### Phase 4: 雙語
+- [ ] Task 20: 用 ux-copy 出用詞表 + en.json（你 review）
+- [ ] Task 21: 抽晒所有文字入 i18n，接 react-i18next，語言跟系統 + 設定頁可轉
+- [ ] Task 22: zh-TW.json（你 review）
+
+### Checkpoint: Phase A2 完成
+- [ ] SPEC v0.2 Success Criteria 全剔
+- [ ] Review 之後開 Phase B
+
+## Risks and Mitigations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Dexie 升級寫壞舊資料 | High | 升級前 test 用 v1 schema 入 fixture 再開 v2 驗證；升級一次性，code 保留一個 version |
+| iOS Share Target 要由主畫面 PWA 開先出現喺 Share sheet | Med | app 內提示加至主畫面；checklist 寫明 |
+| `clipboard.read()` iOS 要 user gesture + 每次問權限 | Med | 用「貼上」掣觸發；失敗提示用 Share 方式 |
+| injectManifest 之後 precache 要自己維護 | Low | 用 workbox `precacheAndRoute(self.__WB_MANIFEST)` 照舊 |
+| blur fill 喺 1080 寬 canvas 用 `ctx.filter` iOS Safari 支援度 | Med | Safari 17+ 支援 `filter`；fallback 用多次 downscale/upscale 做 blur |
+| 4:3 取景框改動影響 `coverRect`/capture | Low | capture 仍輸出 3:2（中央裁），strip 唔使改 |
+
+## Open Questions
+
+- 取景框改 4:3 係咪 OK？（Ask first 項目）
+- 用詞表（Task 20 出嚟你揀）

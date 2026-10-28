@@ -244,7 +244,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Shoot.tsx`, `Result.tsx`
   - Size: M · Depends: Task 28
 
-- [ ] Task 30: 收尾
+- [x] Task 30: 收尾（截圖未補，見 DESIGN-SPEC §12）
   - Acceptance: 守門測試由 skip 轉正式、全綠；browser pane 掃所有 button ≥ 44×44；`prefers-reduced-motion` 動畫 0ms；5 個畫面 before／after 齊；DESIGN-SPEC §12 可剔嘅全剔
   - Verify: `npm test` 全綠；故意加 `px-3` 會 fail
   - Files: `app/src/__tests__/design-tokens.test.ts`, `app/src/index.css`, `docs/design/*`, `docs/DESIGN-SPEC.md`

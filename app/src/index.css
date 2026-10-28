@@ -38,12 +38,9 @@
   --color-scrim-light: rgb(61 54 50 / 0.3);
   --color-danger: #d96b6b;
 
-  /* Transitional aliases until every screen is restyled (removed in Task 30). */
-  --color-berry: var(--color-accent);
-  --color-berry-dark: var(--color-accent-pressed);
-  --color-ink: var(--color-cocoa);
-
-  /* 4.2 type: size / line-height, lines on the 8pt grid */
+  /* 4.2 type: size / line-height, lines on the 8pt grid.
+     Tailwind's default scale is switched off so text-sm etc. do not exist. */
+  --text-*: initial;
   --text-display: 28px;
   --text-display--line-height: 36px;
   --text-display--font-weight: 700;
@@ -61,7 +58,8 @@
   --text-countdown--line-height: 96px;
   --text-countdown--font-weight: 900;
 
-  /* 4.3 radius */
+  /* 4.3 radius — default scale switched off, see 4.2 */
+  --radius-*: initial;
   --radius-card: 16px;
   --radius-pill: 9999px;
 

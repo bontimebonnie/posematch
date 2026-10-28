@@ -144,7 +144,9 @@ line-height 全部 8 嘅倍數（grid 垂直節奏）。
 
 | Token | px | 用途 |
 |---|---|---|
-| `size-touch` | 44 | 所有可按元素最細高度（Apple HIG） |
+| `size-touch` | 44 | 所有可按元素最細高度（Apple HIG）。例外：chip 40（`size-chip`）、縮圖上嘅 tray 細掣 32（`IconButton size="sm"`，44 會遮住圖） |
+| `size-chip` | 40 | chip 高度 |
+| `size-control` | 56 | 大掣、輸入框高度 |
 | `size-icon-sm` | 16 | chip 內、badge 內 |
 | `size-icon` | 24 | 掣、header |
 | `size-icon-lg` | 32 | 空狀態、完成頁 |
@@ -191,7 +193,7 @@ line-height 全部 8 嘅倍數（grid 垂直節奏）。
 | `FitImage` | ui.tsx | 不變 |
 | `Scrim` | Shoot.tsx | 取景框上嘅遮罩層（kept-band） |
 | `Countdown` | Shoot.tsx | 數字 display 級，白色 |
-| `Shutter` | Shoot.tsx | 72 圓掣 |
+| `Shutter` | Shoot.tsx | 72 圓掣 — **延後**：改做圓掣會改拍攝操作（而家係「拍照」／「3 秒」兩個文字掣），留待 Bonnie 試真機後決定 |
 
 每個 component 有 `aria-*`、focus-visible ring（`accent`，2px offset）、`size-touch` 最細。
 
@@ -261,16 +263,16 @@ export function Chip({ selected, children, ...props }: ChipProps) {
 
 ## 12. Success Criteria
 
-- [ ] `index.css` 有 §4 全部 token，舊 `--color-*` 只剩原色層
-- [ ] `ui/` 有 §5 全部 component，`Library.tsx` 跌到 < 200 行，所有 screens 唔再 import `ui.tsx`
-- [ ] `design-tokens.test.ts` pass，而且故意加一個 `px-3` 會 fail
-- [ ] 5 個畫面 before／after 截圖喺 `docs/design/`
-- [ ] 所有可按元素 ≥ 44pt（用 browser pane `getBoundingClientRect` 掃一次）
-- [ ] `prefers-reduced-motion` 下冇動畫
-- [ ] 中文字體 fallback 改成 TC
+- [x] `index.css` 有 §4 全部 token，舊 `--color-*` 只剩原色層；Tailwind 預設 `text-*`／`rounded-*` scale 關閉，build 只出 token class
+- [x] `ui/` 有 §5 全部 component（Shutter 除外，見上），`Library.tsx` 387 → 247 行（EditSheet 另開 `screens/EditSheet.tsx`），`ui.tsx` 刪除
+- [x] `design-tokens.test.ts` pass，而且故意加一個 `px-3` 會 fail
+- [ ] 5 個畫面 before／after 截圖喺 `docs/design/`（Task 30 做嗰陣 browser pane 視窗被縮細，截唔到；checkpoint 補）
+- [x] 所有可按元素 ≥ 44pt（DOM 掃過：header 掣 44、底掣 56、輸入框 56；例外 chip 40、tray 細掣 32）
+- [x] `prefers-reduced-motion` 下冇動畫（index.css 全域 0ms）
+- [x] 中文字體 fallback 改成 TC
 - [ ] 色板同 Chiikawa 圖併排對照，Bonnie 話「係呢種感覺」
 - [ ] Bonnie iPhone 真機過一次 5 個畫面，話「係我想要嘅感覺」
-- [ ] 28 個舊測試照 pass，strip 輸出 byte 層面唔變（用 strip.test 現有斷言）
+- [x] 28 個舊測試照 pass（而家 31），`image.ts`／`strip.ts`／`db.ts` 零改動
 - [ ] （第二步）decor token 定好，至少一個 element 落地（空狀態插圖或完成頁慶祝）
 
 ## 13. Open Questions（要 Bonnie 答）

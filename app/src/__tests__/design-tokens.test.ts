@@ -46,8 +46,7 @@ describe('design tokens gate', () => {
     expect(BANNED.filter((b) => b.re.test(ok)).map((b) => b.name)).toEqual([])
   })
 
-  // Enforced from Task 30 on; until then run with VITE_DESIGN_GATE=1 to list the backlog.
-  it.skipIf(!import.meta.env.VITE_DESIGN_GATE)('src/**/*.tsx uses only token classes', () => {
+  it('src/**/*.tsx uses only token classes', () => {
     expect(findViolations()).toEqual([])
   })
 })

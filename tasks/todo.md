@@ -34,7 +34,7 @@
   - Files: `app/src/strip.ts`, `app/src/screens/Result.tsx`
   - Size: S · Depends: Task 3
 
-- [ ] Task 5: Copy Image 掣
+- [x] Task 5: Copy Image 掣
   - Acceptance: Result 有「Copy Image」；用 `ClipboardItem({'image/png': Promise<Blob>})`；成功顯示「已複製」toast 2 秒；`navigator.clipboard.write` 唔存在就 disable 並顯示原因
   - Verify: 桌面 Chrome copy 後貼入任何 app 係張 strip；unit test 用 mock clipboard 檢查有 call
   - Files: `app/src/screens/Result.tsx`, `app/src/clipboard.ts`, `app/src/__tests__/clipboard.test.ts`

@@ -105,29 +105,29 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ### Checkpoint: 真機再試
 - [x] 部署；Bonnie iPhone 確認 貼圖完整 + 取景框見到人
-- [ ] 同時答返 checklist D：Copy Image、儲存相簿 兩樣
+- [x] 同時答返 checklist D：Copy Image、儲存相簿 兩樣（iPhone 兩樣都 ✅）
 
 ## Phase 2: Library 重整
 
-- [ ] Task 13: Dexie v2 schema + 升級 + 測試
+- [x] Task 13: Dexie v2 schema + 升級 + 測試
   - Acceptance: `images` 加 `personCount: 1|2`、`characterName: string`、`sourceId?: string`、index `[personCount+characterName]`；`sets` 喺 v2 upgrade 展開（每張相攞 set 嘅 personCount，characterName = set.name）後刪除 table；`listCharacterNames()` 回傳去重名單
   - Verify: test 用 Dexie v1 定義入 2 個 set，關閉，開 v2，8 張相帶正確欄位，`sets` 唔存在
   - Files: `app/src/db.ts`, `app/src/__tests__/db.test.ts`
   - Size: M · Depends: —
 
-- [ ] Task 14: Library grid
+- [x] Task 14: Library grid
   - Acceptance: Home 變成 Library：頂部 人數 toggle + 角色名 chips（由 `listCharacterNames`）；grid 顯示篩選結果；長按／「選取」進入多選，可刪除；點一張可以改人數／角色名；篩選記住上次（localStorage）
   - Verify: 入 6 張相 2 個角色名，篩選正確；刪 2 張後 count 啱；reload 篩選仍在
   - Files: `app/src/screens/Library.tsx`（取代 Home）, `app/src/App.tsx`, `app/src/settings.ts`, `app/src/ui.tsx`
   - Size: M · Depends: Task 13
 
-- [ ] Task 15: 揀相模式
+- [x] Task 15: 揀相模式
   - Acceptance: Library 有「開始拍攝」→ 進入揀相模式；點相出現 1–4 序號，再點取消；底部顯示已揀 4 格可拖／調次序；揀夠 4 張「開始」先可用；交 `Blob[]` 畀 Shoot
   - Verify: 揀 4 張次序 3-1-4-2，Shoot 第 1 張係第 3 張相
   - Files: `app/src/screens/Library.tsx`, `app/src/App.tsx`
   - Size: M · Depends: Task 14
 
-- [ ] Task 16: Import pipeline（檔案入口）
+- [x] Task 16: Import pipeline（檔案入口）
   - Acceptance: `Import` 畫面接收 `File[]`：逐張顯示（暫時無 crop）→ 填人數 + 角色名（自動完成）一次套用全部 → 入 library → 返 Library grid；舊 Upload 畫面刪除；相仍 downscale 1600
   - Verify: 揀 3 張檔案，填 "Chiikawa"，grid 見到 3 張帶該名
   - Files: `app/src/screens/Import.tsx`, `app/src/App.tsx`, 刪 `app/src/screens/Upload.tsx`

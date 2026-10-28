@@ -1,10 +1,102 @@
 @import 'tailwindcss';
 
+/* Design tokens — see docs/DESIGN-SPEC.md §4.
+   Components use the semantic layer only; raw palette names stay in here
+   (and, later, in decor). */
 @theme {
-  --color-cream: #fff7f2;
-  --color-ink: #2b2420;
-  --color-berry: #e8517a;
-  --color-berry-dark: #c93b62;
+  /* 4.4 palette (Chiikawa) */
+  --color-cream: #fff9ec;
+  --color-cocoa: #3d3632;
+  --color-sand: #eadfc8;
+  --color-pink: #f7b6c6;
+  --color-pink-deep: #ef97ad;
+  --color-sky: #b9d8ea;
+  --color-butter: #ffe49c;
+  --color-mint: #cce7b8;
+  --color-lilac: #d8cceb;
+  --color-blush: #f4a9b0;
+  --color-navy: #5b7fb5;
+
+  /* 4.4 semantic */
+  --color-surface: var(--color-cream);
+  --color-surface-raised: #ffffff;
+  --color-fg: var(--color-cocoa);
+  --color-fg-muted: color-mix(in oklch, var(--color-cocoa) 62%, transparent);
+  --color-fg-subtle: color-mix(in oklch, var(--color-cocoa) 40%, transparent);
+  --color-line: var(--color-sand);
+  --color-line-strong: color-mix(in oklch, var(--color-cocoa) 20%, transparent);
+  --color-accent: var(--color-pink);
+  --color-accent-pressed: var(--color-pink-deep);
+  --color-on-accent: var(--color-cocoa);
+  --color-tint-1: var(--color-sky);
+  --color-tint-2: var(--color-butter);
+  --color-tint-3: var(--color-mint);
+  --color-tint-4: var(--color-lilac);
+  --color-dark: #1c1917;
+  --color-on-dark: #ffffff;
+  --color-scrim: rgb(61 54 50 / 0.55);
+  --color-scrim-light: rgb(61 54 50 / 0.3);
+  --color-danger: #d96b6b;
+
+  /* Transitional aliases until every screen is restyled (removed in Task 30). */
+  --color-berry: var(--color-accent);
+  --color-berry-dark: var(--color-accent-pressed);
+  --color-ink: var(--color-cocoa);
+
+  /* 4.2 type: size / line-height, lines on the 8pt grid */
+  --text-display: 28px;
+  --text-display--line-height: 36px;
+  --text-display--font-weight: 700;
+  --text-title: 20px;
+  --text-title--line-height: 28px;
+  --text-title--font-weight: 700;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-label: 14px;
+  --text-label--line-height: 20px;
+  --text-label--font-weight: 600;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-countdown: 96px;
+  --text-countdown--line-height: 96px;
+  --text-countdown--font-weight: 900;
+
+  /* 4.3 radius */
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+
+  /* 4.5 sizes (usable as h-/w-/size-/min-h-) */
+  --spacing-touch: 44px;
+  --spacing-control: 56px;
+  --spacing-chip: 32px;
+  --spacing-icon-sm: 16px;
+  --spacing-icon: 24px;
+  --spacing-icon-lg: 32px;
+  --spacing-shutter: 72px;
+
+  /* 4.6 motion */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  /* 4.7 shadow */
+  --shadow-sheet: 0 -8px 24px rgb(61 54 50 / 0.12);
+
+  --font-sans: system-ui, -apple-system, 'PingFang TC', 'Noto Sans TC', sans-serif;
+}
+
+@utility duration-fast {
+  transition-duration: 150ms;
+}
+@utility duration-base {
+  transition-duration: 250ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
 }
 
 html,
@@ -14,8 +106,8 @@ body,
 }
 
 body {
-  background: var(--color-cream);
-  color: var(--color-ink);
-  font-family: system-ui, -apple-system, 'PingFang HK', 'Noto Sans HK', sans-serif;
+  background: var(--color-surface);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
 }

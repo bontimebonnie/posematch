@@ -198,7 +198,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 1: Token
 
-- [ ] Task 23: index.css 新 token
+- [x] Task 23: index.css 新 token
   - Acceptance: `@theme` 有 DESIGN-SPEC §4.1–4.7 全部 token；原色層係 Chiikawa 色板；語意層用 color-mix；字體 fallback `PingFang TC, Noto Sans TC`；舊 `berry` 刪走（暫時 alias 去 accent 等 B3 換完先刪）；app 開到、build 綠
   - Verify: browser pane 將 Chiikawa 圖同 Library 併排截圖入 `docs/design/palette.png`，Bonnie 睇一眼
   - Files: `app/src/index.css`, `docs/design/palette.png`

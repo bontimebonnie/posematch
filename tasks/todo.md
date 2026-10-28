@@ -212,7 +212,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 2: Component（純搬動，零視覺改動）
 
-- [ ] Task 25: 抽 ui/ 第一批
+- [x] Task 25: 抽 ui/ 第一批
   - Acceptance: `ui/Button.tsx` `IconButton.tsx` `Header.tsx` `FitImage.tsx` `SegmentedControl.tsx` `Chip.tsx` `Badge.tsx` `Toast.tsx` + `ui/index.ts`；`ui.tsx` 刪走；PersonToggle 變 SegmentedControl 嘅一個用法；screens 改 import；畫面樣貌不變
   - Verify: build + lint + test 綠；browser pane 走一次流程
   - Files: `app/src/ui/*`, `app/src/screens/*.tsx`

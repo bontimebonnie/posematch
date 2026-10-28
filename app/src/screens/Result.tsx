@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { canCopyImage, copyImage } from '../clipboard'
 import { composeStrip, type StripOutput } from '../strip'
-import { Button, Header } from '../ui'
+import { Button, Header, Toast } from '../ui'
 
 export default function Result({
   cartoons,
@@ -79,9 +79,7 @@ export default function Result({
       </div>
       <div className="relative px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {toast && (
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-sm text-white">
-            {toast}
-          </div>
+          <Toast className="absolute -top-10 left-1/2 -translate-x-1/2">{toast}</Toast>
         )}
         <div className="flex gap-3">
           <Button variant="secondary" onClick={onRetake} className="flex-1">

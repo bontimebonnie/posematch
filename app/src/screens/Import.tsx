@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addImageBatch, listCharacterNames, type ImportItem, type PersonCount } from '../db'
 import { downscaleImage } from '../image'
-import { Button, FitImage, Header, PersonToggle } from '../ui'
+import { Button, FitImage, Header, IconButton, PersonToggle } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
 import { CharacterNameInput } from './Library'
 
@@ -50,13 +50,14 @@ export default function Import({
           {urls.map((u, i) => (
             <li key={u} className="relative">
               <FitImage src={u} className="aspect-[3/2] w-full rounded-xl" />
-              <button
+              <IconButton
+                variant="scrim"
                 onClick={() => setItems((prev) => prev.filter((_, j) => j !== i))}
                 aria-label={t('common.remove')}
-                className="absolute top-1 right-1 rounded-full bg-black/50 p-1 text-white"
+                className="absolute top-1 right-1"
               >
                 <Xmark width={14} height={14} strokeWidth={3} />
-              </button>
+              </IconButton>
             </li>
           ))}
         </ul>

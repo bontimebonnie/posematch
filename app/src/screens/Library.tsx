@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { canPasteImage, imagesFromPasteEvent, readImagesFromClipboard } from '../clipboard'
 import { db, deleteImages, listCharacterNames, SHOTS_PER_SET, updateImage, type PersonCount, type StoredImage } from '../db'
 import { getLibraryFilter, setLanguage, setLibraryFilter, type Language, type LibraryFilter } from '../settings'
-import { Button, FitImage, Header, PersonToggle } from '../ui'
+import { Badge, Button, Chip, FitImage, Header, IconButton, PersonToggle, Toast } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
 
 type Mode = 'browse' | 'select' | 'pick'
@@ -140,18 +140,18 @@ export default function Library({
       <div className="space-y-2 px-4 pb-3">
         <div className="flex gap-2">
           {([null, 1, 2] as const).map((n) => (
-            <Chip key={String(n)} active={filter.personCount === n} onClick={() => setFilter({ ...filter, personCount: n })}>
+            <Chip key={String(n)} selected={filter.personCount === n} onClick={() => setFilter({ ...filter, personCount: n })}>
               {n === null ? t('library.filter_all') : t('common.people', { count: n })}
             </Chip>
           ))}
         </div>
         {names.length > 0 && (
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-            <Chip active={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
+            <Chip selected={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
               {t('library.filter_all_characters')}
             </Chip>
             {names.map((n) => (
-              <Chip key={n} active={activeName === n} onClick={() => setFilter({ ...filter, characterName: n })}>
+              <Chip key={n} selected={activeName === n} onClick={() => setFilter({ ...filter, characterName: n })}>
                 {n}
               </Chip>
             ))}
@@ -181,18 +181,18 @@ export default function Library({
                     <FitImage src={urls[i]} className="aspect-[3/2] w-full" />
                   </button>
                   {mode !== 'browse' && (
-                    <span
-                      className={`pointer-events-none absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                    <Badge
+                      className={`top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
                         isSelected ? 'bg-berry text-white' : 'bg-white/80 text-ink/40 ring-1 ring-ink/20'
                       }`}
                     >
                       {isSelected ? (mode === 'pick' ? order + 1 : <Check width={14} height={14} strokeWidth={3} />) : ''}
-                    </span>
+                    </Badge>
                   )}
                   {mode === 'browse' && img.characterName && (
-                    <span className="pointer-events-none absolute bottom-1 left-1 max-w-[90%] truncate rounded-full bg-black/50 px-2 py-0.5 text-[10px] text-white">
+                    <Badge className="bottom-1 left-1 max-w-[90%] truncate rounded-full bg-black/50 px-2 py-0.5 text-[10px] text-white">
                       {img.characterName}
-                    </span>
+                    </Badge>
                   )}
                 </li>
               )
@@ -204,7 +204,7 @@ export default function Library({
       {/* Bottom bar */}
       <div className="px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {toast && (
-          <div className="mb-3 rounded-full bg-ink px-4 py-2 text-center text-sm text-white">{toast}</div>
+          <Toast className="mb-3">{toast}</Toast>
         )}
         {mode === 'browse' && (
           <div className="flex gap-3">
@@ -262,18 +262,6 @@ export default function Library({
   )
 }
 
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ring-1 transition-colors ${
-        active ? 'bg-ink text-white ring-ink' : 'bg-white text-ink/70 ring-ink/15'
-      }`}
-    >
-      {children}
-    </button>
-  )
-}
 
 // The four slots chosen for shooting, in order, with reorder/remove controls.
 function PickTray({
@@ -301,10 +289,10 @@ function PickTray({
         return (
           <li key={id} className="relative">
             <FitImage src={urlById.get(id) ?? ''} className="aspect-[3/2] w-full rounded-lg" />
-            <span className="absolute top-0.5 left-0.5 rounded-full bg-berry px-1.5 text-[10px] font-bold text-white">{i + 1}</span>
-            <button onClick={() => onRemove(id)} aria-label={t('common.remove')} className="absolute top-0.5 right-0.5 rounded-full bg-black/50 p-0.5 text-white">
+            <Badge className="top-0.5 left-0.5 rounded-full bg-berry px-1.5 text-[10px] font-bold text-white">{i + 1}</Badge>
+            <IconButton variant="scrim" onClick={() => onRemove(id)} aria-label={t('common.remove')} className="absolute top-0.5 right-0.5 p-0.5">
               <Xmark width={12} height={12} strokeWidth={3} />
-            </button>
+            </IconButton>
             <div className="absolute inset-x-0 bottom-0 flex justify-between">
               <button onClick={() => onMove(i, -1)} disabled={i === 0} aria-label={t('library.move_earlier')} className="rounded-tr-md bg-black/50 p-0.5 text-white disabled:opacity-30">
                 <NavArrowLeft width={12} height={12} strokeWidth={3} />
@@ -345,9 +333,9 @@ function EditSheet({ image, names, onClose }: { image: StoredImage; names: strin
             <EditPencil width={18} height={18} />
             {t('library.edit')}
           </h2>
-          <button onClick={onClose} aria-label={t('common.close')} className="rounded-full p-1">
+          <IconButton onClick={onClose} aria-label={t('common.close')} className="p-1">
             <Xmark width={20} height={20} />
-          </button>
+          </IconButton>
         </div>
         <PersonToggle value={personCount} onChange={setPersonCount} />
         <CharacterNameInput value={name} onChange={setName} names={names} />

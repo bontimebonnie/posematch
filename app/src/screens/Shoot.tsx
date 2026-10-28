@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SHOTS_PER_SET } from '../db'
 import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
+import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
 import { Button, Header } from '../ui'
 
@@ -19,6 +20,7 @@ export default function Shoot({
   const cartoonUrls = useObjectUrls(cartoons)
   const video = useRef<HTMLVideoElement>(null)
   const [facing, setFacingState] = useState<Facing>('user')
+  const [mirrorPref, setMirrorPref] = useState(getMirror)
   const [cameraError, setCameraError] = useState<string | null>(null)
   const setFacing = (f: Facing) => {
     setCameraError(null)
@@ -30,7 +32,14 @@ export default function Shoot({
   const previewUrls = useObjectUrls(preview ? [preview] : [])
 
   const index = photos.length
-  const mirror = facing === 'user'
+  // Mirroring only makes sense for the selfie camera; the preference is
+  // applied to both the live preview and the captured frame.
+  const mirror = facing === 'user' && mirrorPref
+  const toggleMirror = () => {
+    const next = !mirrorPref
+    setMirrorPref(next)
+    setMirror(next)
+  }
 
   // Start / restart the camera whenever the facing mode changes.
   useEffect(() => {
@@ -96,12 +105,24 @@ export default function Shoot({
         title={`第 ${index + 1} / ${SHOTS_PER_SET} 張`}
         onBack={onBack}
         right={
-          <button
-            onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')}
-            className="rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
-          >
-            🔄 轉鏡頭
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={toggleMirror}
+              disabled={facing !== 'user'}
+              aria-pressed={mirror}
+              className={`rounded-full px-3 py-1.5 text-sm ring-1 ring-ink/15 disabled:opacity-40 ${
+                mirror ? 'bg-ink text-white' : 'bg-white'
+              }`}
+            >
+              鏡像 {mirror ? 'ON' : 'OFF'}
+            </button>
+            <button
+              onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')}
+              className="rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
+            >
+              🔄 轉鏡頭
+            </button>
+          </div>
         }
       />
 

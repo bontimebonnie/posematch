@@ -40,7 +40,7 @@
   - Files: `app/src/screens/Result.tsx`, `app/src/clipboard.ts`, `app/src/__tests__/clipboard.test.ts`
   - Size: S · Depends: Task 4
 
-- [ ] Task 6: Mirror toggle
+- [x] Task 6: Mirror toggle
   - Acceptance: `settings.ts` 有 `getMirror()/setMirror()` 存 localStorage，預設 `true`；Shoot header 有「鏡像」toggle；開關即時影響 `<video>` 翻轉同 `drawCover(mirror)`；轉後鏡時 toggle 仍然可用但預設唔鏡像
   - Verify: mock camera 下 toggle off，影出嚟「MOCK CAM」字正向；toggle on 字反向；reload 後記得設定
   - Files: `app/src/settings.ts`, `app/src/screens/Shoot.tsx`, `app/src/__tests__/settings.test.ts`

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { canCopyImage, copyImage } from '../clipboard'
 import { composeStrip, type StripOutput } from '../strip'
 import { Button, Header } from '../ui'
@@ -14,6 +15,7 @@ export default function Result({
   onRetake: () => void
   onHome: () => void
 }) {
+  const { t } = useTranslation()
   const [strip, setStrip] = useState<(StripOutput & { url: string }) | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const copySupported = canCopyImage()
@@ -42,9 +44,9 @@ export default function Result({
     if (!strip) return
     try {
       await copyImage(strip.png)
-      setToast('已複製，可以直接貼去 IG')
+      setToast(t('result.copied'))
     } catch {
-      setToast('複製唔到，請用「儲存」')
+      setToast(t('result.copy_failed'))
     }
   }
 
@@ -67,12 +69,12 @@ export default function Result({
 
   return (
     <div className="flex h-full flex-col">
-      <Header title="搞掂！" onBack={onHome} />
+      <Header title={t('result.title')} onBack={onHome} />
       <div className="flex flex-1 items-start justify-center overflow-y-auto px-4">
         {strip ? (
-          <img src={strip.url} className="max-h-full w-auto max-w-full rounded-xl shadow-lg" alt="Four-strip 成果" />
+          <img src={strip.url} className="max-h-full w-auto max-w-full rounded-xl shadow-lg" alt={t('result.alt')} />
         ) : (
-          <p className="pt-10 text-ink/50">砌緊相⋯</p>
+          <p className="pt-10 text-ink/50">{t('result.composing')}</p>
         )}
       </div>
       <div className="relative px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -83,22 +85,22 @@ export default function Result({
         )}
         <div className="flex gap-3">
           <Button variant="secondary" onClick={onRetake} className="flex-1">
-            重新影過
+            {t('result.retake')}
           </Button>
           <Button
             variant="secondary"
             onClick={copy}
             disabled={!strip || !copySupported}
-            title={copySupported ? undefined : '呢個瀏覽器唔支援複製圖片'}
+            title={copySupported ? undefined : t('result.copy_unsupported')}
             className="flex-1"
           >
-            Copy Image
+            {t('result.copy')}
           </Button>
           <Button onClick={save} disabled={!strip} className="flex-1">
-            儲存
+            {t('result.save')}
           </Button>
         </div>
-        {!copySupported && <p className="mt-2 text-center text-xs text-ink/50">呢個瀏覽器唔支援複製圖片，請用「儲存」</p>}
+        {!copySupported && <p className="mt-2 text-center text-xs text-ink/50">{t('result.copy_unsupported')}</p>}
       </div>
     </div>
   )

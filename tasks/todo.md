@@ -165,19 +165,19 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 4: 雙語
 
-- [ ] Task 20: 用詞表 + en.json
+- [x] Task 20: 用詞表 + en.json
   - Acceptance: 用 `design:ux-copy` 出用詞表（Library／Strip／Shoot／Character name／Fill edges 等）同所有 key 嘅英文；Bonnie review
   - Verify: Bonnie approve
   - Files: `docs/COPY.md`, `app/src/locales/en.json`
   - Size: S · Depends: Task 17–19 完成（畫面齊）
 
-- [ ] Task 21: 接 i18n
+- [x] Task 21: 接 i18n
   - Acceptance: react-i18next（**Ask first** dependency）；所有畫面文字用 `t()`；語言跟 `navigator.language`（zh* → zh-TW，否則 en）；設定頁可以轉並記住；`<html lang>` 跟住變
   - Verify: grep `src` 冇中文字串；轉語言所有畫面即時變
   - Files: `app/src/i18n.ts`, `app/src/screens/Settings.tsx`, 全部 screens
   - Size: L（多 file 但機械式）· Depends: Task 20
 
-- [ ] Task 22: zh-TW.json
+- [x] Task 22: zh-TW.json
   - Acceptance: 台灣繁體書面語，跟用詞表；Bonnie review
   - Verify: Bonnie approve；全畫面 zh-TW 截圖
   - Files: `app/src/locales/zh-TW.json`

@@ -1,9 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Camera, Check, EditPencil, NavArrowLeft, NavArrowRight, PasteClipboard, Plus, Trash, Xmark } from 'iconoir-react'
+import { Camera, Check, EditPencil, Language as LanguageIcon, NavArrowLeft, NavArrowRight, PasteClipboard, Plus, Trash, Xmark } from 'iconoir-react'
+import { useTranslation } from 'react-i18next'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { canPasteImage, imagesFromPasteEvent, readImagesFromClipboard } from '../clipboard'
 import { db, deleteImages, listCharacterNames, SHOTS_PER_SET, updateImage, type PersonCount, type StoredImage } from '../db'
-import { getLibraryFilter, setLibraryFilter, type LibraryFilter } from '../settings'
+import { getLibraryFilter, setLanguage, setLibraryFilter, type Language, type LibraryFilter } from '../settings'
 import { Button, FitImage, Header, PersonToggle } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
 
@@ -16,7 +17,13 @@ export default function Library({
   onImport: (files: File[]) => void
   onShoot: (cartoons: Blob[]) => void
 }) {
+  const { t, i18n } = useTranslation()
   const [filter, setFilterState] = useState<LibraryFilter>(getLibraryFilter)
+  const switchLanguage = () => {
+    const next: Language = i18n.language === 'en' ? 'zh-TW' : 'en'
+    setLanguage(next)
+    i18n.changeLanguage(next)
+  }
   const setFilter = (f: LibraryFilter) => {
     setFilterState(f)
     setLibraryFilter(f)
@@ -35,10 +42,10 @@ export default function Library({
   const paste = async () => {
     try {
       const files = await readImagesFromClipboard()
-      if (files.length === 0) setToast('剪貼簿入面冇圖片')
+      if (files.length === 0) setToast(t('library.paste_empty'))
       else onImport(files)
     } catch {
-      setToast('貼唔到。試下用 Share → Post Match')
+      setToast(t('library.paste_failed'))
     }
   }
   // Desktop Cmd/Ctrl+V anywhere on the library.
@@ -87,7 +94,7 @@ export default function Library({
       return next
     })
   const removeSelected = async () => {
-    if (!confirm(`刪除 ${selected.length} 張相？`)) return
+    if (!confirm(t('library.confirm_delete', { count: selected.length }))) return
     await deleteImages(selected)
     leaveMode()
   }
@@ -96,7 +103,12 @@ export default function Library({
     onShoot(selected.map((id) => byId.get(id)!))
   }
 
-  const title = mode === 'pick' ? `揀 ${selected.length} / ${SHOTS_PER_SET} 張` : mode === 'select' ? `已選 ${selected.length} 張` : 'Post Match'
+  const title =
+    mode === 'pick'
+      ? t('library.pick_title', { count: selected.length, total: SHOTS_PER_SET })
+      : mode === 'select'
+        ? t('library.selected', { count: selected.length })
+        : t('library.title')
 
   return (
     <div className="flex h-full flex-col">
@@ -104,10 +116,22 @@ export default function Library({
         title={title}
         onBack={mode === 'browse' ? undefined : leaveMode}
         right={
-          mode === 'browse' && (images?.length ?? 0) > 0 ? (
-            <button onClick={() => setMode('select')} className="rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15">
-              選取
-            </button>
+          mode === 'browse' ? (
+            <div className="flex gap-2">
+              <button
+                onClick={switchLanguage}
+                aria-label={t('common.language')}
+                className="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
+              >
+                <LanguageIcon width={16} height={16} />
+                {i18n.language === 'en' ? '中' : 'EN'}
+              </button>
+              {(images?.length ?? 0) > 0 && (
+                <button onClick={() => setMode('select')} className="rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15">
+                  {t('library.select')}
+                </button>
+              )}
+            </div>
           ) : null
         }
       />
@@ -117,14 +141,14 @@ export default function Library({
         <div className="flex gap-2">
           {([null, 1, 2] as const).map((n) => (
             <Chip key={String(n)} active={filter.personCount === n} onClick={() => setFilter({ ...filter, personCount: n })}>
-              {n === null ? '全部' : `${n} 個人`}
+              {n === null ? t('library.filter_all') : t('common.people', { count: n })}
             </Chip>
           ))}
         </div>
         {names.length > 0 && (
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
             <Chip active={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
-              所有角色
+              {t('library.filter_all_characters')}
             </Chip>
             {names.map((n) => (
               <Chip key={n} active={activeName === n} onClick={() => setFilter({ ...filter, characterName: n })}>
@@ -139,9 +163,9 @@ export default function Library({
       <div className="flex-1 overflow-y-auto px-4 pb-4">
         {images === undefined ? null : images.length === 0 ? (
           <p className="rounded-2xl bg-white p-6 text-center text-sm text-ink/50 ring-1 ring-ink/10">
-            呢度未有相。
+            {t('library.empty_title')}
             <br />
-            撳「加入圖片」放第一張。
+            {t('library.empty_body')}
           </p>
         ) : (
           <ul className="grid grid-cols-3 gap-2">
@@ -186,10 +210,10 @@ export default function Library({
           <div className="flex gap-3">
             <Button variant="secondary" onClick={() => fileInput.current?.click()} className="flex flex-1 items-center justify-center gap-2">
               <Plus width={20} height={20} strokeWidth={2.2} />
-              加入圖片
+              {t('library.add')}
             </Button>
             {canPasteImage() && (
-              <Button variant="secondary" onClick={paste} aria-label="貼上" className="flex items-center justify-center px-4">
+              <Button variant="secondary" onClick={paste} aria-label={t('library.paste')} className="flex items-center justify-center px-4">
                 <PasteClipboard width={20} height={20} strokeWidth={2.2} />
               </Button>
             )}
@@ -199,14 +223,14 @@ export default function Library({
               className="flex flex-1 items-center justify-center gap-2"
             >
               <Camera width={20} height={20} strokeWidth={2.2} />
-              開始拍攝
+              {t('library.shoot')}
             </Button>
           </div>
         )}
         {mode === 'select' && (
           <Button variant="secondary" onClick={removeSelected} disabled={selected.length === 0} className="flex w-full items-center justify-center gap-2 text-berry">
             <Trash width={20} height={20} strokeWidth={2.2} />
-            刪除 {selected.length} 張
+            {t('library.delete_count', { count: selected.length })}
           </Button>
         )}
         {mode === 'pick' && (
@@ -214,7 +238,7 @@ export default function Library({
             <PickTray selected={selected} images={images ?? []} urls={urls} onMove={movePick} onRemove={toggle} />
             <Button onClick={startShoot} disabled={selected.length !== SHOTS_PER_SET} className="flex w-full items-center justify-center gap-2">
               <Camera width={20} height={20} strokeWidth={2.2} />
-              開始
+              {t('library.start')}
             </Button>
           </div>
         )}
@@ -265,6 +289,7 @@ function PickTray({
   onMove: (i: number, dir: -1 | 1) => void
   onRemove: (id: number) => void
 }) {
+  const { t } = useTranslation()
   const urlById = new Map(images.map((img, i) => [img.id, urls[i]]))
   return (
     <ul className="grid grid-cols-4 gap-2">
@@ -277,14 +302,14 @@ function PickTray({
           <li key={id} className="relative">
             <FitImage src={urlById.get(id) ?? ''} className="aspect-[3/2] w-full rounded-lg" />
             <span className="absolute top-0.5 left-0.5 rounded-full bg-berry px-1.5 text-[10px] font-bold text-white">{i + 1}</span>
-            <button onClick={() => onRemove(id)} aria-label="移除" className="absolute top-0.5 right-0.5 rounded-full bg-black/50 p-0.5 text-white">
+            <button onClick={() => onRemove(id)} aria-label={t('common.remove')} className="absolute top-0.5 right-0.5 rounded-full bg-black/50 p-0.5 text-white">
               <Xmark width={12} height={12} strokeWidth={3} />
             </button>
             <div className="absolute inset-x-0 bottom-0 flex justify-between">
-              <button onClick={() => onMove(i, -1)} disabled={i === 0} aria-label="向前" className="rounded-tr-md bg-black/50 p-0.5 text-white disabled:opacity-30">
+              <button onClick={() => onMove(i, -1)} disabled={i === 0} aria-label={t('library.move_earlier')} className="rounded-tr-md bg-black/50 p-0.5 text-white disabled:opacity-30">
                 <NavArrowLeft width={12} height={12} strokeWidth={3} />
               </button>
-              <button onClick={() => onMove(i, 1)} disabled={i === selected.length - 1} aria-label="向後" className="rounded-tl-md bg-black/50 p-0.5 text-white disabled:opacity-30">
+              <button onClick={() => onMove(i, 1)} disabled={i === selected.length - 1} aria-label={t('library.move_later')} className="rounded-tl-md bg-black/50 p-0.5 text-white disabled:opacity-30">
                 <NavArrowRight width={12} height={12} strokeWidth={3} />
               </button>
             </div>
@@ -297,6 +322,7 @@ function PickTray({
 
 // Edit one image's metadata, or delete it.
 function EditSheet({ image, names, onClose }: { image: StoredImage; names: string[]; onClose: () => void }) {
+  const { t } = useTranslation()
   const [personCount, setPersonCount] = useState<PersonCount>(image.personCount)
   const [name, setName] = useState(image.characterName)
   const save = async () => {
@@ -304,7 +330,7 @@ function EditSheet({ image, names, onClose }: { image: StoredImage; names: strin
     onClose()
   }
   const remove = async () => {
-    if (!confirm('刪除呢張相？')) return
+    if (!confirm(t('library.confirm_delete', { count: 1 }))) return
     await deleteImages([image.id])
     onClose()
   }
@@ -317,9 +343,9 @@ function EditSheet({ image, names, onClose }: { image: StoredImage; names: strin
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 font-bold">
             <EditPencil width={18} height={18} />
-            編輯
+            {t('library.edit')}
           </h2>
-          <button onClick={onClose} aria-label="關閉" className="rounded-full p-1">
+          <button onClick={onClose} aria-label={t('common.close')} className="rounded-full p-1">
             <Xmark width={20} height={20} />
           </button>
         </div>
@@ -328,10 +354,10 @@ function EditSheet({ image, names, onClose }: { image: StoredImage; names: strin
         <div className="flex gap-3">
           <Button variant="secondary" onClick={remove} className="flex flex-1 items-center justify-center gap-2 text-berry">
             <Trash width={18} height={18} />
-            刪除
+            {t('common.delete')}
           </Button>
           <Button onClick={save} className="flex-1">
-            儲存
+            {t('common.save')}
           </Button>
         </div>
       </div>
@@ -340,14 +366,15 @@ function EditSheet({ image, names, onClose }: { image: StoredImage; names: strin
 }
 
 export function CharacterNameInput({ value, onChange, names }: { value: string; onChange: (v: string) => void; names: string[] }) {
+  const { t } = useTranslation()
   return (
     <label className="block">
-      <span className="mb-1 block text-sm text-ink/60">角色名（例如 Tom & Jerry）</span>
+      <span className="mb-1 block text-sm text-ink/60">{t('library.character_label')}（{t('library.character_hint')}）</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         list="character-names"
-        placeholder="可以唔填"
+        placeholder={t('library.character_placeholder')}
         className="w-full rounded-xl bg-white px-4 py-3 ring-1 ring-ink/15 outline-none focus:ring-berry"
       />
       <datalist id="character-names">

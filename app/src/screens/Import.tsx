@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Xmark } from 'iconoir-react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { addImageBatch, listCharacterNames, type ImportItem, type PersonCount } from '../db'
 import { downscaleImage } from '../image'
 import { Button, FitImage, Header, PersonToggle } from '../ui'
@@ -20,6 +21,7 @@ export default function Import({
   onBack: () => void
   onDone: () => void
 }) {
+  const { t } = useTranslation()
   const [items, setItems] = useState(initialItems)
   const blobs = useMemo(() => items.map((i) => i.blob), [items])
   const [personCount, setPersonCount] = useState<PersonCount>(defaultPersonCount)
@@ -35,14 +37,14 @@ export default function Import({
       await addImageBatch(scaled, { personCount, characterName: name })
       onDone()
     } catch (err) {
-      alert(`Save 唔到：${err instanceof Error ? err.message : String(err)}`)
+      alert(t('import.save_failed', { message: err instanceof Error ? err.message : String(err) }))
       setSaving(false)
     }
   }
 
   return (
     <div className="flex h-full flex-col">
-      <Header title={`加入 ${items.length} 張圖片`} onBack={onBack} />
+      <Header title={t('import.title', { count: items.length })} onBack={onBack} />
       <div className="flex-1 space-y-5 overflow-y-auto px-4 pb-6">
         <ul className="grid grid-cols-3 gap-2">
           {urls.map((u, i) => (
@@ -50,7 +52,7 @@ export default function Import({
               <FitImage src={u} className="aspect-[3/2] w-full rounded-xl" />
               <button
                 onClick={() => setItems((prev) => prev.filter((_, j) => j !== i))}
-                aria-label="移除"
+                aria-label={t('common.remove')}
                 className="absolute top-1 right-1 rounded-full bg-black/50 p-1 text-white"
               >
                 <Xmark width={14} height={14} strokeWidth={3} />
@@ -59,14 +61,14 @@ export default function Import({
           ))}
         </ul>
         <div>
-          <span className="mb-1 block text-sm text-ink/60">卡通入面有幾多個 character？</span>
+          <span className="mb-1 block text-sm text-ink/60">{t('import.people_question')}</span>
           <PersonToggle value={personCount} onChange={setPersonCount} />
         </div>
         <CharacterNameInput value={name} onChange={setName} names={names} />
       </div>
       <div className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Button onClick={save} disabled={items.length === 0 || saving} className="w-full">
-          {saving ? '儲存緊⋯' : `加入 Library`}
+          {saving ? t('import.saving') : t('import.save')}
         </Button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'iconoir-react'
+import { useTranslation } from 'react-i18next'
 import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
@@ -23,10 +24,11 @@ export function Button({
 }
 
 export function Header({ title, onBack, right }: { title: string; onBack?: () => void; right?: ReactNode }) {
+  const { t } = useTranslation()
   return (
     <header className="flex items-center gap-2 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3">
       {onBack && (
-        <button onClick={onBack} className="-ml-2 rounded-full p-2" aria-label="返回">
+        <button onClick={onBack} className="-ml-2 rounded-full p-2" aria-label={t('common.back')}>
           <ArrowLeft width={24} height={24} />
         </button>
       )}
@@ -58,6 +60,7 @@ export function FitImage({
 }
 
 export function PersonToggle({ value, onChange }: { value: 1 | 2; onChange: (v: 1 | 2) => void }) {
+  const { t } = useTranslation()
   return (
     <div className="grid grid-cols-2 gap-2 rounded-full bg-white p-1 ring-1 ring-ink/10">
       {([1, 2] as const).map((n) => (
@@ -68,7 +71,7 @@ export function PersonToggle({ value, onChange }: { value: 1 | 2; onChange: (v: 
             value === n ? 'bg-ink text-white' : 'text-ink/60'
           }`}
         >
-          {n} 個人
+          {t('common.people', { count: n })}
         </button>
       ))}
     </div>

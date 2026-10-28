@@ -2,7 +2,8 @@ import { ArrowRight, Check, Flip, Timer } from 'iconoir-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SHOTS_PER_SET } from '../db'
 import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
-import { describeCameraError } from '../camera'
+import { useTranslation } from 'react-i18next'
+import { cameraErrorKey } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
 import { useViewfinderRatio } from '../useViewfinderRatio'
@@ -20,6 +21,7 @@ export default function Shoot({
   onBack: () => void
   onDone: (photos: Blob[]) => void
 }) {
+  const { t } = useTranslation()
   const cartoonUrls = useObjectUrls(cartoons)
   const video = useRef<HTMLVideoElement>(null)
   const [facing, setFacingState] = useState<Facing>('user')
@@ -68,12 +70,15 @@ export default function Shoot({
         stream = s
         if (video.current) video.current.srcObject = s
       })
-      .catch((err: unknown) => setCameraError(describeCameraError(err)))
+      .catch((err: unknown) => {
+        const { key, message } = cameraErrorKey(err)
+        setCameraError(t(`camera.${key}`, { message }))
+      })
     return () => {
       cancelled = true
       stream?.getTracks().forEach((t) => t.stop())
     }
-  }, [facing, cameraAttempt])
+  }, [facing, cameraAttempt]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const capture = useCallback(async () => {
     const v = video.current
@@ -115,7 +120,7 @@ export default function Shoot({
   return (
     <div className="flex h-full flex-col">
       <Header
-        title={`第 ${index + 1} / ${SHOTS_PER_SET} 張`}
+        title={t('shoot.title', { index: index + 1, total: SHOTS_PER_SET })}
         onBack={onBack}
         right={
           <div className="flex gap-2">
@@ -127,14 +132,14 @@ export default function Shoot({
                 mirror ? 'bg-ink text-white' : 'bg-white'
               }`}
             >
-              鏡像 {mirror ? 'ON' : 'OFF'}
+              {mirror ? t('shoot.mirror_on') : t('shoot.mirror_off')}
             </button>
             <button
               onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')}
               className="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
             >
               <Flip width={16} height={16} />
-              轉鏡頭
+              {t('shoot.flip')}
             </button>
           </div>
         }
@@ -144,7 +149,7 @@ export default function Shoot({
         {/* Reference cartoon on top */}
         <FitImage
           src={cartoonUrls[index]}
-          alt="參考卡通圖"
+          alt={t('shoot.reference_alt')}
           className="w-full rounded-2xl ring-1 ring-ink/10"
           style={{ aspectRatio: viewRatio }}
         />
@@ -174,7 +179,7 @@ export default function Shoot({
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-sm text-white">
               <p>{cameraError}</p>
               <Button variant="secondary" onClick={retryCamera}>
-                重試
+                {t('shoot.retry')}
               </Button>
             </div>
           )}
@@ -195,21 +200,21 @@ export default function Shoot({
         {preview ? (
           <>
             <Button variant="secondary" onClick={() => setPreview(null)} className="flex-1">
-              重影
+              {t('shoot.retake')}
             </Button>
             <Button onClick={keep} className="flex flex-1 items-center justify-center gap-2">
-              {index + 1 === SHOTS_PER_SET ? '完成' : '下一張'}
+              {index + 1 === SHOTS_PER_SET ? t('common.done') : t('common.next')}
               {index + 1 === SHOTS_PER_SET ? <Check width={20} height={20} strokeWidth={2.2} /> : <ArrowRight width={20} height={20} strokeWidth={2.2} />}
             </Button>
           </>
         ) : (
           <>
             <Button variant="secondary" onClick={capture} disabled={!!cameraError || countdown !== null} className="flex-1">
-              即影
+              {t('shoot.capture')}
             </Button>
             <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex flex-1 items-center justify-center gap-2">
               <Timer width={20} height={20} strokeWidth={2.2} />
-              {COUNTDOWN_SECONDS} 秒倒數
+              {t('shoot.countdown', { seconds: COUNTDOWN_SECONDS })}
             </Button>
           </>
         )}

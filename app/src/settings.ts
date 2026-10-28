@@ -44,3 +44,29 @@ export function setLibraryFilter(filter: LibraryFilter) {
     // ignore
   }
 }
+
+// UI language: follows the device unless the user picked one.
+export type Language = 'en' | 'zh-TW'
+const LANGUAGE_KEY = 'post-match.language'
+
+export function detectLanguage(navigatorLanguage: string): Language {
+  return navigatorLanguage.toLowerCase().startsWith('zh') ? 'zh-TW' : 'en'
+}
+
+export function getLanguage(): Language {
+  try {
+    const v = localStorage.getItem(LANGUAGE_KEY)
+    if (v === 'en' || v === 'zh-TW') return v
+  } catch {
+    // fall through
+  }
+  return detectLanguage(typeof navigator === 'undefined' ? 'en' : navigator.language)
+}
+
+export function setLanguage(lng: Language) {
+  try {
+    localStorage.setItem(LANGUAGE_KEY, lng)
+  } catch {
+    // ignore
+  }
+}

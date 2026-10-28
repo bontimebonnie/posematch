@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
+import { Plus, Xmark } from 'iconoir-react'
 import { useEffect, useState } from 'react'
 import { db, deleteSet, loadSetImages, type CartoonSet, type PersonCount } from '../db'
 import { Button, Header, PersonToggle } from '../ui'
@@ -27,8 +28,9 @@ export default function Home({
         <p className="mb-2 text-sm text-ink/60">幾多個人影？</p>
         <PersonToggle value={personCount} onChange={onPersonCount} />
 
-        <Button onClick={onUpload} className="mt-5 w-full">
-          ＋ Upload 新嘅一套卡通相
+        <Button onClick={onUpload} className="mt-5 flex w-full items-center justify-center gap-2">
+          <Plus width={20} height={20} strokeWidth={2.2} />
+          Upload 新嘅一套卡通相
         </Button>
 
         <h2 className="mt-7 mb-3 font-bold">Library</h2>
@@ -81,9 +83,9 @@ function SetCard({ set, onPick }: { set: CartoonSet; onPick: (cartoons: Blob[]) 
       <button
         onClick={remove}
         aria-label="刪除"
-        className="absolute top-1.5 right-1.5 h-7 w-7 rounded-full bg-black/50 text-sm text-white"
+        className="absolute top-1.5 right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white"
       >
-        ✕
+        <Xmark width={16} height={16} strokeWidth={2.4} />
       </button>
     </li>
   )

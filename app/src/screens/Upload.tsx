@@ -1,3 +1,4 @@
+import { NavArrowLeft, NavArrowRight, Plus } from 'iconoir-react'
 import { useRef, useState } from 'react'
 import { SHOTS_PER_SET, saveSet, type PersonCount } from '../db'
 import { downscaleImage } from '../image'
@@ -82,14 +83,14 @@ export default function Upload({
                   {i + 1}
                 </span>
                 <div className="flex justify-between px-1 py-1 text-sm">
-                  <button onClick={() => move(i, -1)} className="px-2" disabled={i === 0}>
-                    ◀
+                  <button onClick={() => move(i, -1)} className="px-2 disabled:opacity-30" disabled={i === 0} aria-label="向前移">
+                    <NavArrowLeft width={18} height={18} />
                   </button>
                   <button onClick={() => removeAt(i)} className="px-2 text-berry">
                     刪除
                   </button>
-                  <button onClick={() => move(i, 1)} className="px-2" disabled={i === files.length - 1}>
-                    ▶
+                  <button onClick={() => move(i, 1)} className="px-2 disabled:opacity-30" disabled={i === files.length - 1} aria-label="向後移">
+                    <NavArrowRight width={18} height={18} />
                   </button>
                 </div>
               </li>
@@ -100,7 +101,7 @@ export default function Upload({
                   onClick={() => input.current?.click()}
                   className="flex aspect-[3/2] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-ink/20 text-ink/50"
                 >
-                  <span className="text-3xl leading-none">＋</span>
+                  <Plus width={32} height={32} />
                   <span className="text-xs">加相</span>
                 </button>
               </li>

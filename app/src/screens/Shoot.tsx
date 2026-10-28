@@ -1,3 +1,4 @@
+import { ArrowRight, Check, Flip, Timer } from 'iconoir-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SHOTS_PER_SET } from '../db'
 import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
@@ -125,9 +126,10 @@ export default function Shoot({
             </button>
             <button
               onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')}
-              className="rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
+              className="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
             >
-              🔄 轉鏡頭
+              <Flip width={16} height={16} />
+              轉鏡頭
             </button>
           </div>
         }
@@ -181,8 +183,9 @@ export default function Shoot({
             <Button variant="secondary" onClick={() => setPreview(null)} className="flex-1">
               重影
             </Button>
-            <Button onClick={keep} className="flex-1">
-              {index + 1 === SHOTS_PER_SET ? '完成 ✓' : '下一張 →'}
+            <Button onClick={keep} className="flex flex-1 items-center justify-center gap-2">
+              {index + 1 === SHOTS_PER_SET ? '完成' : '下一張'}
+              {index + 1 === SHOTS_PER_SET ? <Check width={20} height={20} strokeWidth={2.2} /> : <ArrowRight width={20} height={20} strokeWidth={2.2} />}
             </Button>
           </>
         ) : (
@@ -190,8 +193,9 @@ export default function Shoot({
             <Button variant="secondary" onClick={capture} disabled={!!cameraError || countdown !== null} className="flex-1">
               即影
             </Button>
-            <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex-1">
-              ⏱ {COUNTDOWN_SECONDS} 秒倒數
+            <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex flex-1 items-center justify-center gap-2">
+              <Timer width={20} height={20} strokeWidth={2.2} />
+              {COUNTDOWN_SECONDS} 秒倒數
             </Button>
           </>
         )}

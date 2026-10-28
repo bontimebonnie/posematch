@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'iconoir-react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
@@ -25,8 +26,8 @@ export function Header({ title, onBack, right }: { title: string; onBack?: () =>
   return (
     <header className="flex items-center gap-2 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3">
       {onBack && (
-        <button onClick={onBack} className="-ml-2 rounded-full px-3 py-2 text-lg" aria-label="返回">
-          ←
+        <button onClick={onBack} className="-ml-2 rounded-full p-2" aria-label="返回">
+          <ArrowLeft width={24} height={24} />
         </button>
       )}
       <h1 className="flex-1 text-lg font-bold">{title}</h1>

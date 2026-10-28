@@ -106,3 +106,23 @@ export async function downscaleImage(blob: Blob, maxEdge = 1600): Promise<Blob> 
   canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
   return canvasToBlob(canvas)
 }
+
+export interface PixelCrop {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+// Cuts `crop` (in source pixels) out of the image, downscaled so the result
+// is at most `maxEdge` wide.
+export async function cropImage(blob: Blob, crop: PixelCrop, maxEdge = 1600): Promise<Blob> {
+  const img = await loadImage(blob)
+  const [w, h] = fitWithin(crop.width, crop.height, maxEdge)
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  canvas.getContext('2d')!.drawImage(img, crop.x, crop.y, crop.width, crop.height, 0, 0, w, h)
+  URL.revokeObjectURL(img.src)
+  return canvasToBlob(canvas)
+}

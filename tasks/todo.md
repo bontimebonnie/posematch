@@ -140,7 +140,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 3: Crop + 入相
 
-- [ ] Task 17: Crop 畫面
+- [x] Task 17: Crop 畫面
   - Acceptance: Import 每張相先入 crop：拖動／雙指縮放，框鎖 3:2；「跳過」= 唔裁（之後填邊）；「再切一張」將當前裁出嚟加入隊列並留喺同一來源相；裁出嚟嘅相帶同一 `sourceId`
   - Verify: 一張 4 格 strip 切 4 次 → library 4 張獨立相
   - Files: `app/src/screens/Crop.tsx`, `app/src/screens/Import.tsx`, `app/package.json`（react-easy-crop，**Ask first**）

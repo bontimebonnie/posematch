@@ -65,13 +65,27 @@ export interface ImageMeta {
   sourceId?: string
 }
 
-export async function addImages(blobs: Blob[], meta: ImageMeta): Promise<number[]> {
+export interface ImportItem {
+  blob: Blob
+  // Shared by every crop taken from the same original.
+  sourceId: string
+}
+
+export async function addImageBatch(items: ImportItem[], meta: Omit<ImageMeta, 'sourceId'>): Promise<number[]> {
   const now = Date.now()
   const name = meta.characterName.trim()
   return (await db.images.bulkAdd(
-    blobs.map((blob) => ({ blob, personCount: meta.personCount, characterName: name, sourceId: meta.sourceId, createdAt: now })),
+    items.map(({ blob, sourceId }) => ({ blob, personCount: meta.personCount, characterName: name, sourceId, createdAt: now })),
     { allKeys: true },
   )) as number[]
+}
+
+export function addImages(blobs: Blob[], meta: ImageMeta): Promise<number[]> {
+  const sourceId = meta.sourceId ?? crypto.randomUUID()
+  return addImageBatch(
+    blobs.map((blob) => ({ blob, sourceId })),
+    meta,
+  )
 }
 
 export async function updateImage(id: number, changes: Partial<ImageMeta>) {

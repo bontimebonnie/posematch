@@ -134,8 +134,9 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Size: M · Depends: Task 14
 
 ### Checkpoint: Library
-- [ ] 舊資料升級完整；grid → 揀 4 張 → strip
-- [ ] 部署，Bonnie 確認
+- [x] 舊資料升級完整（瀏覽器內 v1 真資料 8 張升級成功，sets 表消失）；grid → 揀 4 張 → strip 1080×1350
+- [x] 部署
+- [ ] Bonnie 確認（iPhone 舊相仲喺度、篩選、揀 4 張、加入圖片）
 
 ## Phase 3: Crop + 入相
 

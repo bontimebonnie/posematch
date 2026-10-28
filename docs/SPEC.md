@@ -53,7 +53,10 @@ Phase A 唔做視覺美化；Phase B 唔改功能。
 - 切完先填人數同角色名（一次填，套用到由同一張來源切出嚟嘅所有相）。
 
 ### A2c. 非 3:2 填邊（v0.2）
-- Crop 時可以揀「唔裁，填邊」：相用 contain 放入 3:2 框，空位用**模糊放大背景**填（同一張相放大 + blur + 稍微調暗）。
+- **預設**：任何唔係 3:2 嘅相都用 contain 放入 3:2 框（整張相完整顯示，唔會裁走 character），空位用**模糊放大背景**填（同一張相放大 + blur + 稍微調暗）。白底貼圖填出嚟就係白色。
+- 呢個規則同時套用喺：library 縮圖、影相畫面嘅參考圖、成果 strip。而家嘅 cover（放大裁邊）行為取消。
+- Crop（A2b）係可選步驟，用家想裁先裁；裁完係 3:2 就唔使填。
+- 真機實例：一張 1.2:1 嘅貼圖，而家會被裁走下半身同手（2026-10-27 iPhone 截圖）。
 - AI outpaint（用外部 API 生成邊位）列入 Phase C。
 
 ### A3. 影相
@@ -172,7 +175,7 @@ export default function Shoot({ cartoons, onBack, onDone }: {
 - [ ] iPhone：Pinterest 複製圖片 → app 貼上 → crop → 入 library
 - [ ] iPhone：Pinterest Share sheet 見到「Post Match」，分享後相出現喺 crop 畫面
 - [ ] 一張 strip 來源相可以切出 4 張獨立嘅相
-- [ ] 非 3:2 嘅相用填邊模式後，成果 strip 冇白位
+- [ ] 非 3:2 嘅相（例如 1.2:1 貼圖）喺參考圖同 strip 都完整顯示，兩邊係模糊填邊，唔係被裁
 - [ ] 舊版 library 嘅相（一套 4 張）升級後仍然喺度，自動變成獨立相 + 角色名 = 原本系列名
 - [ ] `npm test`、build、lint 零錯誤
 

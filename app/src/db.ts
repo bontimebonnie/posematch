@@ -1,16 +1,22 @@
-import Dexie, { type EntityTable } from 'dexie'
+import Dexie, { type EntityTable, type Transaction } from 'dexie'
 
 export type PersonCount = 1 | 2
 
-// Images are stored individually so a later "mix and match" library can reuse
-// them; a set just points at four of them in order.
+// Every cartoon image is its own record. Shooting picks any four of them,
+// so there is no "set" any more (v1 had one; v2 unpacks it, see below).
 export interface StoredImage {
   id: number
   blob: Blob
+  personCount: PersonCount
+  characterName: string
+  // Images cropped from the same source share this, so they can be shown
+  // together later.
+  sourceId?: string
   createdAt: number
 }
 
-export interface CartoonSet {
+// v1 only; kept so the v2 upgrade can read it.
+interface LegacySet {
   id: number
   name: string
   personCount: PersonCount
@@ -20,7 +26,6 @@ export interface CartoonSet {
 
 export const db = new Dexie('post-match') as Dexie & {
   images: EntityTable<StoredImage, 'id'>
-  sets: EntityTable<CartoonSet, 'id'>
 }
 
 db.version(1).stores({
@@ -28,28 +33,71 @@ db.version(1).stores({
   sets: '++id, personCount, createdAt',
 })
 
-export const SHOTS_PER_SET = 4
-
-export async function saveSet(name: string, personCount: PersonCount, files: Blob[]) {
-  return db.transaction('rw', db.images, db.sets, async () => {
-    const now = Date.now()
-    const imageIds = (await db.images.bulkAdd(
-      files.map((blob) => ({ blob, createdAt: now })),
-      { allKeys: true },
-    )) as number[]
-    const id = await db.sets.add({ name, personCount, imageIds, createdAt: now })
-    return (await db.sets.get(id))!
-  })
+export const V2_STORES = {
+  images: '++id, createdAt, personCount, characterName, [personCount+characterName]',
+  sets: null,
 }
 
-export async function loadSetImages(set: CartoonSet): Promise<Blob[]> {
-  const images = await db.images.bulkGet(set.imageIds)
+// Each v1 set becomes N standalone images tagged with the set's name.
+export async function upgradeV1toV2(tx: Transaction) {
+  const sets = (await tx.table('sets').toArray()) as LegacySet[]
+  const meta = new Map<number, { personCount: PersonCount; characterName: string }>()
+  for (const set of sets) {
+    for (const id of set.imageIds) meta.set(id, { personCount: set.personCount, characterName: set.name })
+  }
+  await tx
+    .table('images')
+    .toCollection()
+    .modify((img: Partial<StoredImage> & { id: number }) => {
+      const m = meta.get(img.id)
+      img.personCount = m?.personCount ?? 2
+      img.characterName = m?.characterName ?? ''
+    })
+}
+
+db.version(2).stores(V2_STORES).upgrade(upgradeV1toV2)
+
+export const SHOTS_PER_SET = 4
+
+export interface ImageMeta {
+  personCount: PersonCount
+  characterName: string
+  sourceId?: string
+}
+
+export async function addImages(blobs: Blob[], meta: ImageMeta): Promise<number[]> {
+  const now = Date.now()
+  const name = meta.characterName.trim()
+  return (await db.images.bulkAdd(
+    blobs.map((blob) => ({ blob, personCount: meta.personCount, characterName: name, sourceId: meta.sourceId, createdAt: now })),
+    { allKeys: true },
+  )) as number[]
+}
+
+export async function updateImage(id: number, changes: Partial<ImageMeta>) {
+  if (changes.characterName !== undefined) changes = { ...changes, characterName: changes.characterName.trim() }
+  await db.images.update(id, changes)
+}
+
+export async function deleteImages(ids: number[]) {
+  await db.images.bulkDelete(ids)
+}
+
+// Blobs for the given ids, in the same order as `ids`.
+export async function loadImages(ids: number[]): Promise<Blob[]> {
+  const images = await db.images.bulkGet(ids)
   return images.map((img) => img!.blob)
 }
 
-export async function deleteSet(set: CartoonSet) {
-  await db.transaction('rw', db.images, db.sets, async () => {
-    await db.images.bulkDelete(set.imageIds)
-    await db.sets.delete(set.id)
+// Distinct names, most recently used first, for filter chips and autocomplete.
+export async function listCharacterNames(): Promise<string[]> {
+  const seen = new Set<string>()
+  const names: string[] = []
+  await db.images.orderBy('createdAt').reverse().each((img) => {
+    if (img.characterName && !seen.has(img.characterName)) {
+      seen.add(img.characterName)
+      names.push(img.characterName)
+    }
   })
+  return names
 }

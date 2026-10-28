@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'iconoir-react'
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
 
@@ -38,9 +38,19 @@ export function Header({ title, onBack, right }: { title: string; onBack?: () =>
 
 // An image shown fully (object-fit: contain) with the leftover area filled by
 // a blurred, darkened copy of itself. Same look as drawFit() in image.ts.
-export function FitImage({ src, alt = '', className = '' }: { src: string; alt?: string; className?: string }) {
+export function FitImage({
+  src,
+  alt = '',
+  className = '',
+  style,
+}: {
+  src: string
+  alt?: string
+  className?: string
+  style?: CSSProperties
+}) {
   return (
-    <div className={`relative overflow-hidden bg-ink/10 ${className}`}>
+    <div className={`relative overflow-hidden bg-ink/10 ${className}`} style={style}>
       <img src={src} aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-md brightness-90" />
       <img src={src} alt={alt} className="relative h-full w-full object-contain" />
     </div>

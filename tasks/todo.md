@@ -96,7 +96,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Home.tsx`, `app/src/screens/Shoot.tsx`, `app/src/strip.ts`, `app/src/ui.tsx`（新 `FitImage` component）
   - Size: S · Depends: Task 10
 
-- [ ] Task 12: 手機直向取景框 4:3
+- [x] Task 12: 手機直向取景框 4:3
   - Acceptance: viewport 直向且闊度 < 768 時，camera 框同參考圖框都係 4:3；capture 仍中央裁出 3:2；桌面／橫向維持 3:2；有一個 `VIEWFINDER_RATIO` 單一來源
   - Verify: 瀏覽器 mobile viewport 見到 4:3 框；輸出 strip 仍 1080×1350 格 3:2
   - Files: `app/src/screens/Shoot.tsx`, `app/src/image.ts`
@@ -104,7 +104,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - **Ask first**: 比例改動，等 Bonnie approve plan 先做
 
 ### Checkpoint: 真機再試
-- [ ] 部署；Bonnie iPhone 確認 貼圖完整 + 取景框見到人
+- [x] 部署；Bonnie iPhone 確認 貼圖完整 + 取景框見到人
 - [ ] 同時答返 checklist D：Copy Image、儲存相簿 兩樣
 
 ## Phase 2: Library 重整

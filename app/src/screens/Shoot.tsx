@@ -5,6 +5,7 @@ import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
 import { describeCameraError } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
+import { useViewfinderRatio } from '../useViewfinderRatio'
 import { Button, FitImage, Header } from '../ui'
 
 type Facing = 'user' | 'environment'
@@ -38,6 +39,10 @@ export default function Shoot({
   const [countdown, setCountdown] = useState<number | null>(null)
   const previewBlobs = useMemo(() => (preview ? [preview] : []), [preview])
   const previewUrls = useObjectUrls(previewBlobs)
+  const viewRatio = useViewfinderRatio()
+  // Fraction of the viewfinder height that the 3:2 capture keeps.
+  // (a 3:2 band inside a 4:3 box is 4/3 ÷ 3/2 = 89% of its height)
+  const keptFraction = viewRatio / CELL_RATIO
 
   const index = photos.length
   // Mirroring only makes sense for the selfie camera; the preference is
@@ -137,10 +142,15 @@ export default function Shoot({
 
       <div className="flex flex-1 flex-col gap-3 overflow-hidden px-4">
         {/* Reference cartoon on top */}
-        <FitImage src={cartoonUrls[index]} alt="參考卡通圖" className="aspect-[3/2] w-full rounded-2xl ring-1 ring-ink/10" />
+        <FitImage
+          src={cartoonUrls[index]}
+          alt="參考卡通圖"
+          className="w-full rounded-2xl ring-1 ring-ink/10"
+          style={{ aspectRatio: viewRatio }}
+        />
 
         {/* Camera (or the captured preview) below */}
-        <div className="relative aspect-[3/2] overflow-hidden rounded-2xl bg-black">
+        <div className="relative overflow-hidden rounded-2xl bg-black" style={{ aspectRatio: viewRatio }}>
           <video
             ref={video}
             autoPlay
@@ -148,7 +158,13 @@ export default function Shoot({
             muted
             className={`h-full w-full object-cover ${mirror ? '-scale-x-100' : ''} ${preview ? 'invisible' : ''}`}
           />
-          {preview && <img src={previewUrls[0]} className="absolute inset-0 h-full w-full object-cover" alt="" />}
+          {preview && <img src={previewUrls[0]} className="absolute inset-0 h-full w-full object-contain" alt="" />}
+          {!preview && keptFraction < 1 && (
+            <>
+              <div className="pointer-events-none absolute inset-x-0 top-0 bg-black/40" style={{ height: `${((1 - keptFraction) / 2) * 100}%` }} />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/40" style={{ height: `${((1 - keptFraction) / 2) * 100}%` }} />
+            </>
+          )}
           {countdown !== null && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-8xl font-black text-white">
               {countdown}

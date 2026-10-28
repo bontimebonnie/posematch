@@ -54,7 +54,7 @@
 
 ## Phase 3: 真機同錯誤處理
 
-- [ ] Task 7: 錯誤狀態
+- [x] Task 7: 錯誤狀態
   - Acceptance: camera 被拒 → 顯示「去設定開返 camera 權限」同「重試」掣；`NotFoundError` → 「搵唔到 camera」；clipboard 唔支援 → Copy 掣 disable + 提示；`saveSet` 失敗（quota）→ alert 而唔係 silent；upload 嘅卡通相 downscale 到最長邊 1600
   - Verify: mock `getUserMedia` reject 唔同 error name 檢查文字；upload 一張 4000px 相之後 IndexedDB 入面 blob 細咗
   - Files: `app/src/screens/Shoot.tsx`, `app/src/screens/Upload.tsx`, `app/src/screens/Result.tsx`, `app/src/image.ts`

@@ -56,3 +56,23 @@ export function canvasToBlob(canvas: HTMLCanvasElement, type = 'image/jpeg'): Pr
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), type, 0.92),
   )
 }
+
+// Target size for an image whose longest edge must not exceed `maxEdge`.
+export function fitWithin(w: number, h: number, maxEdge: number): [number, number] {
+  const scale = Math.min(1, maxEdge / Math.max(w, h))
+  return [Math.round(w * scale), Math.round(h * scale)]
+}
+
+// Re-encodes an uploaded image at most `maxEdge` px on its longest side so
+// the library and the strip canvas don't carry multi-megapixel originals.
+export async function downscaleImage(blob: Blob, maxEdge = 1600): Promise<Blob> {
+  const img = await loadImage(blob)
+  const [w, h] = fitWithin(img.naturalWidth, img.naturalHeight, maxEdge)
+  URL.revokeObjectURL(img.src)
+  if (w === img.naturalWidth && h === img.naturalHeight) return blob
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
+  return canvasToBlob(canvas)
+}

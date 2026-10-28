@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SHOTS_PER_SET } from '../db'
 import { canvasToBlob, CELL_RATIO, drawCover } from '../image'
+import { describeCameraError } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
 import { Button, Header } from '../ui'
@@ -22,6 +23,11 @@ export default function Shoot({
   const [facing, setFacingState] = useState<Facing>('user')
   const [mirrorPref, setMirrorPref] = useState(getMirror)
   const [cameraError, setCameraError] = useState<string | null>(null)
+  const [cameraAttempt, setCameraAttempt] = useState(0)
+  const retryCamera = () => {
+    setCameraError(null)
+    setCameraAttempt((n) => n + 1)
+  }
   const setFacing = (f: Facing) => {
     setCameraError(null)
     setFacingState(f)
@@ -42,7 +48,7 @@ export default function Shoot({
     setMirror(next)
   }
 
-  // Start / restart the camera whenever the facing mode changes.
+  // Start / restart the camera whenever the facing mode changes or the user retries.
   useEffect(() => {
     let stream: MediaStream | undefined
     let cancelled = false
@@ -56,12 +62,12 @@ export default function Shoot({
         stream = s
         if (video.current) video.current.srcObject = s
       })
-      .catch((err: unknown) => setCameraError(err instanceof Error ? err.message : String(err)))
+      .catch((err: unknown) => setCameraError(describeCameraError(err)))
     return () => {
       cancelled = true
       stream?.getTracks().forEach((t) => t.stop())
     }
-  }, [facing])
+  }, [facing, cameraAttempt])
 
   const capture = useCallback(async () => {
     const v = video.current
@@ -149,8 +155,11 @@ export default function Shoot({
             </div>
           )}
           {cameraError && (
-            <div className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-white">
-              開唔到 camera：{cameraError}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-sm text-white">
+              <p>{cameraError}</p>
+              <Button variant="secondary" onClick={retryCamera}>
+                重試
+              </Button>
             </div>
           )}
         </div>

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { SHOTS_PER_SET, saveSet, type PersonCount } from '../db'
+import { downscaleImage } from '../image'
 import { useObjectUrls } from '../useObjectUrls'
 import { Button, Header, PersonToggle } from '../ui'
 
@@ -38,9 +39,14 @@ export default function Upload({
 
   const save = async () => {
     setSaving(true)
-    const set = await saveSet(name.trim() || `卡通相 ${new Date().toLocaleDateString()}`, personCount, files)
-    void set
-    onSaved(files)
+    try {
+      const blobs = await Promise.all(files.map((f) => downscaleImage(f)))
+      await saveSet(name.trim() || `卡通相 ${new Date().toLocaleDateString()}`, personCount, blobs)
+      onSaved(blobs)
+    } catch (err) {
+      alert(`Save 唔到：${err instanceof Error ? err.message : String(err)}`)
+      setSaving(false)
+    }
   }
 
   const ready = files.length === SHOTS_PER_SET

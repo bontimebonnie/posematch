@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { coverRect } from '../image'
+import { coverRect, fitWithin } from '../image'
 
 describe('coverRect', () => {
   it('crops the sides of a landscape source going into a squarer target', () => {
@@ -29,5 +29,15 @@ describe('coverRect', () => {
     const r = coverRect(4000, 1000, 900, 600)
     expect(r.sx + r.cw / 2).toBe(2000)
     expect(r.sy + r.ch / 2).toBe(500)
+  })
+})
+
+describe('fitWithin', () => {
+  it('leaves small images alone', () => {
+    expect(fitWithin(800, 600, 1600)).toEqual([800, 600])
+  })
+  it('scales the longest edge down to the limit', () => {
+    expect(fitWithin(4000, 3000, 1600)).toEqual([1600, 1200])
+    expect(fitWithin(3000, 4000, 1600)).toEqual([1200, 1600])
   })
 })

@@ -1,42 +1,32 @@
 import { useState } from 'react'
-import type { PersonCount } from './db'
-import Home from './screens/Home'
-import Upload from './screens/Upload'
-import Shoot from './screens/Shoot'
+import { getLibraryFilter } from './settings'
+import Import from './screens/Import'
+import Library from './screens/Library'
 import Result from './screens/Result'
+import Shoot from './screens/Shoot'
 
 type Screen =
-  | { name: 'home' }
-  | { name: 'upload' }
+  | { name: 'library' }
+  | { name: 'import'; files: File[] }
   | { name: 'shoot'; cartoons: Blob[] }
   | { name: 'result'; cartoons: Blob[]; photos: Blob[] }
 
 export default function App() {
-  const [personCount, setPersonCount] = useState<PersonCount>(2)
-  const [screen, setScreen] = useState<Screen>({ name: 'home' })
-  const home = () => setScreen({ name: 'home' })
+  const [screen, setScreen] = useState<Screen>({ name: 'library' })
+  const library = () => setScreen({ name: 'library' })
 
   return (
     <div className="mx-auto flex h-full max-w-xl flex-col">
-      {screen.name === 'home' && (
-        <Home
-          personCount={personCount}
-          onPersonCount={setPersonCount}
-          onUpload={() => setScreen({ name: 'upload' })}
-          onPick={(cartoons) => setScreen({ name: 'shoot', cartoons })}
-        />
+      {screen.name === 'library' && (
+        <Library onImport={(files) => setScreen({ name: 'import', files })} onShoot={(cartoons) => setScreen({ name: 'shoot', cartoons })} />
       )}
-      {screen.name === 'upload' && (
-        <Upload
-          personCount={personCount}
-          onBack={home}
-          onSaved={(cartoons) => setScreen({ name: 'shoot', cartoons })}
-        />
+      {screen.name === 'import' && (
+        <Import files={screen.files} defaultPersonCount={getLibraryFilter().personCount ?? 2} onBack={library} onDone={library} />
       )}
       {screen.name === 'shoot' && (
         <Shoot
           cartoons={screen.cartoons}
-          onBack={home}
+          onBack={library}
           onDone={(photos) => setScreen({ name: 'result', cartoons: screen.cartoons, photos })}
         />
       )}
@@ -45,7 +35,7 @@ export default function App() {
           cartoons={screen.cartoons}
           photos={screen.photos}
           onRetake={() => setScreen({ name: 'shoot', cartoons: screen.cartoons })}
-          onHome={home}
+          onHome={library}
         />
       )}
     </div>

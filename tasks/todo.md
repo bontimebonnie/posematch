@@ -218,7 +218,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/ui/*`, `app/src/screens/*.tsx`
   - Size: M · Depends: Task 23
 
-- [ ] Task 26: 抽 ui/ 第二批
+- [x] Task 26: 抽 ui/ 第二批
   - Acceptance: `Tile.tsx` `Tray.tsx` `Sheet.tsx` `TextField.tsx` `EmptyState.tsx` `Scrim.tsx` `Countdown.tsx` `Shutter.tsx`；Library.tsx < 200 行；畫面樣貌不變
   - Verify: 同上
   - Files: `app/src/ui/*`, `app/src/screens/Library.tsx`, `Shoot.tsx`

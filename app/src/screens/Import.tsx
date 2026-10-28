@@ -6,7 +6,7 @@ import { addImageBatch, listCharacterNames, type ImportItem, type PersonCount } 
 import { downscaleImage } from '../image'
 import { Button, FitImage, Header, IconButton, PersonToggle } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
-import { CharacterNameInput } from './Library'
+import { CharacterNameInput } from './EditSheet'
 
 // Every way of adding images (file picker, paste, share target) lands here:
 // review the batch, tag it, save to the library.

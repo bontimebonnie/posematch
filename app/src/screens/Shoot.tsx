@@ -7,7 +7,7 @@ import { cameraErrorKey } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
 import { useViewfinderRatio } from '../useViewfinderRatio'
-import { Button, FitImage, Header } from '../ui'
+import { Button, Countdown, FitImage, Header, Scrim } from '../ui'
 
 type Facing = 'user' | 'environment'
 const COUNTDOWN_SECONDS = 3
@@ -164,17 +164,8 @@ export default function Shoot({
             className={`h-full w-full object-cover ${mirror ? '-scale-x-100' : ''} ${preview ? 'invisible' : ''}`}
           />
           {preview && <img src={previewUrls[0]} className="absolute inset-0 h-full w-full object-contain" alt="" />}
-          {!preview && keptFraction < 1 && (
-            <>
-              <div className="pointer-events-none absolute inset-x-0 top-0 bg-black/40" style={{ height: `${((1 - keptFraction) / 2) * 100}%` }} />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/40" style={{ height: `${((1 - keptFraction) / 2) * 100}%` }} />
-            </>
-          )}
-          {countdown !== null && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-8xl font-black text-white">
-              {countdown}
-            </div>
-          )}
+          {!preview && <Scrim keptFraction={keptFraction} />}
+          {countdown !== null && <Countdown seconds={countdown} />}
           {cameraError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-sm text-white">
               <p>{cameraError}</p>

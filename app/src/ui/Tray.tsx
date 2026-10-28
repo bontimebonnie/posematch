@@ -23,22 +23,22 @@ export function Tray({
       {Array.from({ length: total }, (_, i) => {
         const slot = slots[i]
         if (!slot) {
-          return <li key={`empty-${i}`} className="aspect-[3/2] rounded-lg border-2 border-dashed border-ink/20" />
+          return <li key={`empty-${i}`} className="aspect-[3/2] rounded-card border-2 border-dashed border-line-strong" />
         }
         return (
-          <li key={slot.id} className="relative">
-            <FitImage src={slot.src} className="aspect-[3/2] w-full rounded-lg" />
-            <Badge className="top-0.5 left-0.5 rounded-full bg-berry px-1.5 text-[10px] font-bold text-white">{i + 1}</Badge>
-            <IconButton variant="scrim" onClick={() => onRemove(slot.id)} aria-label={t('common.remove')} className="absolute top-0.5 right-0.5 p-0.5">
-              <Xmark width={12} height={12} strokeWidth={3} />
+          <li key={slot.id} className="relative overflow-hidden rounded-card ring-1 ring-line">
+            <FitImage src={slot.src} className="aspect-[3/2] w-full" />
+            <Badge className="top-1 left-1 size-icon-sm">{i + 1}</Badge>
+            <IconButton variant="scrim" size="sm" onClick={() => onRemove(slot.id)} aria-label={t('common.remove')} className="absolute top-1 right-1">
+              <Xmark width={16} height={16} strokeWidth={3} />
             </IconButton>
-            <div className="absolute inset-x-0 bottom-0 flex justify-between">
-              <button onClick={() => onMove(i, -1)} disabled={i === 0} aria-label={t('library.move_earlier')} className="rounded-tr-md bg-black/50 p-0.5 text-white disabled:opacity-30">
-                <NavArrowLeft width={12} height={12} strokeWidth={3} />
-              </button>
-              <button onClick={() => onMove(i, 1)} disabled={i === slots.length - 1} aria-label={t('library.move_later')} className="rounded-tl-md bg-black/50 p-0.5 text-white disabled:opacity-30">
-                <NavArrowRight width={12} height={12} strokeWidth={3} />
-              </button>
+            <div className="absolute inset-x-1 bottom-1 flex justify-between">
+              <IconButton variant="scrim" size="sm" onClick={() => onMove(i, -1)} disabled={i === 0} aria-label={t('library.move_earlier')}>
+                <NavArrowLeft width={16} height={16} strokeWidth={3} />
+              </IconButton>
+              <IconButton variant="scrim" size="sm" onClick={() => onMove(i, 1)} disabled={i === slots.length - 1} aria-label={t('library.move_later')}>
+                <NavArrowRight width={16} height={16} strokeWidth={3} />
+              </IconButton>
             </div>
           </li>
         )

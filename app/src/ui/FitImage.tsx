@@ -14,7 +14,7 @@ export function FitImage({
   style?: CSSProperties
 }) {
   return (
-    <div className={`relative overflow-hidden bg-ink/10 ${className}`} style={style}>
+    <div className={`relative overflow-hidden bg-line ${className}`} style={style}>
       <img src={src} aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-md brightness-90" />
       <img src={src} alt={alt} className="relative h-full w-full object-contain" />
     </div>

@@ -1,13 +1,24 @@
 import type { ReactNode } from 'react'
+import { focusRing } from './Button'
 
-// A small filter pill; `selected` is the active filter.
-export function Chip({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: ReactNode }) {
+export type Tint = 1 | 2 | 3 | 4
+
+const tints: Record<Tint, string> = {
+  1: 'bg-tint-1',
+  2: 'bg-tint-2',
+  3: 'bg-tint-3',
+  4: 'bg-tint-4',
+}
+
+// A small filter pill. When selected it fills with a pastel tint (or cocoa
+// when no tint is given); unselected chips are white with a thin line.
+export function Chip({ selected, tint, onClick, children }: { selected: boolean; tint?: Tint; onClick: () => void; children: ReactNode }) {
   return (
     <button
       onClick={onClick}
       aria-pressed={selected}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ring-1 transition-colors ${
-        selected ? 'bg-ink text-white ring-ink' : 'bg-white text-ink/70 ring-ink/15'
+      className={`inline-flex h-chip shrink-0 items-center gap-1 rounded-pill px-4 text-label transition-colors duration-fast ${focusRing} ${
+        selected ? (tint ? `${tints[tint]} text-fg` : 'bg-fg text-on-dark') : 'bg-surface-raised text-fg-muted ring-1 ring-line active:bg-surface'
       }`}
     >
       {children}

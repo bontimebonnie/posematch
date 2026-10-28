@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Camera, Language as LanguageIcon, PasteClipboard, Plus, Trash } from 'iconoir-react'
+import { Camera, Language as LanguageIcon, MediaImage, PasteClipboard, Plus, Trash } from 'iconoir-react'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { canPasteImage, imagesFromPasteEvent, readImagesFromClipboard } from '../clipboard'
@@ -123,18 +123,14 @@ export default function Library({
         right={
           mode === 'browse' ? (
             <div className="flex gap-2">
-              <button
-                onClick={switchLanguage}
-                aria-label={t('common.language')}
-                className="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15"
-              >
+              <Button variant="secondary" size="md" onClick={switchLanguage} aria-label={t('common.language')} className="gap-1">
                 <LanguageIcon width={16} height={16} />
                 {i18n.language === 'en' ? '中' : 'EN'}
-              </button>
+              </Button>
               {(images?.length ?? 0) > 0 && (
-                <button onClick={() => setMode('select')} className="rounded-full bg-white px-3 py-1.5 text-sm ring-1 ring-ink/15">
+                <Button variant="secondary" size="md" onClick={() => setMode('select')}>
                   {t('library.select')}
-                </button>
+                </Button>
               )}
             </div>
           ) : null
@@ -142,10 +138,10 @@ export default function Library({
       />
 
       {/* Filters */}
-      <div className="space-y-2 px-4 pb-3">
+      <div className="space-y-2 px-4 pb-2">
         <div className="flex gap-2">
           {([null, 1, 2] as const).map((n) => (
-            <Chip key={String(n)} selected={filter.personCount === n} onClick={() => setFilter({ ...filter, personCount: n })}>
+            <Chip key={String(n)} selected={filter.personCount === n} tint={n ?? undefined} onClick={() => setFilter({ ...filter, personCount: n })}>
               {n === null ? t('library.filter_all') : t('common.people', { count: n })}
             </Chip>
           ))}
@@ -155,8 +151,8 @@ export default function Library({
             <Chip selected={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
               {t('library.filter_all_characters')}
             </Chip>
-            {names.map((n) => (
-              <Chip key={n} selected={activeName === n} onClick={() => setFilter({ ...filter, characterName: n })}>
+            {names.map((n, i) => (
+              <Chip key={n} selected={activeName === n} tint={i % 2 ? 4 : 3} onClick={() => setFilter({ ...filter, characterName: n })}>
                 {n}
               </Chip>
             ))}
@@ -167,9 +163,9 @@ export default function Library({
       {/* Grid */}
       <div className="flex-1 overflow-y-auto px-4 pb-4">
         {images === undefined ? null : images.length === 0 ? (
-          <EmptyState title={t('library.empty_title')} body={t('library.empty_body')} />
+          <EmptyState icon={<MediaImage width={32} height={32} />} title={t('library.empty_title')} body={t('library.empty_body')} />
         ) : (
-          <ul className="grid grid-cols-3 gap-2">
+          <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
             {images.map((img, i) => (
               <Tile
                 key={img.id}
@@ -186,41 +182,37 @@ export default function Library({
       </div>
 
       {/* Bottom bar */}
-      <div className="px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {toast && (
-          <Toast className="mb-3">{toast}</Toast>
+          <Toast className="mb-2">{toast}</Toast>
         )}
         {mode === 'browse' && (
-          <div className="flex gap-3">
-            <Button variant="secondary" onClick={() => fileInput.current?.click()} className="flex flex-1 items-center justify-center gap-2">
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => fileInput.current?.click()} className="flex-1">
               <Plus width={20} height={20} strokeWidth={2.2} />
               {t('library.add')}
             </Button>
             {canPasteImage() && (
-              <Button variant="secondary" onClick={paste} aria-label={t('library.paste')} className="flex items-center justify-center px-4">
+              <Button variant="secondary" onClick={paste} aria-label={t('library.paste')} className="px-4">
                 <PasteClipboard width={20} height={20} strokeWidth={2.2} />
               </Button>
             )}
-            <Button
-              onClick={() => setMode('pick')}
-              disabled={(images?.length ?? 0) === 0}
-              className="flex flex-1 items-center justify-center gap-2"
-            >
+            <Button onClick={() => setMode('pick')} disabled={(images?.length ?? 0) === 0} className="flex-1">
               <Camera width={20} height={20} strokeWidth={2.2} />
               {t('library.shoot')}
             </Button>
           </div>
         )}
         {mode === 'select' && (
-          <Button variant="secondary" onClick={removeSelected} disabled={selected.length === 0} className="flex w-full items-center justify-center gap-2 text-berry">
+          <Button variant="danger" onClick={removeSelected} disabled={selected.length === 0} className="w-full">
             <Trash width={20} height={20} strokeWidth={2.2} />
             {t('library.delete_count', { count: selected.length })}
           </Button>
         )}
         {mode === 'pick' && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Tray slots={traySlots} total={SHOTS_PER_SET} onMove={movePick} onRemove={toggle} />
-            <Button onClick={startShoot} disabled={selected.length !== SHOTS_PER_SET} className="flex w-full items-center justify-center gap-2">
+            <Button onClick={startShoot} disabled={selected.length !== SHOTS_PER_SET} className="w-full">
               <Camera width={20} height={20} strokeWidth={2.2} />
               {t('library.start')}
             </Button>

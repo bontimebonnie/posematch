@@ -28,7 +28,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="mx-auto flex h-full max-w-xl flex-col">
+    <div className="mx-auto flex h-full max-w-xl flex-col md:max-w-2xl">
       {screen.name === 'library' && (
         <Library onImport={(files) => setScreen({ name: 'crop', files })} onShoot={(cartoons) => setScreen({ name: 'shoot', cartoons })} />
       )}

@@ -22,7 +22,7 @@ export function EditSheet({ image, names, onClose }: { image: StoredImage; names
     <Sheet
       title={
         <>
-          <EditPencil width={18} height={18} />
+          <EditPencil width={24} height={24} />
           {t('library.edit')}
         </>
       }
@@ -30,9 +30,9 @@ export function EditSheet({ image, names, onClose }: { image: StoredImage; names
     >
       <PersonToggle value={personCount} onChange={setPersonCount} />
       <CharacterNameInput value={name} onChange={setName} names={names} />
-      <div className="flex gap-3">
-        <Button variant="secondary" onClick={remove} className="flex flex-1 items-center justify-center gap-2 text-berry">
-          <Trash width={18} height={18} />
+      <div className="flex gap-2">
+        <Button variant="danger" onClick={remove} className="flex-1">
+          <Trash width={20} height={20} />
           {t('common.delete')}
         </Button>
         <Button onClick={save} className="flex-1">

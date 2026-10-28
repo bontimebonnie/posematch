@@ -226,7 +226,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 3: 畫面套用
 
-- [ ] Task 27: Library
+- [x] Task 27: Library
   - Acceptance: 全部 class 用語意 token；spacing 喺 grid；chip／tile／sheet／tray／空狀態跟 DESIGN-SPEC §3 §5；主要動作粉紅 pill 配深字；單人／雙人 chip 用 tint-1／tint-2
   - Verify: `docs/design/library-before.png` / `-after.png`（390 寬）；守門測試 Library 零違規
   - Files: `app/src/screens/Library.tsx`, `app/src/ui/*`

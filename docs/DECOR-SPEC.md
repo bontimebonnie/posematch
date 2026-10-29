@@ -69,7 +69,8 @@
 - `inset: { top, right, bottom, left }`（px，1080×1350 canvas 座標）—— strip 幾何用 `stripLayout({ rows, inset })` 算，cell 等比縮細置中。`inset` 全 0 = 而家嘅幾何（SIDE_PADDING 48、上下自動置中）。
 - `draw(ctx, layout)`：喺相格畫完之後畫（框可以探入 gutter，但係 **唔可以覆蓋相格內部**，測試會 sample 相格中心像素）。
 - 第一批 3 個：**無框**（預設）、**粉彩邊**（cream 底 + sand 粗邊 + 四角 sticker 式小圓）、**貼紙簿**（白底 + 四邊 pastel 虛線膠紙 + gutter 入面細星）。第 4、5 個等你嘅角色素材。
-- Inset 建議：粉彩邊 `{72, 72, 72, 72}`（cell 462×308，strip 高 1268，上下餘 41）；貼紙簿 `{120, 72, 120, 72}`（cell 462×308，上下 band 各 ~80 放膠紙／標題）。數字落實時以 integer cell 為準，寫入 `strip.test.ts`。
+- Inset 幾何：strip 係高身嘅，所以 **上下 inset 先卡住 cell 大細**，左右自動多餘位。`cellH = floor((1350 − top − bottom − 36) / 4)`，`cellW = floor(cellH × 1.5)`。例：粉彩邊 `{72, 72, 72, 72}` → cell 438×292，strip 闊 888，側邊實際留白 96；貼紙簿 `{120, 72, 120, 72}` → cell 402×268，側邊 132。preset 表同 Figma 做法見 `docs/design/figma-frame-brief.md`。數字落實時以 integer cell 為準，寫入 `strip.test.ts`。
+- 框嘅美術由 Bonnie 喺 Figma 設計（brief 同上），交圖後再定 id／inset；下面 3 個只係 placeholder 方向。
 
 ### 4.2 Sticker
 
@@ -207,7 +208,7 @@ export const pastel: Frame = {
 
 ## 13. Open Questions（要 Bonnie 答）
 
-1. **框嘅數量同風格**：第一批 3 個（無框／粉彩邊／貼紙簿）夠唔夠起步？你有冇現成嘅框圖想直接用？
+1. **框嘅數量同風格**：Bonnie 喺 Figma 自己設計中（見 `docs/design/figma-frame-brief.md`）；交圖後填返 id、inset、名。
 2. **角色貼紙**：你會提供 Chiikawa 風格 PNG（透明底，建議 512×512）定係先用我畫嘅 8 個簡單 SVG？
 3. **貼紙可唔可以疊喺相上面**：我假設可以（係你自己放嘅），但框永遠唔可以。OK？
 4. **記住上次 frame**：要唔要？（我假設要，用 localStorage）

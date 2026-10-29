@@ -83,7 +83,7 @@ export default function Result({
   const picture = (
     <div className="flex flex-1 items-start justify-center overflow-y-auto px-4">
       {strip ? (
-        <img src={strip.url} className="max-h-full w-auto max-w-full rounded-card ring-1 ring-line" alt={t('result.alt')} />
+        <img src={strip.url} className="reveal max-h-full w-auto max-w-full rounded-card ring-1 ring-line" alt={t('result.alt')} />
       ) : (
         <p className="pt-12 text-body text-fg-muted">{t('result.composing')}</p>
       )}
@@ -125,7 +125,7 @@ export default function Result({
           </>
         }
         actions={bottom}
-        tray={<TrayStrip rows={rows} total={rows.length} />}
+        tray={<TrayStrip rows={rows} total={rows.length} eject={!!strip} />}
       />
     )
   }

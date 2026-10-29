@@ -735,6 +735,18 @@
   border-radius: 2px;
   transform: translate(-50%, -50%);
 }
+/* Result: the printed strip ejects up out of the slot */
+.booth-strip-eject {
+  animation: booth-eject 700ms var(--ease-curtain) both;
+}
+@keyframes booth-eject {
+  from { transform: translateY(0); }
+  to { transform: translateY(-46%); }
+}
+.booth-tray:has(.booth-strip-eject) .booth-out {
+  overflow: visible;
+}
+
 .booth-lbl {
   position: absolute;
   left: 18px;
@@ -762,4 +774,5 @@
   .booth-curtain-snapping,
   .booth-curtain-springing { transition: none; }
   .booth-curtain-squeeze { animation: none; }
+  .booth-strip-eject { animation: none; transform: translateY(-46%); }
 }

@@ -372,7 +372,7 @@ Bonnie 試 C.0 嘅回報：(1) how-to 彈窗要置中 ✓ 已改；(2) 語言掣
   - Files: `app/src/booth/BoothChrome.tsx`（新）, `BoothInterior.tsx`, `app/src/screens/{Crop,Shoot,Result}.tsx`, `app/src/App.tsx`, `booth.css`
   - Size: L · Depends: Task 45
 
-- [ ] Task 47: Result 顯影 reveal + tray 彈出
+- [x] Task 47: Result 顯影 reveal + tray 彈出（snapshot 測試未加：jsdom 冇 canvas，reveal 係純 CSS 唔郁輸出）
   - Acceptance: Result 開頁時 strip 1.6s 由 sepia 低對比淡入到正常（`--duration-reveal`）；desktop 櫃台 tray 嘅 strip 向上彈出印出口（700ms）；`prefers-reduced-motion` 即時顯示；輸出 byte 不變（C0 snapshot 測試）
   - Verify: 截圖序列；snapshot 測試
   - Files: `app/src/screens/Result.tsx`, `booth.css`, `app/src/__tests__/strip-snapshot.test.ts`（新）

@@ -718,6 +718,12 @@
   background: var(--color-decor-metal);
   border-style: dotted;
 }
+.booth-cell-taken {
+  border-style: solid;
+}
+.booth-cell-taken::after {
+  display: none;
+}
 .booth-cell-photo::after {
   content: '';
   position: absolute;

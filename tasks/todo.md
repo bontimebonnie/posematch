@@ -366,7 +366,7 @@ Bonnie 試 C.0 嘅回報：(1) how-to 彈窗要置中 ✓ 已改；(2) 語言掣
   - Files: `app/src/cropBox.ts`, `app/src/ui/CropBox.tsx`, `app/src/screens/Crop.tsx`, `app/package.json`, `locales/*`
   - Size: M
 
-- [ ] Task 46: Booth 外殼抽做 `BoothChrome`，Crop／Shoot／Result 喺 desktop 都入 booth
+- [x] Task 46: Booth 外殼抽做 `BoothChrome`，Crop／Shoot／Result 喺 desktop 都入 booth
   - Acceptance: `BoothInterior` 拆成 `BoothChrome({ glass, actions, tray })`（牆、管燈、bezel、櫃台、tray 共用）；Library 照舊；Crop 嘅圖 + 框喺玻璃入面，掣喺櫃台；Shoot 參考圖（左 30%）同取景框（右）並排喺玻璃，倒數／快門喺櫃台，每影一張 tray 右格填上；Result 條 strip 喺玻璃，重新拍攝・裝飾・儲存喺櫃台；<760px 全部同今日 phone 版一樣
   - Verify: pane 1280 寬逐頁截圖對 mock v9；pane 390 寬同 phone 版逐像素對；`npm test`
   - Files: `app/src/booth/BoothChrome.tsx`（新）, `BoothInterior.tsx`, `app/src/screens/{Crop,Shoot,Result}.tsx`, `app/src/App.tsx`, `booth.css`

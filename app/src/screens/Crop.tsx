@@ -3,6 +3,8 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ImportItem } from '../db'
 import { CELL_RATIO, cropImage } from '../image'
+import { BoothChrome, TrayStrip } from '../booth/BoothChrome'
+import { useWide } from '../booth/useWide'
 import { Button, CropBox, FitImage, Header, IconButton, type PixelCrop } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
 
@@ -13,14 +15,17 @@ import { useObjectUrls } from '../useObjectUrls'
 // removable. Everything cut from one file shares a sourceId.
 export default function Crop({
   files,
+  booth = false,
   onBack,
   onDone,
 }: {
   files: File[]
+  booth?: boolean // render inside the booth chrome on wide screens
   onBack: () => void
   onDone: (items: ImportItem[]) => void
 }) {
   const { t } = useTranslation()
+  const wide = useWide()
   const [index, setIndex] = useState(0)
   const [items, setItems] = useState<ImportItem[]>([])
   const [cutsFromThis, setCutsFromThis] = useState(0)
@@ -80,13 +85,17 @@ export default function Crop({
     advance(next)
   }
 
-  return (
-    <div className="flex h-full flex-col">
+  const header = (
+    <>
       <Header
         title={files.length > 1 ? t('crop.title_n', { index: index + 1, total: files.length }) : t('crop.title')}
         onBack={onBack}
         right={cutsFromThis > 0 ? <span className="text-label text-fg-muted">{t('crop.cut_count', { count: cutsFromThis })}</span> : null}
-      />
+  />
+    </>
+  )
+  const stage = (
+    <>
       <div className="relative mx-4 flex-1 overflow-hidden rounded-card bg-dark">
         {urls[index] && <CropBox src={urls[index]} ratio={CELL_RATIO} tag={t('crop.tag')} onChange={setArea} />}
       </div>
@@ -102,7 +111,10 @@ export default function Crop({
             </li>
           ))}
         </ul>
-      )}
+  )}
+    </>
+  )
+  const bottom = (
       <div className="space-y-2 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Button variant="secondary" onClick={cutAnother} disabled={busy || !area} className="w-full">
           <Plus width={20} height={20} strokeWidth={2.2} />
@@ -118,6 +130,16 @@ export default function Crop({
           </Button>
         </div>
       </div>
+  )
+
+  if (booth && wide) {
+    return <BoothChrome glass={<>{header}{stage}</>} actions={bottom} tray={<TrayStrip rows={[]} total={4} />} />
+  }
+  return (
+    <div className="flex h-full flex-col">
+      {header}
+      {stage}
+      {bottom}
     </div>
   )
 }

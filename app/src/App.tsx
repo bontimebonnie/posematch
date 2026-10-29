@@ -32,10 +32,11 @@ export default function App() {
     })
   }, [])
 
-  // The booth and the library inside it fill the viewport; the working
-  // screens keep their phone-width column on desktop.
+  // With decor on, every screen lives in the booth and fills the viewport
+  // (each screen falls back to its phone stack below 760px). With decor off
+  // the working screens keep their phone-width column on desktop.
   const decor = decorEnabled()
-  const wide = screen.name === 'booth' || (screen.name === 'library' && decor)
+  const wide = decor || screen.name === 'booth'
   return (
     <div className={`mx-auto flex h-full flex-col ${wide ? '' : 'max-w-xl md:max-w-2xl'}`}>
       {screen.name === 'booth' && <Booth unfold={screen.unfold} onEnter={library} />}
@@ -47,13 +48,14 @@ export default function App() {
           onShoot={(cartoons) => setScreen({ name: 'shoot', cartoons })}
         />
       )}
-      {screen.name === 'crop' && <Crop files={screen.files} onBack={library} onDone={(items) => setScreen({ name: 'import', items })} />}
+      {screen.name === 'crop' && <Crop files={screen.files} booth={decor} onBack={library} onDone={(items) => setScreen({ name: 'import', items })} />}
       {screen.name === 'import' && (
-        <Import items={screen.items} defaultPersonCount={getLibraryFilter().personCount ?? 2} onBack={library} onDone={library} />
+        <Import items={screen.items} defaultPersonCount={getLibraryFilter().personCount ?? 2} booth={decor} onBack={library} onDone={library} />
       )}
       {screen.name === 'shoot' && (
         <Shoot
           cartoons={screen.cartoons}
+          booth={decor}
           onBack={library}
           onDone={(photos) => setScreen({ name: 'result', cartoons: screen.cartoons, photos })}
         />
@@ -62,6 +64,7 @@ export default function App() {
         <Result
           cartoons={screen.cartoons}
           photos={screen.photos}
+          booth={decor}
           onRetake={() => setScreen({ name: 'shoot', cartoons: screen.cartoons })}
           onHome={library}
         />

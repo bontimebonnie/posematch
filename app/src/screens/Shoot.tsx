@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { cameraErrorKey } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
+import { BoothChrome, TrayStrip } from '../booth/BoothChrome'
+import { useWide } from '../booth/useWide'
 import { Button, Chip, Countdown, FitImage, Header } from '../ui'
 
 type Facing = 'user' | 'environment'
@@ -13,14 +15,17 @@ const COUNTDOWN_SECONDS = 3
 
 export default function Shoot({
   cartoons,
+  booth = false,
   onBack,
   onDone,
 }: {
   cartoons: Blob[]
+  booth?: boolean // render inside the booth chrome on wide screens
   onBack: () => void
   onDone: (photos: Blob[]) => void
 }) {
   const { t } = useTranslation()
+  const wide = useWide()
   const cartoonUrls = useObjectUrls(cartoons)
   const video = useRef<HTMLVideoElement>(null)
   const [facing, setFacingState] = useState<Facing>('user')
@@ -36,6 +41,7 @@ export default function Shoot({
     setFacingState(f)
   }
   const [photos, setPhotos] = useState<Blob[]>([])
+  const photoUrls = useObjectUrls(photos)
   const [preview, setPreview] = useState<Blob | null>(null)
   const [countdown, setCountdown] = useState<number | null>(null)
   const previewBlobs = useMemo(() => (preview ? [preview] : []), [preview])
@@ -114,88 +120,106 @@ export default function Shoot({
     else setPhotos(next)
   }
 
+  const header = (
+    <Header
+      title={t('shoot.title', { index: index + 1, total: SHOTS_PER_SET })}
+      onBack={onBack}
+      right={
+        <div className="flex items-center gap-2">
+          <Chip selected={mirror} tint={1} disabled={facing !== 'user'} onClick={toggleMirror}>
+            {mirror ? t('shoot.mirror_on') : t('shoot.mirror_off')}
+          </Chip>
+          <Button variant="secondary" size="md" onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')} className="gap-1">
+            <Flip width={16} height={16} />
+            {t('shoot.flip')}
+          </Button>
+        </div>
+      }
+    />
+  )
+  // The frame on screen is exactly the cell that prints: reference and
+  // viewfinder are the same 3:2 box, stacked on phones, side by side in the booth.
+  const reference = (
+    <FitImage src={cartoonUrls[index]} alt={t('shoot.reference_alt')} className="w-full rounded-card ring-1 ring-line" style={{ aspectRatio: CELL_RATIO }} />
+  )
+  const viewfinder = (
+    <div className="relative overflow-hidden rounded-card bg-dark" style={{ aspectRatio: CELL_RATIO }}>
+      <video ref={video} autoPlay playsInline muted className={`h-full w-full object-cover ${mirror ? '-scale-x-100' : ''} ${preview ? 'invisible' : ''}`} />
+      {preview && <img src={previewUrls[0]} className="absolute inset-0 h-full w-full object-contain" alt="" />}
+      {countdown !== null && <Countdown seconds={countdown} />}
+      {cameraError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-body text-on-dark">
+          <p>{cameraError}</p>
+          <Button variant="secondary" onClick={retryCamera}>
+            {t('shoot.retry')}
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+  const progress = (
+    <div className="flex gap-2">
+      {Array.from({ length: SHOTS_PER_SET }, (_, i) => (
+        <div key={i} className={`h-1 flex-1 rounded-pill ${i < index ? 'bg-accent-pressed' : i === index ? 'bg-fg' : 'bg-line'}`} />
+      ))}
+    </div>
+  )
+  const bottom = (
+    <div className="flex gap-2 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      {preview ? (
+        <>
+          <Button variant="secondary" onClick={() => setPreview(null)} className="flex-1">
+            {t('shoot.retake')}
+          </Button>
+          <Button onClick={keep} className="flex-1">
+            {index + 1 === SHOTS_PER_SET ? t('common.done') : t('common.next')}
+            {index + 1 === SHOTS_PER_SET ? <Check width={20} height={20} strokeWidth={2.2} /> : <ArrowRight width={20} height={20} strokeWidth={2.2} />}
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button variant="secondary" onClick={capture} disabled={!!cameraError || countdown !== null} className="flex-1">
+            {t('shoot.capture')}
+          </Button>
+          <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex-1">
+            <Timer width={20} height={20} strokeWidth={2.2} />
+            {t('shoot.countdown', { seconds: COUNTDOWN_SECONDS })}
+          </Button>
+        </>
+      )}
+    </div>
+  )
+
+  if (booth && wide) {
+    const rows = cartoonUrls.map((pose, i) => ({ pose, photo: photoUrls[i] }))
+    return (
+      <BoothChrome
+        glass={
+          <>
+            {header}
+            <div className="flex flex-1 flex-col gap-4 overflow-hidden px-4 pb-4">
+              <div className="grid grid-cols-2 items-start gap-4">
+                {reference}
+                {viewfinder}
+              </div>
+              {progress}
+            </div>
+          </>
+        }
+        actions={bottom}
+        tray={<TrayStrip rows={rows} total={SHOTS_PER_SET} />}
+      />
+    )
+  }
   return (
     <div className="flex h-full flex-col">
-      <Header
-        title={t('shoot.title', { index: index + 1, total: SHOTS_PER_SET })}
-        onBack={onBack}
-        right={
-          <div className="flex items-center gap-2">
-            <Chip selected={mirror} tint={1} disabled={facing !== 'user'} onClick={toggleMirror}>
-              {mirror ? t('shoot.mirror_on') : t('shoot.mirror_off')}
-            </Chip>
-            <Button variant="secondary" size="md" onClick={() => setFacing(facing === 'user' ? 'environment' : 'user')} className="gap-1">
-              <Flip width={16} height={16} />
-              {t('shoot.flip')}
-            </Button>
-          </div>
-        }
-      />
-
+      {header}
       <div className="flex flex-1 flex-col gap-2 overflow-hidden px-4">
-        {/* Reference cartoon on top */}
-        <FitImage
-          src={cartoonUrls[index]}
-          alt={t('shoot.reference_alt')}
-          className="w-full rounded-card ring-1 ring-line"
-          style={{ aspectRatio: CELL_RATIO }}
-        />
-
-        {/* Camera (or the captured preview) below */}
-        <div className="relative overflow-hidden rounded-card bg-dark" style={{ aspectRatio: CELL_RATIO }}>
-          <video
-            ref={video}
-            autoPlay
-            playsInline
-            muted
-            className={`h-full w-full object-cover ${mirror ? '-scale-x-100' : ''} ${preview ? 'invisible' : ''}`}
-          />
-          {preview && <img src={previewUrls[0]} className="absolute inset-0 h-full w-full object-contain" alt="" />}
-          {countdown !== null && <Countdown seconds={countdown} />}
-          {cameraError && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-body text-on-dark">
-              <p>{cameraError}</p>
-              <Button variant="secondary" onClick={retryCamera}>
-                {t('shoot.retry')}
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Thumbnails of what's already kept */}
-        <div className="flex gap-2">
-          {Array.from({ length: SHOTS_PER_SET }, (_, i) => (
-            <div
-              key={i}
-              className={`h-1 flex-1 rounded-pill ${i < index ? 'bg-accent-pressed' : i === index ? 'bg-fg' : 'bg-line'}`}
-            />
-          ))}
-        </div>
+        {reference}
+        {viewfinder}
+        {progress}
       </div>
-
-      <div className="flex gap-2 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        {preview ? (
-          <>
-            <Button variant="secondary" onClick={() => setPreview(null)} className="flex-1">
-              {t('shoot.retake')}
-            </Button>
-            <Button onClick={keep} className="flex-1">
-              {index + 1 === SHOTS_PER_SET ? t('common.done') : t('common.next')}
-              {index + 1 === SHOTS_PER_SET ? <Check width={20} height={20} strokeWidth={2.2} /> : <ArrowRight width={20} height={20} strokeWidth={2.2} />}
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button variant="secondary" onClick={capture} disabled={!!cameraError || countdown !== null} className="flex-1">
-              {t('shoot.capture')}
-            </Button>
-            <Button onClick={startCountdown} disabled={!!cameraError || countdown !== null} className="flex-1">
-              <Timer width={20} height={20} strokeWidth={2.2} />
-              {t('shoot.countdown', { seconds: COUNTDOWN_SECONDS })}
-            </Button>
-          </>
-        )}
-      </div>
+      {bottom}
     </div>
   )
 }

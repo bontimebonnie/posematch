@@ -295,3 +295,55 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Size: S
 
 ### Checkpoint: Bonnie 喺真 Chrome（唔係 pane）過一次 1–6、影相、儲存
+
+# Post Match — Phase C.0 Tasks（Booth landing + Library 入 booth）
+
+對應 [tasks/plan.md](plan.md) Phase C.0、[docs/design/booth-landing.md](../docs/design/booth-landing.md) §1–§3。每個 task 一個 commit；checkpoint 停。
+
+## Phase 1: 殼
+
+- [ ] Task 38: decor token + booth flag + routing
+  - Acceptance: `index.css` 加 `--color-decor-*`（14 色）、`--duration-curtain`、`--ease-curtain`；新 `app/src/booth/booth.css`（空殼）+ `__tests__/booth-css.test.ts` 掃 booth.css 冇 hex／rgb 字面色；`App.tsx` 加 `booth` screen，launch 預設 booth，`VITE_DECOR=0` 或 share-target launch 直落 Library／Crop；Library header 有 Back → booth；App 外層寬度改 per-screen（booth／library full width，其餘 `max-w-xl`）；Booth 畫面暫時係三欄空框 + 一個「進入」臨時掣
+  - Verify: `npm test` 全綠（含新 CSS 掃描、App routing 測試：預設 booth、flag 關、share 跳過）；pane 開 app 見三欄空框，撳臨時掣入 Library，Back 返 booth
+  - Files: `app/src/index.css`, `app/src/App.tsx`, `app/src/screens/Library.tsx`, `app/src/screens/Booth.tsx`（新）, `app/src/booth/booth.css`（新）, `app/src/__tests__/booth-css.test.ts`（新）, `app/src/__tests__/app-routing.test.tsx`（新）
+  - Size: M
+
+- [ ] Task 39: Locker 門
+  - Acceptance: 兩隻門照 booth-landing.md §2 表：框 10px metal-dark radius 8 + bevel + shadow；門 100° 漸層 radius 6；鉸鏈右邊 14px 兩節；把手 14×90 + 掛鎖 44 喺左；號碼牌 92×38「No. 04／05」；上下各 3 條通風口；左門圓鏡 + 2×2 polaroid（兩張貼膠紙、各轉 ±2–3°）；右門黃色 how-to 便條（轉 −3°，撳開 Sheet 三步）；光源左上；紙紋 overlay 18% multiply；全部色用 `decor-*`
+  - Verify: pane 1280 寬截圖同 mock v8 並排；hover 便條放大；Sheet 開關；`npm test` 全綠
+  - Files: `app/src/screens/Booth.tsx`, `app/src/booth/booth.css`, `app/src/booth/LockerDoor.tsx`（新）, `app/public/booth/pose-{1..4}.svg`（新 placeholder）, `locales/*`（howto 三步、便條字）
+  - Size: L · Depends: Task 38
+
+- [ ] Task 40: 門口 + 簾（靜態）
+  - Acceptance: 門口 radial 深色 + 10px 金屬內框 + 內影；底 30% 地板（48px 木板）；桿 14px 高 top 18 + 每 36px 一個環；簾一塊布 74% 高、左右 14px：直條紋（藍 14・空 14・粉 8・空 20）、26px 粉紅頭帶 + 虛線車縫、14px 半圓波浪底、36px 摺影（multiply）+ 亮線（screen）疊喺字上面；「pose match／photobooth」SVG text 手寫體、棕線 satin fill + 3px 虛線 ink 描邊，佔簾高 16%–62%；下面提示「Swipe the curtain to enter · 滑開簾子進入」+ 箭咀
+  - Verify: 截圖對 mock；`prefers-reduced-motion` 唔影響靜態；`npm test`
+  - Files: `app/src/booth/Doorway.tsx`（新）, `app/src/booth/Curtain.tsx`（新）, `app/src/booth/booth.css`, `locales/*`
+  - Size: M · Depends: Task 38
+
+### Checkpoint: 靜態 Booth
+- [ ] 1280 寬截圖 ×1 入 `docs/design/booth-closed.png`
+- [ ] `npm test`、build、lint 綠
+
+## Phase 2: 動
+
+- [ ] Task 41: 簾拖拉
+  - Acceptance: `curtainReducer`（純函數）：pointerdown／move／up → `{ scale, phase: 'idle'|'dragging'|'snapping'|'open'|'springing' }`，過 50% 放手 → snap 去 0.1（420ms `--ease-curtain`），未過 → spring 返（180ms）；tap 冇拖 → squeeze（.96→1.01→1，450ms）；`useCurtainDrag` 用 Pointer Events + `setPointerCapture`，只寫 `transform: scaleX()`，`transform-origin: left`，`touch-action: pan-y` 喺門口；open 之後 300ms Library 淡入；Library Back → 簾 unfold；`prefers-reduced-motion` 時直接跳
+  - Verify: Vitest 測 reducer（過／唔過 50%、tap、reduced motion）；pane `left_click_drag` 拖過一半入 Library，拖唔夠彈返
+  - Files: `app/src/booth/curtain.ts`（新）, `app/src/booth/useCurtainDrag.ts`（新）, `app/src/booth/Curtain.tsx`, `app/src/App.tsx`, `app/src/__tests__/curtain.test.ts`（新）
+  - Size: M · Depends: Task 40
+
+- [ ] Task 42: Library 入 booth
+  - Acceptance: `Library.tsx` 抽 `LibraryBody`（零視覺改動）；新 `BoothInterior`：cream 金屬背牆（160px 一條縫）、兩支 44px 管燈（揀滿 4 變亮黃）、bezel（radius 36、22px、粉紅電源點）+ 玻璃（白、3px ink 邊、radius 22、頂部藍光）包住 `LibraryBody`；34px 櫃台邊；櫃台前 150–210px：左邊「新增圖片」「開始拍攝」（未滿 4 時 50%），右邊斜 tray（perspective 700 rotateX 14 skewX −3）＋印出口＋ **4 行 × 2 格 strip 預覽**（左＝已揀姿勢色塊 + 號碼，右＝虛線相位 + 細相機），未揀嘅行虛線淡色；手寫字「your strip comes out here」；≥760px 先有殼，<760px 同今日 Library 一樣
+  - Verify: pane 1280 揀 0／3／4 張截圖（管燈、掣、tray 三個狀態）；pane 390 寬同 Task 37 之後嘅 Library 截圖逐像素對；`npm test`
+  - Files: `app/src/screens/Library.tsx`, `app/src/booth/BoothInterior.tsx`（新）, `app/src/booth/TrayPreview.tsx`（新）, `app/src/booth/booth.css`, `locales/*`
+  - Size: L · Depends: Task 41
+
+- [ ] Task 43: 收尾
+  - Acceptance: 手寫字體按 Open Question 1 落實（self-host woff2 + `@font-face` + preload，或 fallback）；`docs/design/` 四張 1280 截圖（closed／half／open／library inside）；DESIGN-SPEC §4.8 連去 booth-landing.md；todo 剔；Lighthouse PWA 離線仍過
+  - Verify: `npm test`、build、lint 綠；pane 離線模式 reload booth 字體唔變
+  - Files: `app/public/fonts/*`, `app/src/index.css`, `app/index.html`, `docs/design/*`, `docs/DESIGN-SPEC.md`, `tasks/todo.md`
+  - Size: S · Depends: Task 42
+
+### Checkpoint: Bonnie desktop 真 Chrome
+- [ ] 拖簾感覺係摺布；Back 簾返；phone 寬 Library 不變
+- [ ] 答 plan.md Open Questions 1–2；睇 mock v8 決定 §3b 要唔要 → Phase C.1

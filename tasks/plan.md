@@ -186,3 +186,57 @@
 ## Open Questions
 
 - 字體（system vs 標題 web font）、decor 想要邊三樣、header 要唔要 logo、平板兩欄——見 DESIGN-SPEC §13 Q3–7，B5 之前要答。
+
+---
+
+# Implementation Plan: Post Match — Phase C.0（Booth landing + Library 入 booth）
+
+對應 [docs/design/booth-landing.md](../docs/design/booth-landing.md) §1–§3（Bonnie 已批）；§3b（Shoot／Result／Decorate 入 booth 框）未批，只預留位。Mock 原碼：[docs/design/mocks/booth-web.html](../docs/design/mocks/booth-web.html) v8。
+
+## Overview
+
+Launch 先見 Booth（兩隻 cream locker 門 + 中間掛條紋簾嘅門口）→ 拖簾向左摺（accordion）→ Library 喺 booth 入面（bezel 玻璃、兩支管燈、櫃台、斜 tray 顯示 4×2 strip 預覽）→ 之後 Pick／Shoot／Result 唔變。Desktop 先；<760px 跟 mock 收成一欄。唔加 dependency。
+
+## Architecture Decisions
+
+- **Booth 視覺用一個 scoped CSS 檔（`booth.css`），唔用 Tailwind utility。** 門框 10px、鉸鏈 14px、摺 36px、perspective 呢啲全部唔喺 8pt scale 上，硬塞 utility 會同 `design-tokens.test.ts` 打交。CSS 入面只准用 `var(--color-decor-*)`、`var(--spacing-*)`，另加一個測試掃 `booth.css` 冇 hex 色（同守門測試一樣精神）。TSX 只有 class name。
+- **decor token 入 `@theme`**：`--color-decor-cream/paper/ink/pink/pink-deep/blue/blue-deep/yellow/mint/lilac/peach/metal/metal-dark/dark`（booth-landing.md 色表），加 `--duration-curtain: 420ms`、`--ease-curtain: cubic-bezier(.2,.8,.2,1)`。守門測試嘅「raw colour」regex 唔會撞 `decor-*`（已核對）。
+- **Booth 係 App 一個 screen，唔係 Library 嘅一部分。** `App.tsx` 加 `{ name: 'booth' }`，launch 預設去 booth；`entered` state 記住今次 launch 入過；Library header 多個 Back → booth；share-target launch 直接去 crop，跳過 booth。`VITE_DECOR=0` 時成個 booth 關掉，直落 Library（同 DECOR-SPEC 同一個 flag）。
+- **App 外層 `max-w-xl` 改為 per-screen。** Booth 同 Library-in-booth 要 full viewport；Crop／Import／Shoot／Result 保持而家 576px 置中。
+- **Library 內容零改動，只換殼。** `Library.tsx` 抽一個 `LibraryBody`（header、chips、grid、bottom bar）出嚟，`<BoothInterior>` 喺 ≥760px 時包住佢（bezel／管燈／櫃台／tray），<760px 直接 render `LibraryBody`（即今日 phone 版）。Tray 嘅 4×2 預覽讀 Library 嘅 `selected`；管燈 `lit` = 揀滿 4。
+- **簾嘅拖拉係一個純 reducer + 一個 hook。** `curtainReducer(state, event)` 算 progress、snap／spring 決定（Vitest 測），`useCurtainDrag()` 用 Pointer Events 接落 DOM，只寫 `transform: scaleX()`。`prefers-reduced-motion` 時冇 transition。
+- **手寫字體**：mock 用 Google Fonts 嘅 Patrick Hand（OFL）。PWA 要離線，所以 **self-host woff2 喺 `app/public/fonts/`**（加 asset，唔係 npm dependency，但係都當「ask first」：見 Open Questions）。未批之前 fallback `ui-rounded, "Chalkboard SE", cursive`。
+- **素材全部 placeholder**：polaroid 用 mock 嘅 4 個 SVG 面、簾字用 SVG text + stitch pattern、紋理用 SVG `feTurbulence`。Bonnie 之後供 PNG（booth-landing.md §4）直接換檔，唔使改 code。
+
+## Task List
+
+### Phase 1: 殼
+- [ ] Task 38: decor token + booth flag + routing（Booth 空殼、Library Back、per-screen 寬度）
+- [ ] Task 39: Locker 門（框、門、鉸鏈、把手鎖、號碼牌、通風口、鏡、polaroid、how-to 便條 + Sheet）
+- [ ] Task 40: 門口 + 簾（桿、環、條紋布、頭帶、波浪底、摺影、繡字、提示）
+
+### Checkpoint: 靜態 Booth
+- [ ] 1280 寬截圖同 mock v8 並排；`npm test` 全綠
+
+### Phase 2: 動
+- [ ] Task 41: 簾拖拉（reducer + hook、snap／spring／squeeze、Library 淡入、Back 時簾返）
+- [ ] Task 42: Library 入 booth（bezel、管燈、櫃台、斜 tray 4×2 預覽、<760 fallback）
+- [ ] Task 43: 收尾（字體決定落實、截圖 ×4、DESIGN-SPEC §4.8 連結、todo）
+
+### Checkpoint: Bonnie desktop 真 Chrome
+- [ ] 簾「摺布」唔係「推板」；Back 簾返；phone 寬度 Library 同今日一樣
+- [ ] 批唔批 §3b（Shoot／Result／Decorate 入 booth 框）→ 開 Phase C.1
+
+## Risks and Mitigations
+
+- **CSS 體積同複雜度**：mock 嘅 CSS 約 200 行，搬入 app 會變 booth.css ~250 行。風險係之後冇人敢郁。緩解：每個部件一個 class 前綴（`.booth-door`、`.booth-curtain`），檔頭寫清楚對應 mock 邊段。
+- **Pointer Events 喺 iPad／觸控板**：`touch-action: pan-y` 要落喺門口，唔係簾，否則垂直捲動同拖簾打架。測試：pane 用 `left_click_drag`，iPad 真機 checkpoint。
+- **守門測試誤殺**：booth.css 唔喺 `*.tsx` glob 入面，TSX 只有 class name，應該安全。Task 38 先加 booth.css 嘅 hex 掃描測試，之後每個 task 都靠佢。
+- **Share target 同 booth 搶路**：`launchedFromShare()` 已經喺 App 第一個 effect，加 `entered=true` 就得；加一個 App 測試。
+- **Library 抽 `LibraryBody` 會郁到 Task 33 啱啱改完嘅嘢**：純搬動，零視覺改動，用 pane 截圖 before／after 對。
+
+## Open Questions
+
+1. **Patrick Hand self-host**（加 ~30KB woff2 到 `public/fonts/`，OFL）——批唔批？唔批就用系統 cursive，簾字會差啲。
+2. **Booth 每次 launch 都出**（brief 寫「once per launch」）定係 session 入面入過就唔再出？我假設前者。
+3. **§3b** 睇完 mock v8 之後先答；呢個 plan 唔包。

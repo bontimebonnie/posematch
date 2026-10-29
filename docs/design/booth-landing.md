@@ -84,6 +84,20 @@ Same materials and light as Screen A. Existing Library content unchanged; it liv
 
 Layout: `grid-template-rows: 1fr auto` (wall, counter); wall is `1fr minmax(0, 76%) 1fr` (light, screen, light).
 
+## 3b. Shoot, Result, Decorate inside the booth (mock v8, first draft, not yet approved)
+
+All three reuse the interior chrome of §3 (wall, tube lights, bezel + glass, ledge, counter, tray). Only the glass content and the counter buttons change. The existing Shoot/Result logic is untouched; this is the skin.
+
+| screen | glass | counter |
+|---|---|---|
+| **Shoot** | Top bar: Back · "Shot N of 4" · hand-font sub "match the pose on the left". Body: **reference card** on the left (30 %, the picked pose on its colour, number badge, caption "reference pose") and the **viewfinder** on the right (dark rounded panel, dashed circle "you, in the mirror", Mirror chip top-left, Flip button top-right, big countdown number centred, white flash on capture). Bottom row: timer segmented control **No timer · 3 s · 5 s**, "Retake this one" ghost button, round pink **shutter** on the right | Left: hand-font note "each shot drops into the strip on the right". Right: the tray strip; each capture fills the right-column cell of the current row |
+| **Result** | Top bar: Back · "Your strip" · sub "developing…" → "done". Body: the strip large (4 × 2, left pose art on its colour, right photo), **developing reveal** 1.6 s (sepia, low contrast → full), side notes "left: the pose / right: you" and "1080 × 1350 / 4 : 5" | Buttons: **Retake all · Decorate · Save** (primary). The tray strip **ejects** upward out of the slot (700 ms) when the screen opens |
+| **Decorate** (Phase C) | Top bar: Back · "Decorate" · segmented **Frame · Stickers** on the right. Body: strip on the left, tools panel on the right. Frame tab: four swatches (white, pink, blue, yellow) that recolour the strip's paper. Stickers tab: six stickers; tap drops one at a random spot and tilt on the strip | Buttons: **Cancel · Done** (primary). Note "frames and stickers are Phase C" |
+
+Flow: Library (4 picked) → Start shooting → Shoot ×4 → Result → Decorate → Done → Result → Save (share sheet / Downloads per Task 37). Back from Shoot and Result goes to Library; Back from Decorate goes to Result.
+
+Open for Bonnie: sticker drag/resize (research says yes, mock only taps), whether Decorate is a separate screen or a sheet over Result, and the Save confirmation.
+
 ## 4. Assets from Bonnie (later, not blocking)
 
 | # | asset | size | notes |

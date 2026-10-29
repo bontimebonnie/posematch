@@ -85,7 +85,8 @@
     "save": "Save",
     "copied": "Copied. Paste it straight into Instagram.",
     "copy_failed": "Couldn't copy. Use Save instead.",
-    "copy_unsupported": "This browser can't copy images. Use Save."
+    "copy_unsupported": "This browser can't copy images. Use Save.",
+    "decorate": "Decorate"
   },
   "booth": {
     "enter": "Enter",
@@ -96,5 +97,19 @@
     "howto_3": "Shoot and decorate",
     "hint": "Swipe the curtain to enter",
     "tray_label": "your strip comes out here"
+  },
+  "decorate": {
+    "title": "Decorate",
+    "frames": "Frames",
+    "stickers": "Stickers",
+    "frame_none": "No frame",
+    "frame_pastel": "Pastel edge",
+    "frame_stickerbook": "Sticker book",
+    "sticker_star": "Star",
+    "sticker_heart": "Heart",
+    "sticker_sparkle": "Sparkle",
+    "sticker_bubble": "Speech bubble",
+    "sticker_flower": "Flower",
+    "sticker_blush": "Blush"
   }
 }

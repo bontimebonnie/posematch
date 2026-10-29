@@ -85,7 +85,8 @@
     "save": "儲存",
     "copied": "已複製，可以直接貼到 Instagram。",
     "copy_failed": "無法複製，請改用「儲存」。",
-    "copy_unsupported": "這個瀏覽器不支援複製圖片，請使用「儲存」。"
+    "copy_unsupported": "這個瀏覽器不支援複製圖片，請使用「儲存」。",
+    "decorate": "裝飾"
   },
   "booth": {
     "enter": "進入",
@@ -96,5 +97,19 @@
     "howto_3": "拍攝，再裝飾",
     "hint": "滑開簾子進入",
     "tray_label": "拼圖會從這裡出來"
+  },
+  "decorate": {
+    "title": "裝飾",
+    "frames": "框",
+    "stickers": "貼紙",
+    "frame_none": "無框",
+    "frame_pastel": "粉彩邊",
+    "frame_stickerbook": "貼紙簿",
+    "sticker_star": "星星",
+    "sticker_heart": "愛心",
+    "sticker_sparkle": "閃光",
+    "sticker_bubble": "對話框",
+    "sticker_flower": "小花",
+    "sticker_blush": "腮紅"
   }
 }

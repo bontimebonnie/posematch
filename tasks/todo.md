@@ -378,7 +378,7 @@ Bonnie 試 C.0 嘅回報：(1) how-to 彈窗要置中 ✓ 已改；(2) 語言掣
   - Files: `app/src/screens/Result.tsx`, `booth.css`, `app/src/__tests__/strip-snapshot.test.ts`（新）
   - Size: S · Depends: Task 46
 
-- [ ] Task 48: Decorate（框 + 貼紙，第一版照 mock v9 簡化：4 色紙 swatch、6 個貼紙點一下落）
+- [x] Task 48: Decorate（框 + 貼紙，第一版照 mock v9 簡化：4 色紙 swatch、6 個貼紙點一下落）
   - Acceptance: 見 DECOR-SPEC §4（inset 幾何）+ mock v9 §3b；由 Result「裝飾」入，取消／完成返 Result；無框輸出 byte 不變
   - Verify: `decor.test.ts`；pane 截圖
   - Files: `app/src/decor/*`, `app/src/screens/Decorate.tsx`, `strip.ts`（加 inset）

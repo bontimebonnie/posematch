@@ -1,24 +1,30 @@
+import { Copy, Star } from 'iconoir-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { canCopyImage, copyImage } from '../clipboard'
-import { isMobile } from '../platform'
-import { composeStrip, type StripOutput } from '../strip'
+import { composeDecorated, NO_DECOR, type DecorState } from '../decor/compose'
+import { saveJpeg } from '../save'
+import type { StripOutput } from '../strip'
 import { BoothChrome, TrayStrip } from '../booth/BoothChrome'
 import { useWide } from '../booth/useWide'
 import { useObjectUrls } from '../useObjectUrls'
-import { Button, Header, Toast } from '../ui'
+import { Button, Header, IconButton, Toast } from '../ui'
 
 export default function Result({
   cartoons,
   photos,
+  decor = NO_DECOR,
   booth = false,
   onRetake,
+  onDecorate,
   onHome,
 }: {
   cartoons: Blob[]
   photos: Blob[]
+  decor?: DecorState
   booth?: boolean // render inside the booth chrome on wide screens
   onRetake: () => void
+  onDecorate?: () => void // absent when decor is off
   onHome: () => void
 }) {
   const { t } = useTranslation()
@@ -38,7 +44,7 @@ export default function Result({
   useEffect(() => {
     let url: string | undefined
     let cancelled = false
-    composeStrip(cartoons, photos).then((out) => {
+    composeDecorated(cartoons, photos, decor).then((out) => {
       if (cancelled) return
       url = URL.createObjectURL(out.jpeg)
       setStrip({ ...out, url })
@@ -47,7 +53,7 @@ export default function Result({
       cancelled = true
       if (url) URL.revokeObjectURL(url)
     }
-  }, [cartoons, photos])
+  }, [cartoons, photos, decor])
 
   const copy = async () => {
     if (!strip) return
@@ -59,29 +65,24 @@ export default function Result({
     }
   }
 
-  const save = async () => {
-    if (!strip) return
-    const file = new File([strip.jpeg], `post-match-${Date.now()}.jpg`, { type: 'image/jpeg' })
-    // Phones: share sheet (saves to the album). Desktop: straight download,
-    // even though desktop Chrome can share files, because the OS share sheet
-    // is a detour there.
-    if (isMobile() && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file] })
-        return
-      } catch {
-        // user cancelled or share failed; fall through to download
-      }
-    }
-    const a = document.createElement('a')
-    a.href = strip.url
-    a.download = file.name
-    a.click()
-  }
+  const save = () => strip && saveJpeg(strip.jpeg, strip.url)
 
-  const header = <Header title={t('result.title')} onBack={onHome} />
+  // Copy lives in the header so the bar below has room for Retake · Decorate · Save.
+  const header = (
+    <Header
+      title={t('result.title')}
+      onBack={onHome}
+      right={
+        copySupported ? (
+          <IconButton onClick={copy} disabled={!strip} aria-label={t('result.copy')} className="-mr-2">
+            <Copy width={24} height={24} />
+          </IconButton>
+        ) : null
+      }
+    />
+  )
   const picture = (
-    <div className="flex flex-1 items-start justify-center overflow-y-auto px-4">
+    <div className="flex min-h-0 flex-1 items-start justify-center overflow-y-auto px-4">
       {strip ? (
         <img src={strip.url} className="reveal max-h-full w-auto max-w-full rounded-card ring-1 ring-line" alt={t('result.alt')} />
       ) : (
@@ -96,20 +97,16 @@ export default function Result({
         <Button variant="secondary" onClick={onRetake} className="flex-1">
           {t('result.retake')}
         </Button>
-        <Button
-          variant="secondary"
-          onClick={copy}
-          disabled={!strip || !copySupported}
-          title={copySupported ? undefined : t('result.copy_unsupported')}
-          className="flex-1"
-        >
-          {t('result.copy')}
-        </Button>
+        {onDecorate && (
+          <Button variant="secondary" onClick={onDecorate} disabled={!strip} className="flex-1">
+            <Star width={20} height={20} strokeWidth={2.2} />
+            {t('result.decorate')}
+          </Button>
+        )}
         <Button onClick={save} disabled={!strip} className="flex-1">
           {t('result.save')}
         </Button>
       </div>
-      {!copySupported && <p className="mt-2 text-center text-body text-fg-muted">{t('result.copy_unsupported')}</p>}
     </div>
   )
 

@@ -6,6 +6,9 @@ import { decorEnabled, initialScreen } from './booth/entry'
 import { BoothInterior } from './booth/BoothInterior'
 import Booth from './screens/Booth'
 import Crop from './screens/Crop'
+import Decorate from './screens/Decorate'
+import { NO_DECOR, type DecorState } from './decor/compose'
+import { getLastFrame } from './decor/frames'
 import Import from './screens/Import'
 import Library from './screens/Library'
 import Result from './screens/Result'
@@ -17,7 +20,8 @@ type Screen =
   | { name: 'crop'; files: File[] }
   | { name: 'import'; items: ImportItem[] }
   | { name: 'shoot'; cartoons: Blob[] }
-  | { name: 'result'; cartoons: Blob[]; photos: Blob[] }
+  | { name: 'result'; cartoons: Blob[]; photos: Blob[]; decor: DecorState }
+  | { name: 'decorate'; cartoons: Blob[]; photos: Blob[]; decor: DecorState }
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>(() => ({ name: initialScreen({ decor: decorEnabled(), share: launchedFromShare() }) }))
@@ -57,16 +61,28 @@ export default function App() {
           cartoons={screen.cartoons}
           booth={decor}
           onBack={library}
-          onDone={(photos) => setScreen({ name: 'result', cartoons: screen.cartoons, photos })}
+          onDone={(photos) => setScreen({ name: 'result', cartoons: screen.cartoons, photos, decor: decor ? { ...NO_DECOR, frame: getLastFrame() } : NO_DECOR })}
         />
       )}
       {screen.name === 'result' && (
         <Result
           cartoons={screen.cartoons}
           photos={screen.photos}
+          decor={screen.decor}
           booth={decor}
           onRetake={() => setScreen({ name: 'shoot', cartoons: screen.cartoons })}
+          onDecorate={decor ? () => setScreen({ ...screen, name: 'decorate' }) : undefined}
           onHome={library}
+        />
+      )}
+      {screen.name === 'decorate' && (
+        <Decorate
+          cartoons={screen.cartoons}
+          photos={screen.photos}
+          initial={screen.decor}
+          booth={decor}
+          onCancel={() => setScreen({ ...screen, name: 'result' })}
+          onDone={(next) => setScreen({ ...screen, name: 'result', decor: next })}
         />
       )}
     </div>

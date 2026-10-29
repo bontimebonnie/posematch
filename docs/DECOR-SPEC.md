@@ -217,6 +217,8 @@ export const pastel: Frame = {
 
 ---
 
+> **狀態（2026-10-28）**：C1 frames + C2 stickers 已落地（Task 48，commit 見 git log）：`strip.ts` 加 `inset`、`decor/{frames,stickers,compose,tokens}.ts`、`screens/Decorate.tsx`、6 個 SVG 貼紙喺 `public/decor/`；reveal 係 Task 47（1.6s，跟 mock v9）。未做：貼紙縮放／旋轉、角色 PNG、C0 輸出 snapshot 測試（jsdom 冇 canvas）。
+
 ## 14. Phase C 分步（approve 後先寫 plan 同 tasks）
 
 C0 輸出 snapshot 測試 → **C1 frames**（`inset` + 3 框 + Decorate 畫面骨架 + Result「裝飾」掣）→ checkpoint 真機 → **C2 stickers**（manifest + tray + drag + 合成）→ **C3 reveal** → checkpoint 真機 → 截圖收尾。

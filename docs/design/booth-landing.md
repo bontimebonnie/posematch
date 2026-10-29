@@ -70,9 +70,19 @@ Three columns across the full viewport: locker door · doorway with curtain · l
 - `prefers-reduced-motion`: no transitions; curtain jumps between open and closed.
 - No motion library needed; pointer events + CSS transform.
 
-## 3. Screen B: Library as the booth interior
+## 3. Screen B: Library as the booth interior (Bonnie's sketch 2)
 
-Existing Library content unchanged, laid out as in the mock: 3-column grid `24px 1fr 24px`, tube lights left and right (glow brighter when 4 picked), white bezel with 3 px ink border and radius 32 holding chips + tile grid (`auto-fill, minmax(160px, 1fr)`), bottom counter in pink with ink border holding the dark tray (4 cells) and the two buttons (Add pictures · Start shooting, primary at 50 % opacity until 4 picked).
+Same materials and light as Screen A. Existing Library content unchanged; it lives inside the screen.
+
+| part | spec |
+|---|---|
+| Back wall | cream metal panels: `#f7f0df` with a 4 px `#efe6d2` seam every 160 px |
+| Screen | rounded metal bezel (radius 36, 22 px thick, same gradient and bevel as the locker doors, drop shadow 14/20/32 ink-25 %), small pink power dot at the bottom centre. Inside it the "glass": white, 3 px ink border, radius 22, faint blue inner glow at the top. Glass holds the top bar (Back · "Pick N of 4" · chips right-aligned) and the tile grid (`auto-fill, minmax(150px, 1fr)`), which scrolls inside the glass |
+| Tube lights | one each side of the screen, 44 px wide, 78 % of the wall height, pill shape with metal caps top and bottom. Warm cream glow at rest; **brighter yellow glow when 4 are picked** |
+| Ledge | 34 px strip under the wall, lighter metal, 3 px borders, soft upward shadow: the counter top seen from slightly above |
+| Counter front | 150–210 px tall, darker metal with an inset frame line. Buttons on the left (Add pictures · Start shooting, primary at 50 % until 4 picked). **Slanted tray on the right**: cream metal box tilted toward the viewer (`perspective(600px) rotateX(18deg) skewX(-4deg)`), ink border, dark print slot at the top, 4 dashed cells that fill as poses are picked. Hand-font caption above it: "your strip comes out here" |
+
+Layout: `grid-template-rows: 1fr auto` (wall, counter); wall is `1fr minmax(0, 76%) 1fr` (light, screen, light).
 
 ## 4. Assets from Bonnie (later, not blocking)
 

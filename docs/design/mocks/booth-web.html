@@ -133,7 +133,7 @@
   .counter { position: relative; margin-top: 28px; }
   .ledge { height: 34px; background: linear-gradient(180deg, #fffdf6, #efe6d2); border-top: 3px solid #d9d2c2; border-bottom: 3px solid #cfc6b1; box-shadow: 0 -6px 12px rgba(90,74,66,.08); }
   .ledge::before { content: ""; position: absolute; left: 24px; right: 24px; top: 6px; height: 2px; background: rgba(90,74,66,.12); }
-  .cfront { position: relative; height: clamp(150px, 24vh, 210px); background: linear-gradient(180deg, #ebe3cf, #ddd4bf); display: flex; align-items: center; justify-content: space-between; padding: 0 48px; box-sizing: border-box;
+  .cfront { position: relative; height: clamp(250px, 36vh, 330px); background: linear-gradient(180deg, #ebe3cf, #ddd4bf); display: flex; align-items: center; justify-content: space-between; padding: 0 48px; box-sizing: border-box;
     box-shadow: inset 0 10px 14px rgba(90,74,66,.12); }
   .cfront::before { content: ""; position: absolute; left: 32px; right: 32px; top: 18px; bottom: 18px; border: 3px solid rgba(90,74,66,.18); border-radius: 10px; pointer-events: none; }
   .actions { display: flex; gap: 12px; z-index: 1; }
@@ -141,12 +141,18 @@
   .btn.primary { background: var(--pink-deep); border-color: var(--pink-deep); color: var(--white); opacity: .5; min-width: 200px; }
   .btn.primary.ready { opacity: 1; }
   /* slanted tray: the strip slides out here */
-  .tray { position: relative; z-index: 1; width: min(38%, 420px); height: 72%; margin-right: 8px; transform: perspective(600px) rotateX(18deg) skewX(-4deg); transform-origin: bottom center;
+  .tray { position: relative; z-index: 1; width: min(24%, 260px); height: 86%; margin-right: 8px; transform: perspective(700px) rotateX(14deg) skewX(-3deg); transform-origin: bottom center;
     background: linear-gradient(180deg, #fffdf6, #efe6d2); border: 3px solid var(--ink); border-radius: 10px; box-shadow: 10px 12px 20px rgba(90,74,66,.3), inset 0 0 0 6px #f7f0df; display: flex; flex-direction: column; }
   .tray .slot { height: 14px; margin: 12px 18px 0; border-radius: 7px; background: var(--dark); box-shadow: inset 0 3px 4px rgba(0,0,0,.6); }
-  .tray .cells { flex: 1; display: flex; gap: 10px; padding: 12px 18px 16px; }
-  .tray .cell { flex: 1; border-radius: 6px; border: 2px dashed rgba(90,74,66,.45); background: #fff; opacity: .6; }
+  .tray .out { flex: 1; display: grid; place-items: center; padding: 10px 18px 14px; min-height: 0; }
+  /* the strip itself: four rows, two columns. Left column = the picked pose (its colour + number), right column = the photo you will take */
+  .tray .strip { height: 100%; aspect-ratio: 3/4; max-width: 100%; background: #fff; border: 2px solid var(--ink); border-radius: 4px; padding: 8px; box-sizing: border-box;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); gap: 5px; box-shadow: 0 3px 6px rgba(90,74,66,.2); }
+  .tray .cell { position: relative; border-radius: 3px; border: 2px dashed rgba(90,74,66,.35); background: #fffdf5; opacity: .6; }
   .tray .cell.full { opacity: 1; border-style: solid; border-color: var(--ink); }
+  .tray .cell.full::after { content: attr(data-n); position: absolute; left: 4px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 1.5px solid var(--ink); font-size: 10px; font-weight: 700; color: var(--ink); display: grid; place-items: center; }
+  .tray .cell.photo { background: #f3eee2; border-style: dotted; }
+  .tray .cell.photo::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 10px; border: 1.5px solid rgba(90,74,66,.4); border-radius: 2px; transform: translate(-50%,-50%); }
   .tray .lbl { position: absolute; left: 18px; top: -30px; font-family: var(--hand); font-size: 18px; color: var(--ink-soft); transform: skewX(4deg); }
   @media (max-width: 760px) { .front { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; } .locker { margin: 12px 0; } .door { flex-direction: row; flex-wrap: wrap; } .mirror, .polas, .vents.bottom { display: none; } }
   @media (prefers-reduced-motion: reduce) { .curtain, .inside, .tube { transition: none; } .curtain.wiggle { animation: none; } }
@@ -261,7 +267,7 @@
       <div class="ledge"></div>
       <div class="cfront">
         <div class="actions"><div class="btn">Add pictures</div><div class="btn primary" id="start">Start shooting</div></div>
-        <div class="tray"><span class="lbl">your strip comes out here</span><div class="slot"></div><div class="cells" id="tray"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div></div>
+        <div class="tray"><span class="lbl">your strip comes out here</span><div class="slot"></div><div class="out"><div class="strip" id="tray"><div class="cell" data-n="1"></div><div class="cell photo"></div><div class="cell" data-n="2"></div><div class="cell photo"></div><div class="cell" data-n="3"></div><div class="cell photo"></div><div class="cell" data-n="4"></div><div class="cell photo"></div></div></div></div>
       </div>
     </div>
     <div class="grain"></div>
@@ -299,7 +305,7 @@
   howto.addEventListener('click', function(){ howto.hidden=true; });
 
   var colors=['#f9c6cf','#bcd8ee','#fde8a6','#cfe8c6','#ddd0ea','#fbd9c3','#f9c6cf','#bcd8ee','#fde8a6','#cfe8c6','#ddd0ea','#fbd9c3'];
-  var grid=document.getElementById('grid'), tray=document.getElementById('tray').children, start=document.getElementById('start'), title=document.getElementById('ititle');
+  var grid=document.getElementById('grid'), tray=document.querySelectorAll('#tray .cell:not(.photo)'), start=document.getElementById('start'), title=document.getElementById('ititle');
   var picked=[];
   colors.forEach(function(c,i){ var t=document.createElement('div'); t.className='tile'; t.style.background=c; t.innerHTML='<b></b>';
     t.addEventListener('click', function(){ var k=picked.indexOf(i); if(k>=0) picked.splice(k,1); else if(picked.length<4) picked.push(i); render(); }); grid.appendChild(t); });

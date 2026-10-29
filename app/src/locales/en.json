@@ -86,6 +86,11 @@
     "copy_unsupported": "This browser can't copy images. Use Save."
   },
   "booth": {
-    "enter": "Enter"
+    "enter": "Enter",
+    "note": "how\nto\nuse",
+    "howto_title": "How to use",
+    "howto_1": "Add cartoon poses",
+    "howto_2": "Pick 4",
+    "howto_3": "Shoot and decorate"
   }
 }

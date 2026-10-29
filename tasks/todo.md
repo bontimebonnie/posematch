@@ -308,7 +308,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/index.css`, `app/src/App.tsx`, `app/src/screens/Library.tsx`, `app/src/screens/Booth.tsx`（新）, `app/src/booth/booth.css`（新）, `app/src/__tests__/booth-css.test.ts`（新）, `app/src/__tests__/app-routing.test.tsx`（新）
   - Size: M
 
-- [ ] Task 39: Locker 門
+- [x] Task 39: Locker 門
   - Acceptance: 兩隻門照 booth-landing.md §2 表：框 10px metal-dark radius 8 + bevel + shadow；門 100° 漸層 radius 6；鉸鏈右邊 14px 兩節；把手 14×90 + 掛鎖 44 喺左；號碼牌 92×38「No. 04／05」；上下各 3 條通風口；左門圓鏡 + 2×2 polaroid（兩張貼膠紙、各轉 ±2–3°）；右門黃色 how-to 便條（轉 −3°，撳開 Sheet 三步）；光源左上；紙紋 overlay 18% multiply；全部色用 `decor-*`
   - Verify: pane 1280 寬截圖同 mock v8 並排；hover 便條放大；Sheet 開關；`npm test` 全綠
   - Files: `app/src/screens/Booth.tsx`, `app/src/booth/booth.css`, `app/src/booth/LockerDoor.tsx`（新）, `app/public/booth/pose-{1..4}.svg`（新 placeholder）, `locales/*`（howto 三步、便條字）

@@ -1,30 +1,302 @@
 /* Booth landing + booth interior (docs/design/booth-landing.md).
    Everything here is bespoke scenery, so it lives outside the 8pt utility
    scale on purpose. Rules, checked by __tests__/booth-css.test.ts:
-   - colours only via var(--color-decor-*) (plus white/black alpha for light),
+   - colours only via var(--color-decor-*) and color-mix() of them
+     (white/black keywords allowed for light and shade),
    - no hex / rgb() literals.
-   Class prefix: .booth-* */
+   Light comes from the upper left; every highlight and shadow follows it.
+   Class prefix: .booth-*. Section order mirrors mocks/booth-web.html. */
 
 .booth {
+  /* local shorthands */
+  --ink: var(--color-decor-ink);
+  --ink-08: color-mix(in srgb, var(--ink) 8%, transparent);
+  --ink-12: color-mix(in srgb, var(--ink) 12%, transparent);
+  --ink-15: color-mix(in srgb, var(--ink) 15%, transparent);
+  --ink-20: color-mix(in srgb, var(--ink) 20%, transparent);
+  --ink-25: color-mix(in srgb, var(--ink) 25%, transparent);
+  --ink-30: color-mix(in srgb, var(--ink) 30%, transparent);
+  --ink-35: color-mix(in srgb, var(--ink) 35%, transparent);
+  --ink-55: color-mix(in srgb, var(--ink) 55%, transparent);
+  --white-70: color-mix(in srgb, white 70%, transparent);
+  --white-80: color-mix(in srgb, white 80%, transparent);
+  --white-90: color-mix(in srgb, white 90%, transparent);
+  --metal-hi: color-mix(in srgb, white 60%, var(--color-decor-metal));
+  --metal-lo: color-mix(in srgb, var(--color-decor-metal) 55%, var(--color-decor-metal-dark));
+  --metal-edge: color-mix(in srgb, var(--color-decor-metal-dark) 60%, var(--color-decor-metal-deep));
+  --plate-ink: color-mix(in srgb, var(--ink) 45%, var(--color-decor-metal-deep));
+  --font-hand: 'Patrick Hand', 'Chalkboard SE', 'Comic Sans MS', cursive;
+  --fold: 36px;
+  --sh-soft: 0 2px 0 var(--ink-08), 0 8px 16px var(--ink-12);
+
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
   display: grid;
   grid-template-columns: minmax(220px, 1fr) minmax(340px, 1.15fr) minmax(220px, 1fr);
+  align-items: stretch;
   padding: 0 24px;
   box-sizing: border-box;
-  background: var(--color-decor-cream);
-  color: var(--color-decor-ink);
+  color: var(--ink);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-decor-cream) 70%, var(--color-decor-metal-dark)) 0%,
+    var(--color-decor-cream) 30%,
+    var(--color-decor-cream) 78%,
+    color-mix(in srgb, var(--color-decor-cream) 55%, var(--color-decor-metal-dark)) 78%,
+    color-mix(in srgb, var(--color-decor-cream) 35%, var(--color-decor-metal-dark)) 100%
+  );
+  isolation: isolate;
 }
 
+.booth-hand {
+  font-family: var(--font-hand);
+}
+
+/* paper grain over the whole screen */
+.booth-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- Locker doors ---------- */
 .booth-locker {
   position: relative;
   margin: 24px 0;
-  border-radius: 8px;
   background: var(--color-decor-metal-dark);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow:
+    inset 2px 2px 0 var(--white-70),
+    inset -2px -2px 0 var(--ink-15),
+    12px 18px 28px var(--ink-20);
 }
 
+.booth-door {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 6px;
+  overflow: hidden;
+  background: linear-gradient(100deg, var(--metal-hi) 0%, var(--color-decor-metal) 45%, var(--metal-lo) 100%);
+  box-shadow:
+    inset 3px 3px 0 var(--white-90),
+    inset -4px -4px 0 var(--ink-12),
+    inset 0 0 40px var(--ink-08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 20px 44px;
+  gap: 16px;
+}
+
+/* hinge on the right, handle and lock on the left, same on both doors */
+.booth-hinge {
+  position: absolute;
+  right: 14px;
+  top: 12%;
+  bottom: 12%;
+  width: 14px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--color-decor-metal-dark), white 40%, var(--metal-edge) 70%, var(--color-decor-metal-deep));
+  box-shadow: 0 2px 4px var(--ink-30);
+}
+.booth-hinge::before,
+.booth-hinge::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: 22%;
+  background: linear-gradient(90deg, var(--metal-edge), white 45%, var(--metal-edge));
+  border-radius: 5px;
+  box-shadow: 0 1px 2px var(--ink-30);
+}
+.booth-hinge::before { top: 10%; }
+.booth-hinge::after { bottom: 10%; }
+
+.booth-plate {
+  width: 92px;
+  height: 38px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, white, var(--color-decor-metal-dark) 55%, var(--metal-edge));
+  border: 1.5px solid var(--color-decor-metal-deep);
+  box-shadow: 0 2px 3px var(--ink-30), inset 0 1px 0 white;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--plate-ink);
+}
+
+.booth-vents {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 56%;
+  max-width: 200px;
+}
+.booth-vents i {
+  display: block;
+  height: 13px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--color-decor-metal-dark), var(--metal-hi) 45%, white);
+  box-shadow: inset 0 2px 2px var(--ink-25), 0 1px 0 white;
+}
+.booth-vents-bottom {
+  margin-top: auto;
+}
+
+.booth-mirror {
+  width: min(52%, 22vh);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, white 0%, var(--color-decor-blue) 40%, var(--color-decor-blue-deep) 100%);
+  border: 5px solid white;
+  box-shadow:
+    0 0 0 2px var(--color-decor-metal-dark),
+    0 6px 10px var(--ink-25),
+    inset -6px -8px 14px var(--ink-12);
+  position: relative;
+  margin-top: 8px;
+}
+.booth-mirror::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  top: 14%;
+  width: 28%;
+  height: 14%;
+  border-radius: 50%;
+  background: var(--white-80);
+  transform: rotate(-30deg);
+}
+
+.booth-polas {
+  display: grid;
+  grid-template-columns: repeat(2, 72px);
+  gap: 10px 14px;
+  margin-top: 6px;
+}
+.booth-pola {
+  width: 72px;
+  background: white;
+  padding: 5px 5px 14px;
+  border-radius: 2px;
+  box-shadow: 0 2px 0 var(--ink-08), 0 6px 10px var(--ink-20);
+  position: relative;
+}
+.booth-pola img {
+  width: 62px;
+  height: 62px;
+  display: block;
+  border-radius: 2px;
+}
+.booth-pola:nth-child(1) { transform: rotate(-3deg); }
+.booth-pola:nth-child(2) { transform: rotate(2deg); }
+.booth-pola:nth-child(3) { transform: rotate(1.5deg); }
+.booth-pola:nth-child(4) { transform: rotate(-2deg); }
+.booth-pola-tape::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 36px;
+  height: 14px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: color-mix(in srgb, var(--color-decor-blue) 75%, transparent);
+  box-shadow: 0 1px 2px var(--ink-20);
+}
+
+.booth-handle {
+  position: absolute;
+  left: 22px;
+  top: 46%;
+  width: 14px;
+  height: 90px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--ink), color-mix(in srgb, var(--ink) 55%, var(--color-decor-metal)) 40%, var(--color-decor-dark));
+  box-shadow: 2px 3px 4px var(--ink-35);
+}
+.booth-lock {
+  position: absolute;
+  left: 8px;
+  top: calc(46% + 70px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, white, var(--color-decor-metal-dark) 55%, var(--color-decor-metal-deep));
+  box-shadow: 0 4px 6px var(--ink-35), inset 0 -3px 0 var(--ink-20);
+}
+.booth-lock::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: -22px;
+  width: 20px;
+  height: 30px;
+  border: 5px solid var(--plate-ink);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+}
+.booth-lock::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--plate-ink);
+}
+
+/* yellow "how to use" note on the right door; opens the how-to sheet */
+.booth-note {
+  width: 68%;
+  max-width: 190px;
+  aspect-ratio: 4 / 5;
+  background: var(--color-decor-yellow);
+  border: 0;
+  border-radius: 3px;
+  box-shadow: var(--sh-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  position: relative;
+  transform: rotate(-3deg);
+  transition: transform 150ms;
+  margin-top: 24px;
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 32px;
+  text-align: center;
+  white-space: pre-line;
+}
+.booth-note:hover,
+.booth-note:focus-visible {
+  transform: rotate(0) scale(1.03);
+  outline: none;
+}
+.booth-note::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 12%;
+  width: 54px;
+  height: 18px;
+  background: color-mix(in srgb, var(--color-decor-blue) 80%, transparent);
+  transform: rotate(28deg);
+  box-shadow: 0 1px 2px var(--ink-20);
+}
+
+/* ---------- Doorway (shell until Task 40) ---------- */
 .booth-doorway {
   position: relative;
   margin: 24px 8px;
@@ -34,6 +306,17 @@
 }
 
 @media (max-width: 760px) {
-  .booth { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
-  .booth-locker { margin: 12px 0; min-height: 80px; }
+  .booth {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .booth-locker { margin: 12px 0; }
+  .booth-door { flex-direction: row; flex-wrap: wrap; }
+  .booth-mirror,
+  .booth-polas,
+  .booth-vents-bottom { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booth-note { transition: none; }
 }

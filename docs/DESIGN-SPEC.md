@@ -168,7 +168,10 @@ line-height 全部 8 嘅倍數（grid 垂直節奏）。
 
 ### 4.8 Decor（Phase C）
 
-`--decor-*` 獨立 namespace，詳見 [DECOR-SPEC.md](DECOR-SPEC.md) §5（frames → stickers → reveal）。
+`--color-decor-*` 獨立 namespace（`index.css` 4.8 段）。
+
+- **Booth landing + Library 入 booth**（Phase C.0，已落地）：[design/booth-landing.md](design/booth-landing.md) §1–§3。視覺全部喺 `app/src/booth/booth.css`，只用 decor token，由 `booth-css.test.ts` 守門；`VITE_DECOR=0` 關掉。截圖：[booth-closed](design/booth-closed.jpg)、[booth-open](design/booth-open.jpg)、[library-inside](design/booth-library-inside.jpg)。
+- **Frames → stickers → reveal**（Phase C.1，待排）：[DECOR-SPEC.md](DECOR-SPEC.md) §5。
 
 ---
 

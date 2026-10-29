@@ -338,7 +338,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Library.tsx`, `app/src/booth/BoothInterior.tsx`（新）, `app/src/booth/TrayPreview.tsx`（新）, `app/src/booth/booth.css`, `locales/*`
   - Size: L · Depends: Task 41
 
-- [ ] Task 43: 收尾
+- [x] Task 43: 收尾（字體：Bonnie 未答 self-host，先用系統 cursive；截圖 3 張，half-fold 未影；Lighthouse 離線未跑）
   - Acceptance: 手寫字體按 Open Question 1 落實（self-host woff2 + `@font-face` + preload，或 fallback）；`docs/design/` 四張 1280 截圖（closed／half／open／library inside）；DESIGN-SPEC §4.8 連去 booth-landing.md；todo 剔；Lighthouse PWA 離線仍過
   - Verify: `npm test`、build、lint 綠；pane 離線模式 reload booth 字體唔變
   - Files: `app/public/fonts/*`, `app/src/index.css`, `app/index.html`, `docs/design/*`, `docs/DESIGN-SPEC.md`, `tasks/todo.md`
@@ -353,4 +353,4 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 ### Checkpoint: Bonnie desktop 真 Chrome
 - [x] 決定：booth 每次 launch 都出（Bonnie 2026-10-28）；字體未答，先用系統 cursive
 - [ ] 拖簾感覺係摺布；Back 簾返；phone 寬 Library 不變
-- [ ] 答 plan.md Open Questions 1–2；睇 mock v8 決定 §3b 要唔要 → Phase C.1
+- [ ] 答 plan.md Open Question 1（字體 self-host）；睇 mock v9 決定 §3b 要唔要 → Phase C.1

@@ -3,6 +3,7 @@ import type { ImportItem } from './db'
 import { getLibraryFilter } from './settings'
 import { launchedFromShare, takeSharedFiles } from './shareTarget'
 import { decorEnabled, initialScreen } from './booth/entry'
+import { BoothInterior } from './booth/BoothInterior'
 import Booth from './screens/Booth'
 import Crop from './screens/Crop'
 import Import from './screens/Import'
@@ -31,15 +32,17 @@ export default function App() {
     })
   }, [])
 
-  // The booth fills the viewport (the library joins it in Task 42); the
-  // working screens keep their phone-width column on desktop.
-  const wide = screen.name === 'booth'
+  // The booth and the library inside it fill the viewport; the working
+  // screens keep their phone-width column on desktop.
+  const decor = decorEnabled()
+  const wide = screen.name === 'booth' || (screen.name === 'library' && decor)
   return (
     <div className={`mx-auto flex h-full flex-col ${wide ? '' : 'max-w-xl md:max-w-2xl'}`}>
       {screen.name === 'booth' && <Booth unfold={screen.unfold} onEnter={library} />}
       {screen.name === 'library' && (
         <Library
-          onBooth={decorEnabled() ? booth : undefined}
+          onBooth={decor ? booth : undefined}
+          shell={decor ? BoothInterior : undefined}
           onImport={(files) => setScreen({ name: 'crop', files })}
           onShoot={(cartoons) => setScreen({ name: 'shoot', cartoons })}
         />

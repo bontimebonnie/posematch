@@ -92,6 +92,7 @@
     "howto_1": "Add cartoon poses",
     "howto_2": "Pick 4",
     "howto_3": "Shoot and decorate",
-    "hint": "Swipe the curtain to enter"
+    "hint": "Swipe the curtain to enter",
+    "tray_label": "your strip comes out here"
   }
 }

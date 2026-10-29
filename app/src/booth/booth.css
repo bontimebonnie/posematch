@@ -487,6 +487,258 @@
   .booth-vents-bottom { display: none; }
 }
 
+/* ---------- Inside: the booth interior (Library in the glass) ---------- */
+.booth-inside {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-columns: none;
+  padding: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-decor-cream) 60%, var(--color-decor-metal)) 0 160px,
+    color-mix(in srgb, var(--color-decor-metal) 70%, var(--color-decor-metal-dark)) 160px 164px,
+    color-mix(in srgb, var(--color-decor-cream) 60%, var(--color-decor-metal)) 164px 320px
+  );
+}
+.booth-wall {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 76%) 1fr;
+  align-items: center;
+  padding: 32px 24px 0;
+  min-height: 0;
+}
+.booth-tube {
+  justify-self: center;
+  width: 44px;
+  height: 78%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-decor-metal-dark), var(--color-decor-paper) 35%, color-mix(in srgb, var(--color-decor-yellow) 40%, white) 55%, var(--color-decor-metal-dark));
+  box-shadow:
+    0 0 0 3px var(--color-decor-metal-dark),
+    0 0 18px color-mix(in srgb, var(--color-decor-yellow) 55%, transparent),
+    inset 0 0 12px var(--white-90);
+  position: relative;
+  transition: box-shadow 250ms, background 250ms;
+}
+.booth-tube::before,
+.booth-tube::after {
+  content: '';
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, white, var(--metal-edge));
+  box-shadow: 0 2px 3px var(--ink-30);
+}
+.booth-tube::before { top: -8px; }
+.booth-tube::after { bottom: -8px; }
+.booth-lit .booth-tube {
+  background: linear-gradient(90deg, var(--color-decor-yellow), var(--color-decor-paper) 35%, color-mix(in srgb, var(--color-decor-yellow) 60%, white) 55%, color-mix(in srgb, var(--color-decor-yellow) 85%, var(--color-decor-yellow-deep)));
+  box-shadow:
+    0 0 0 3px var(--color-decor-metal-dark),
+    0 0 40px color-mix(in srgb, var(--color-decor-yellow) 90%, transparent),
+    0 0 90px color-mix(in srgb, var(--color-decor-yellow) 60%, transparent),
+    inset 0 0 12px white;
+}
+.booth-bezel {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 36px;
+  padding: 22px;
+  background: linear-gradient(135deg, var(--metal-hi), var(--color-decor-metal) 40%, var(--metal-lo) 100%);
+  box-shadow:
+    inset 3px 3px 0 white,
+    inset -4px -4px 0 color-mix(in srgb, var(--ink) 14%, transparent),
+    14px 20px 32px var(--ink-25);
+  display: grid;
+}
+.booth-bezel::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-decor-pink-deep);
+  box-shadow: 0 0 8px var(--color-decor-pink-deep);
+  transform: translateX(-50%);
+}
+.booth-glass {
+  min-height: 0;
+  border-radius: 22px;
+  background: white;
+  border: 3px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    inset 0 0 0 6px var(--color-decor-paper),
+    inset 0 20px 40px color-mix(in srgb, var(--color-decor-blue) 25%, transparent);
+  overflow: hidden;
+}
+/* the counter: a ledge seen slightly from above, then the front */
+.booth-ledge {
+  height: 34px;
+  margin-top: 28px;
+  background: linear-gradient(180deg, var(--metal-hi), color-mix(in srgb, var(--color-decor-metal) 70%, var(--color-decor-metal-dark)));
+  border-top: 3px solid var(--color-decor-metal-dark);
+  border-bottom: 3px solid var(--metal-edge);
+  box-shadow: 0 -6px 12px var(--ink-08);
+  position: relative;
+}
+.booth-ledge::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 6px;
+  height: 2px;
+  background: var(--ink-12);
+}
+.booth-cfront {
+  position: relative;
+  height: clamp(150px, 24vh, 210px);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-decor-metal) 55%, var(--color-decor-metal-dark)), var(--color-decor-metal-dark));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  box-sizing: border-box;
+  box-shadow: inset 0 10px 14px var(--ink-12);
+}
+.booth-cfront::before {
+  content: '';
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  top: 18px;
+  bottom: 18px;
+  border: 3px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.booth-actions {
+  position: relative;
+  z-index: 1;
+  width: min(52%, 560px);
+}
+/* slanted tray: the strip slides out here */
+.booth-tray {
+  position: relative;
+  z-index: 1;
+  width: min(24%, 260px);
+  height: 86%;
+  margin-right: 8px;
+  transform: perspective(700px) rotateX(14deg) skewX(-3deg);
+  transform-origin: bottom center;
+  background: linear-gradient(180deg, var(--metal-hi), color-mix(in srgb, var(--color-decor-metal) 70%, var(--color-decor-metal-dark)));
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 10px 12px 20px var(--ink-30), inset 0 0 0 6px color-mix(in srgb, var(--color-decor-cream) 60%, var(--color-decor-metal));
+  display: flex;
+  flex-direction: column;
+}
+.booth-slot {
+  height: 14px;
+  margin: 12px 18px 0;
+  border-radius: 7px;
+  background: var(--color-decor-dark);
+  box-shadow: inset 0 3px 4px color-mix(in srgb, black 60%, transparent);
+}
+.booth-out {
+  flex: 1 1 0;
+  height: 0; /* lets the strip's 100% height resolve inside the flexed box */
+  display: grid;
+  grid-template-rows: 100%; /* definite row so the strip's height: 100% is height-driven, not width-driven */
+  place-items: center;
+  padding: 10px 18px 14px;
+  min-height: 0;
+  overflow: hidden;
+}
+.booth-strip {
+  height: 100%;
+  width: auto;
+  aspect-ratio: 3 / 4;
+  max-width: 100%;
+  background: white;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 8px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 4px;
+}
+.booth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  min-height: 0;
+}
+.booth-cell {
+  position: relative;
+  border-radius: 3px;
+  border: 2px dashed var(--ink-35);
+  background: var(--color-decor-paper);
+  opacity: 0.6;
+  overflow: hidden;
+}
+.booth-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.booth-cell-full {
+  opacity: 1;
+  border-style: solid;
+  border-color: var(--ink);
+}
+.booth-cell-full:not(.booth-cell-photo)::after {
+  content: attr(data-n);
+  position: absolute;
+  left: 3px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 1.5px solid var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+}
+.booth-cell-photo {
+  background: var(--color-decor-metal);
+  border-style: dotted;
+}
+.booth-cell-photo::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 10px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent);
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+}
+.booth-lbl {
+  position: absolute;
+  left: 18px;
+  top: -30px;
+  font-size: 18px;
+  color: var(--ink-55);
+  transform: skewX(4deg);
+  white-space: nowrap;
+}
+
 /* fold motion: the class per phase carries the transition; useCurtainDrag
    writes the scaleX inline and listens for transitionend / animationend */
 .booth-curtain-snapping { transition: transform var(--duration-curtain) var(--ease-curtain); }
@@ -500,6 +752,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .booth-note,
+  .booth-tube,
   .booth-curtain-snapping,
   .booth-curtain-springing { transition: none; }
   .booth-curtain-squeeze { animation: none; }

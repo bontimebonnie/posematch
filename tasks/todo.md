@@ -332,7 +332,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/booth/curtain.ts`（新）, `app/src/booth/useCurtainDrag.ts`（新）, `app/src/booth/Curtain.tsx`, `app/src/App.tsx`, `app/src/__tests__/curtain.test.ts`（新）
   - Size: M · Depends: Task 40
 
-- [ ] Task 42: Library 入 booth
+- [x] Task 42: Library 入 booth
   - Acceptance: `Library.tsx` 抽 `LibraryBody`（零視覺改動）；新 `BoothInterior`：cream 金屬背牆（160px 一條縫）、兩支 44px 管燈（揀滿 4 變亮黃）、bezel（radius 36、22px、粉紅電源點）+ 玻璃（白、3px ink 邊、radius 22、頂部藍光）包住 `LibraryBody`；34px 櫃台邊；櫃台前 150–210px：左邊「新增圖片」「開始拍攝」（未滿 4 時 50%），右邊斜 tray（perspective 700 rotateX 14 skewX −3）＋印出口＋ **4 行 × 2 格 strip 預覽**（左＝已揀姿勢色塊 + 號碼，右＝虛線相位 + 細相機），未揀嘅行虛線淡色；手寫字「your strip comes out here」；≥760px 先有殼，<760px 同今日 Library 一樣
   - Verify: pane 1280 揀 0／3／4 張截圖（管燈、掣、tray 三個狀態）；pane 390 寬同 Task 37 之後嘅 Library 截圖逐像素對；`npm test`
   - Files: `app/src/screens/Library.tsx`, `app/src/booth/BoothInterior.tsx`（新）, `app/src/booth/TrayPreview.tsx`（新）, `app/src/booth/booth.css`, `locales/*`

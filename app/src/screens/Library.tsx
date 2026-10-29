@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Camera, Language as LanguageIcon, MediaImage, PasteClipboard, Plus, Trash } from 'iconoir-react'
 import { useTranslation } from 'react-i18next'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { canPasteImage, imagesFromPasteEvent, readImagesFromClipboard } from '../clipboard'
 import { db, deleteImages, listCharacterNames, SHOTS_PER_SET, type StoredImage } from '../db'
 import { getLibraryFilter, setLanguage, setLibraryFilter, type Language, type LibraryFilter } from '../settings'
@@ -11,14 +11,28 @@ import { useObjectUrls } from '../useObjectUrls'
 
 type Mode = 'browse' | 'select' | 'pick'
 
+// The library's pieces, handed to a shell that lays them out: the plain
+// phone stack (DefaultShell) or the booth interior on wide screens.
+export interface LibraryParts {
+  header: ReactNode
+  filters: ReactNode
+  grid: ReactNode
+  bottom: ReactNode // mode-dependent action bar (and the tray in pick mode)
+  picked: { src: string }[] // pick-mode picks, in shooting order
+  total: number
+  mode: Mode
+}
+
 export default function Library({
   onBooth,
   onImport,
   onShoot,
+  shell: Shell = DefaultShell,
 }: {
   onBooth?: () => void // back to the booth front; absent when decor is off
   onImport: (files: File[]) => void
   onShoot: (cartoons: Blob[]) => void
+  shell?: (props: LibraryParts) => ReactNode
 }) {
   const { t, i18n } = useTranslation()
   const [filter, setFilterState] = useState<LibraryFilter>(getLibraryFilter)
@@ -118,111 +132,114 @@ export default function Library({
         ? t('library.selected', { count: selected.length })
         : t('library.title')
 
-  return (
-    <div className="flex h-full flex-col">
-      <Header
-        title={title}
-        onBack={mode === 'browse' ? onBooth : leaveMode}
-        right={
-          mode === 'browse' ? (
-            <div className="flex gap-2">
-              <Button variant="secondary" size="md" onClick={switchLanguage} aria-label={t('common.language')} className="gap-1">
-                <LanguageIcon width={16} height={16} />
-                {i18n.language === 'en' ? '中' : 'EN'}
-              </Button>
-              {(images?.length ?? 0) > 0 && (
-                <Button variant="secondary" size="md" onClick={() => setMode('select')}>
-                  {t('library.select')}
-                </Button>
-              )}
-            </div>
-          ) : null
-        }
-      />
-
-      {/* Filters */}
-      <div className="space-y-2 px-4 pb-2">
+  const header = (
+  <Header
+    title={title}
+    onBack={mode === 'browse' ? onBooth : leaveMode}
+    right={
+      mode === 'browse' ? (
         <div className="flex gap-2">
-          {([null, 1, 2] as const).map((n) => (
-            <Chip key={String(n)} selected={filter.personCount === n} tint={n ?? undefined} onClick={() => setFilter({ ...filter, personCount: n })}>
-              {n === null ? t('library.filter_all') : t('common.people', { count: n })}
-            </Chip>
-          ))}
+          <Button variant="secondary" size="md" onClick={switchLanguage} aria-label={t('common.language')} className="gap-1">
+            <LanguageIcon width={16} height={16} />
+            {i18n.language === 'en' ? '中' : 'EN'}
+          </Button>
+          {(images?.length ?? 0) > 0 && (
+            <Button variant="secondary" size="md" onClick={() => setMode('select')}>
+              {t('library.select')}
+            </Button>
+          )}
         </div>
-        {names.length > 0 && (
-          <div className="-mx-4 -my-1 flex gap-2 overflow-x-auto px-4 py-1">
-            <Chip selected={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
-              {t('library.filter_all_characters')}
-            </Chip>
-            {names.map((n, i) => (
-              <Chip key={n} selected={activeName === n} tint={i % 2 ? 4 : 3} onClick={() => setFilter({ ...filter, characterName: n })}>
-                {n}
-              </Chip>
-            ))}
-          </div>
-        )}
+      ) : null
+    }
+  />
+  )
+  const filters = (
+  <div className="space-y-2 px-4 pb-2">
+    <div className="flex gap-2">
+      {([null, 1, 2] as const).map((n) => (
+        <Chip key={String(n)} selected={filter.personCount === n} tint={n ?? undefined} onClick={() => setFilter({ ...filter, personCount: n })}>
+          {n === null ? t('library.filter_all') : t('common.people', { count: n })}
+        </Chip>
+      ))}
+    </div>
+    {names.length > 0 && (
+      <div className="-mx-4 -my-1 flex gap-2 overflow-x-auto px-4 py-1">
+        <Chip selected={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
+          {t('library.filter_all_characters')}
+        </Chip>
+        {names.map((n, i) => (
+          <Chip key={n} selected={activeName === n} tint={i % 2 ? 4 : 3} onClick={() => setFilter({ ...filter, characterName: n })}>
+            {n}
+          </Chip>
+        ))}
       </div>
-
-      {/* Grid */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        {images === undefined ? null : images.length === 0 ? (
-          <EmptyState icon={<MediaImage width={32} height={32} />} title={t('library.empty_title')} body={t('library.empty_body')} />
-        ) : (
-          <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
-            {images.map((img, i) => (
-              <Tile
-                key={img.id}
-                src={urls[i]}
-                onClick={() => (mode === 'browse' ? setEditing(img) : toggle(img.id))}
-                selectable={mode !== 'browse'}
-                order={selected.indexOf(img.id)}
-                showOrder={mode === 'pick'}
-                label={img.characterName}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Bottom bar */}
-      <div className="px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        {toast && (
-          <Toast className="mb-2">{toast}</Toast>
-        )}
-        {mode === 'browse' && (
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => fileInput.current?.click()} className="flex-1">
-              <Plus width={20} height={20} strokeWidth={2.2} />
-              {t('library.add')}
-            </Button>
-            {canPasteImage() && (
-              <Button variant="secondary" onClick={paste} aria-label={t('library.paste')} className="px-4">
-                <PasteClipboard width={20} height={20} strokeWidth={2.2} />
-              </Button>
-            )}
-            <Button onClick={() => setMode('pick')} disabled={(images?.length ?? 0) === 0} className="flex-1">
-              <Camera width={20} height={20} strokeWidth={2.2} />
-              {t('library.shoot')}
-            </Button>
-          </div>
-        )}
-        {mode === 'select' && (
-          <Button variant="danger" onClick={() => setConfirmingDelete(true)} disabled={selected.length === 0} className="w-full">
-            <Trash width={20} height={20} strokeWidth={2.2} />
-            {t('library.delete_count', { count: selected.length })}
+    )}
+  </div>
+  )
+  const grid = (
+  <div className="flex-1 overflow-y-auto px-4 pb-4">
+    {images === undefined ? null : images.length === 0 ? (
+      <EmptyState icon={<MediaImage width={32} height={32} />} title={t('library.empty_title')} body={t('library.empty_body')} />
+    ) : (
+      <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
+        {images.map((img, i) => (
+          <Tile
+            key={img.id}
+            src={urls[i]}
+            onClick={() => (mode === 'browse' ? setEditing(img) : toggle(img.id))}
+            selectable={mode !== 'browse'}
+            order={selected.indexOf(img.id)}
+            showOrder={mode === 'pick'}
+            label={img.characterName}
+          />
+        ))}
+      </ul>
+    )}
+  </div>
+  )
+  const bottom = (
+  <div className="px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    {toast && (
+      <Toast className="mb-2">{toast}</Toast>
+    )}
+    {mode === 'browse' && (
+      <div className="flex gap-2">
+        <Button variant="secondary" onClick={() => fileInput.current?.click()} className="flex-1">
+          <Plus width={20} height={20} strokeWidth={2.2} />
+          {t('library.add')}
+        </Button>
+        {canPasteImage() && (
+          <Button variant="secondary" onClick={paste} aria-label={t('library.paste')} className="px-4">
+            <PasteClipboard width={20} height={20} strokeWidth={2.2} />
           </Button>
         )}
-        {mode === 'pick' && (
-          <div className="space-y-2">
-            <Tray slots={traySlots} total={SHOTS_PER_SET} onMove={movePick} onRemove={toggle} />
-            <Button onClick={startShoot} disabled={selected.length !== SHOTS_PER_SET} className="w-full">
-              <Camera width={20} height={20} strokeWidth={2.2} />
-              {t('library.start')}
-            </Button>
-          </div>
-        )}
+        <Button onClick={() => setMode('pick')} disabled={(images?.length ?? 0) === 0} className="flex-1">
+          <Camera width={20} height={20} strokeWidth={2.2} />
+          {t('library.shoot')}
+        </Button>
       </div>
+    )}
+    {mode === 'select' && (
+      <Button variant="danger" onClick={() => setConfirmingDelete(true)} disabled={selected.length === 0} className="w-full">
+        <Trash width={20} height={20} strokeWidth={2.2} />
+        {t('library.delete_count', { count: selected.length })}
+      </Button>
+    )}
+    {mode === 'pick' && (
+      <div className="space-y-2">
+        <Tray slots={traySlots} total={SHOTS_PER_SET} onMove={movePick} onRemove={toggle} />
+        <Button onClick={startShoot} disabled={selected.length !== SHOTS_PER_SET} className="w-full">
+          <Camera width={20} height={20} strokeWidth={2.2} />
+          {t('library.start')}
+        </Button>
+      </div>
+    )}
+  </div>
+  )
 
+  return (
+    <>
+      <Shell header={header} filters={filters} grid={grid} bottom={bottom} picked={traySlots} total={SHOTS_PER_SET} mode={mode} />
       <input
         ref={fileInput}
         type="file"
@@ -246,6 +263,18 @@ export default function Library({
           onClose={() => setConfirmingDelete(false)}
         />
       )}
+    </>
+  )
+}
+
+// The phone layout: header, filters, scrolling grid, bottom bar.
+export function DefaultShell({ header, filters, grid, bottom }: LibraryParts) {
+  return (
+    <div className="flex h-full flex-col">
+      {header}
+      {filters}
+      {grid}
+      {bottom}
     </div>
   )
 }

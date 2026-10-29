@@ -166,9 +166,9 @@ line-height 全部 8 嘅倍數（grid 垂直節奏）。
 
 只有一個：`shadow-sheet`（`0 -8px 24px rgb(43 36 32 / 0.12)`），用喺 EditSheet 同 PickTray。其餘唔用陰影，用 `line` 分隔。
 
-### 4.8 Decor（Phase B 第二步先定）
+### 4.8 Decor（Phase C）
 
-`--decor-*` 獨立 namespace：pattern 圖、sticker 顏色、插圖。詳細留待 §10 Q4 答完先寫。
+`--decor-*` 獨立 namespace，詳見 [DECOR-SPEC.md](DECOR-SPEC.md) §5（frames → stickers → reveal）。
 
 ---
 

@@ -270,25 +270,25 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Library.tsx`, `app/src/ui/ConfirmSheet.tsx`, `app/src/ui/index.ts`, `locales/*`
   - Size: S
 
-- [ ] Task 34: Tray 拖拉排序
+- [ ] (放低，Phase C 後再做) Task 34: Tray 拖拉排序
   - Acceptance: pick 模式 tray 四格可以用手指／滑鼠拖去另一格交換次序；拖緊嗰格放大少少同有影；鍵盤 focus 格時 ← → 都可以移；左右箭嘴掣移除；用 Pointer Events 自己寫，唔加 dependency
   - Verify: pane 用 `left_click_drag` 由格 1 拖到格 3，次序變 2 3 1 4；`npm test` 全綠
   - Files: `app/src/ui/Tray.tsx`, `app/src/screens/Library.tsx`
   - Size: M
 
-- [ ] Task 35: Crop 改成拉框（iPhone Photos 式）
+- [ ] (放低，Phase C 後再做) Task 35: Crop 改成拉框（iPhone Photos 式）
   - Acceptance: 圖片成張顯示，上面一個固定 3:2 嘅框，四角／四邊可以拉大拉細、框內可以拖去移位；滑鼠同手指都用得；`react-easy-crop` 換 `react-image-crop`（**加／換 dependency，要你批准**）；`cropImage()` 同輸出不變
   - Verify: pane 用滑鼠拖角再裁，輸出 3:2；手機寬度用手指拖；現有 crop 測試全綠
   - Files: `app/src/screens/Crop.tsx`, `app/package.json`
   - Size: M · Depends: Task 33
 
-- [ ] Task 36: Crop 已裁預覽列
+- [ ] (放低，Phase C 後再做) Task 36: Crop 已裁預覽列
   - Acceptance: Crop 畫面底部一列細圖，每裁一張即刻出現，每張有 ✕ 可以即刻刪；「已裁 N 張」字樣保留
   - Verify: 裁 2 張、刪 1 張，去到 Import 只得 1 張
   - Files: `app/src/screens/Crop.tsx`
   - Size: S · Depends: Task 35
 
-- [ ] Task 37: 儲存分流：手機 share sheet、電腦直接落 Downloads
+- [x] Task 37: 儲存分流：手機 share sheet、電腦直接落 Downloads
   - Acceptance: `Result.save()` 只喺手機（iOS／Android／iPadOS）行 `navigator.share`，桌面一律用 `<a download>` 直接落 Downloads，唔再彈 macOS share sheet；手機行為不變
   - Verify: pane（桌面）撳儲存即落 Downloads；iPhone 撳儲存彈 share sheet 存到相簿
   - Files: `app/src/screens/Result.tsx`, `app/src/platform.ts`（新：isMobile）

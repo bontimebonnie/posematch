@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { canCopyImage, copyImage } from '../clipboard'
+import { isMobile } from '../platform'
 import { composeStrip, type StripOutput } from '../strip'
 import { Button, Header, Toast } from '../ui'
 
@@ -53,7 +54,10 @@ export default function Result({
   const save = async () => {
     if (!strip) return
     const file = new File([strip.jpeg], `post-match-${Date.now()}.jpg`, { type: 'image/jpeg' })
-    if (navigator.canShare?.({ files: [file] })) {
+    // Phones: share sheet (saves to the album). Desktop: straight download,
+    // even though desktop Chrome can share files, because the OS share sheet
+    // is a detour there.
+    if (isMobile() && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ files: [file] })
         return

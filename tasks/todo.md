@@ -344,6 +344,12 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/public/fonts/*`, `app/src/index.css`, `app/index.html`, `docs/design/*`, `docs/DESIGN-SPEC.md`, `tasks/todo.md`
   - Size: S · Depends: Task 42
 
+- [ ] Task 44（Bonnie 經 research session 提出，待批）: 取景框改成同相格一樣嘅 3:2，唔再裁
+  - Acceptance: `useViewfinderRatio` 永遠回 `CELL_RATIO`（刪 4:3 phone 特例同 `keptFraction` band 邏輯）；畫面上個框 = 印出嚟嘅格，冇裁冇加闊；capture 照舊 `drawCover` 填 3:2
+  - Verify: phone 直身 pane 截圖取景框 3:2；影一張，Result 相格內容同取景框所見一致；`npm test`
+  - Files: `app/src/useViewfinderRatio.ts`, `app/src/screens/Shoot.tsx`, `app/src/__tests__/*`
+  - Size: S
+
 ### Checkpoint: Bonnie desktop 真 Chrome
 - [ ] 拖簾感覺係摺布；Back 簾返；phone 寬 Library 不變
 - [ ] 答 plan.md Open Questions 1–2；睇 mock v8 決定 §3b 要唔要 → Phase C.1

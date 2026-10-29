@@ -353,4 +353,5 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 ### Checkpoint: Bonnie desktop 真 Chrome
 - [x] 決定：booth 每次 launch 都出（Bonnie 2026-10-28）；字體未答，先用系統 cursive
 - [ ] 拖簾感覺係摺布；Back 簾返；phone 寬 Library 不變
-- [ ] 答 plan.md Open Question 1（字體 self-host）；睇 mock v9 決定 §3b 要唔要 → Phase C.1
+- [x] 字體：系統 cursive（Bonnie 2026-10-28）
+- [ ] 睇 mock v9 決定 §3b 要唔要 → Phase C.1

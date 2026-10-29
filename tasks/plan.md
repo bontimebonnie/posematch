@@ -237,6 +237,6 @@ Launch 先見 Booth（兩隻 cream locker 門 + 中間掛條紋簾嘅門口）�
 
 ## Open Questions
 
-1. **Patrick Hand self-host**（加 ~30KB woff2 到 `public/fonts/`，OFL）——批唔批？唔批就用系統 cursive，簾字會差啲。
-2. **Booth 每次 launch 都出**（brief 寫「once per launch」）定係 session 入面入過就唔再出？我假設前者。
+1. ~~Patrick Hand self-host~~ → **決定（2026-10-28）：用系統 cursive**（`--font-hand` fallback 鏈），唔加字體檔。
+2. ~~Booth 出現次數~~ → **決定（2026-10-28）：每次 launch 都出**。
 3. **§3b** 睇完 mock v8 之後先答；呢個 plan 唔包。

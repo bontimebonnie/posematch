@@ -487,6 +487,20 @@
   .booth-vents-bottom { display: none; }
 }
 
+/* fold motion: the class per phase carries the transition; useCurtainDrag
+   writes the scaleX inline and listens for transitionend / animationend */
+.booth-curtain-snapping { transition: transform var(--duration-curtain) var(--ease-curtain); }
+.booth-curtain-springing { transition: transform 180ms ease-out; }
+.booth-curtain-squeeze { animation: booth-squeeze 450ms ease-in-out; }
+@keyframes booth-squeeze {
+  0%, 100% { transform: scaleX(1); }
+  30% { transform: scaleX(0.96); }
+  70% { transform: scaleX(1.01); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .booth-note { transition: none; }
+  .booth-note,
+  .booth-curtain-snapping,
+  .booth-curtain-springing { transition: none; }
+  .booth-curtain-squeeze { animation: none; }
 }

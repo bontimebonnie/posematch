@@ -11,7 +11,7 @@ import Result from './screens/Result'
 import Shoot from './screens/Shoot'
 
 type Screen =
-  | { name: 'booth' }
+  | { name: 'booth'; unfold?: boolean }
   | { name: 'library' }
   | { name: 'crop'; files: File[] }
   | { name: 'import'; items: ImportItem[] }
@@ -21,7 +21,7 @@ type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>(() => ({ name: initialScreen({ decor: decorEnabled(), share: launchedFromShare() }) }))
   const library = () => setScreen({ name: 'library' })
-  const booth = () => setScreen({ name: 'booth' })
+  const booth = () => setScreen({ name: 'booth', unfold: true })
 
   // Opened from the OS share sheet: go straight to cropping the shared images.
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function App() {
   const wide = screen.name === 'booth'
   return (
     <div className={`mx-auto flex h-full flex-col ${wide ? '' : 'max-w-xl md:max-w-2xl'}`}>
-      {screen.name === 'booth' && <Booth onEnter={library} />}
+      {screen.name === 'booth' && <Booth unfold={screen.unfold} onEnter={library} />}
       {screen.name === 'library' && (
         <Library
           onBooth={decorEnabled() ? booth : undefined}

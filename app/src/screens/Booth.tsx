@@ -3,15 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { Curtain } from '../booth/Curtain'
 import { Doorway } from '../booth/Doorway'
 import { LockerDoor, Polaroids } from '../booth/LockerDoor'
-import { Button, Sheet } from '../ui'
+import { useCurtainDrag } from '../booth/useCurtainDrag'
+import { Sheet } from '../ui'
 import '../booth/booth.css'
 
 // The front door: two locker doors and a curtained doorway
-// (docs/design/booth-landing.md §2). The drag comes in Task 41; until then a
-// temporary button enters.
-export default function Booth({ onEnter }: { onEnter: () => void }) {
+// (docs/design/booth-landing.md §2). Drag the curtain left past half and it
+// folds to the side; the library then fades in. `unfold` is set when coming
+// back from the library so the curtain re-closes on screen.
+export default function Booth({ unfold = false, onEnter }: { unfold?: boolean; onEnter: () => void }) {
   const { t } = useTranslation()
   const [howto, setHowto] = useState(false)
+  const curtain = useCurtainDrag({ initiallyOpen: unfold, onOpen: onEnter })
   return (
     <div className="booth" data-testid="booth">
       <LockerDoor number="No. 04">
@@ -20,11 +23,7 @@ export default function Booth({ onEnter }: { onEnter: () => void }) {
       </LockerDoor>
 
       <Doorway>
-        <Curtain />
-        {/* temporary until the drag lands in Task 41 */}
-        <Button onClick={onEnter} size="md" className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2">
-          {t('booth.enter')}
-        </Button>
+        <Curtain {...curtain.props} role="button" aria-label={t('booth.hint')} tabIndex={0} />
       </Doorway>
 
       <LockerDoor number="No. 05">

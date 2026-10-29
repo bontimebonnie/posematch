@@ -326,7 +326,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 2: 動
 
-- [ ] Task 41: 簾拖拉
+- [x] Task 41: 簾拖拉
   - Acceptance: `curtainReducer`（純函數）：pointerdown／move／up → `{ scale, phase: 'idle'|'dragging'|'snapping'|'open'|'springing' }`，過 50% 放手 → snap 去 0.1（420ms `--ease-curtain`），未過 → spring 返（180ms）；tap 冇拖 → squeeze（.96→1.01→1，450ms）；`useCurtainDrag` 用 Pointer Events + `setPointerCapture`，只寫 `transform: scaleX()`，`transform-origin: left`，`touch-action: pan-y` 喺門口；open 之後 300ms Library 淡入；Library Back → 簾 unfold；`prefers-reduced-motion` 時直接跳
   - Verify: Vitest 測 reducer（過／唔過 50%、tap、reduced motion）；pane `left_click_drag` 拖過一半入 Library，拖唔夠彈返
   - Files: `app/src/booth/curtain.ts`（新）, `app/src/booth/useCurtainDrag.ts`（新）, `app/src/booth/Curtain.tsx`, `app/src/App.tsx`, `app/src/__tests__/curtain.test.ts`（新）

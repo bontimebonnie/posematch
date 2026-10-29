@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Booth Web Mock</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* Locker booth, web. Two locker doors, a pleated curtain in the middle that hangs 3/4 down and folds to the left side like an accordion. Light from the upper left. */
+  :root {
+    --cream: #fff8e7; --paper: #fffdf5; --white: #ffffff; --ink: #5a4a42; --ink-soft: rgba(90,74,66,.55);
+    --pink: #f9c6cf; --pink-deep: #f29cb0; --blue: #bcd8ee; --blue-deep: #8fb8dd; --yellow: #fde8a6; --yellow-deep: #f6cf6a;
+    --mint: #cfe8c6; --lilac: #ddd0ea; --peach: #fbd9c3; --dark: #4a3b36;
+    --metal: #f3eee2; --metal-dark: #d9d2c2;
+    --font: ui-rounded, "SF Pro Rounded", system-ui, "PingFang TC", "Noto Sans TC", sans-serif;
+    --hand: "Patrick Hand", "Chalkboard SE", cursive;
+    --sh: 0 2px 0 rgba(90,74,66,.08), 0 8px 16px rgba(90,74,66,.12);
+    --fold: 36px; /* width of one pleat */
+  }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: var(--font); overflow: hidden; }
+  .stage { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+  .view { position: absolute; inset: 0; isolation: isolate; }
+  .hand { font-family: var(--hand); }
+  .grain { position: absolute; inset: 0; pointer-events: none; z-index: 50; opacity: .18; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+  /* variant switcher for the lettering (mock only) */
+  .switch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(90,74,66,.85); }
+  .switch button { height: 32px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--cream); cursor: pointer; }
+  .switch button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+
+  /* ---------- Front ---------- */
+  .front { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(340px, 1.15fr) minmax(220px, 1fr); gap: 0;
+    background: linear-gradient(180deg, #f6ecd6 0%, var(--cream) 30%, var(--cream) 78%, #efe3cb 78%, #e8dbc1 100%); padding: 0 24px; box-sizing: border-box; align-items: stretch; }
+  .locker { position: relative; margin: 24px 0; background: var(--metal-dark); border-radius: 8px; padding: 10px;
+    box-shadow: inset 2px 2px 0 rgba(255,255,255,.7), inset -2px -2px 0 rgba(90,74,66,.15), 12px 18px 28px rgba(90,74,66,.22); }
+  .door { position: relative; height: 100%; box-sizing: border-box; border-radius: 6px; overflow: hidden;
+    background: linear-gradient(100deg, #fffdf6 0%, var(--metal) 45%, #ece5d3 100%);
+    box-shadow: inset 3px 3px 0 rgba(255,255,255,.9), inset -4px -4px 0 rgba(90,74,66,.12), inset 0 0 40px rgba(90,74,66,.06);
+    display: flex; flex-direction: column; align-items: center; padding: 20px 16px 20px 44px; gap: 16px; }
+  /* hinge on the right, handle and lock on the left, same on both doors */
+  .hinge { position: absolute; right: 14px; top: 12%; bottom: 12%; width: 14px; border-radius: 7px; background: linear-gradient(90deg, #d2c9b6, #fff 40%, #cfc5b0 70%, #b9ae99); box-shadow: 0 2px 4px rgba(90,74,66,.3); }
+  .hinge::before, .hinge::after { content: ""; position: absolute; left: 2px; right: 2px; height: 22%; background: linear-gradient(90deg, #c5bba6, #fff 45%, #bfb49e); border-radius: 5px; box-shadow: 0 1px 2px rgba(90,74,66,.3); }
+  .hinge::before { top: 10% } .hinge::after { bottom: 10% }
+  .plate { width: 92px; height: 38px; border-radius: 999px; background: linear-gradient(180deg, #fff, #e7e0cf 55%, #cfc6b1); border: 1.5px solid #b8ad97;
+    box-shadow: 0 2px 3px rgba(90,74,66,.3), inset 0 1px 0 #fff; display: grid; place-items: center; font-family: var(--hand); font-size: 15px; letter-spacing: .12em; color: #8b7f6c; }
+  .vents { display: flex; flex-direction: column; gap: 9px; width: 56%; max-width: 200px; }
+  .vents i { display: block; height: 13px; border-radius: 999px; background: linear-gradient(180deg, #d9d1bd, #fbf8f0 45%, #fff); box-shadow: inset 0 2px 2px rgba(90,74,66,.25), 0 1px 0 #fff; }
+  .vents.bottom { margin-top: auto; }
+  .mirror { width: min(52%, 22vh); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0%, var(--blue) 40%, #9fc5e8 100%);
+    border: 5px solid var(--white); box-shadow: 0 0 0 2px #d8d0bd, 0 6px 10px rgba(90,74,66,.25), inset -6px -8px 14px rgba(90,74,66,.12); position: relative; margin-top: 8px; }
+  .mirror::after { content: ""; position: absolute; left: 18%; top: 14%; width: 28%; height: 14%; border-radius: 50%; background: rgba(255,255,255,.8); transform: rotate(-30deg); }
+  .polas { display: grid; grid-template-columns: repeat(2, 72px); gap: 10px 14px; margin-top: 6px; }
+  .pola { width: 72px; background: #fff; padding: 5px 5px 14px; border-radius: 2px; box-shadow: 0 2px 0 rgba(90,74,66,.1), 0 6px 10px rgba(90,74,66,.2); position: relative; }
+  .pola svg { width: 62px; height: 62px; display: block; border-radius: 2px; }
+  .pola:nth-child(1){transform:rotate(-3deg)} .pola:nth-child(2){transform:rotate(2deg)} .pola:nth-child(3){transform:rotate(1.5deg)} .pola:nth-child(4){transform:rotate(-2deg)}
+  .pola.tape::before { content: ""; position: absolute; top: -8px; left: 50%; width: 36px; height: 14px; transform: translateX(-50%) rotate(-3deg); background: rgba(188,216,238,.75); box-shadow: 0 1px 2px rgba(90,74,66,.2); }
+  .handle { position: absolute; left: 22px; top: 46%; width: 14px; height: 90px; border-radius: 7px; background: linear-gradient(90deg, #5a4a42, #8b7a70 40%, #4a3b36); box-shadow: 2px 3px 4px rgba(90,74,66,.35); }
+  .lock { position: absolute; left: 8px; top: calc(46% + 70px); width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #d8d0bd 55%, #a89d87); box-shadow: 0 4px 6px rgba(90,74,66,.35), inset 0 -3px 0 rgba(90,74,66,.2); }
+  .lock::before { content: ""; position: absolute; left: 10px; top: -22px; width: 20px; height: 30px; border: 5px solid #8b7f6c; border-bottom: 0; border-radius: 12px 12px 0 0; }
+  .lock::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; border-radius: 50%; transform: translate(-50%,-50%); border: 3px solid #8b7f6c; }
+  .note { width: 68%; max-width: 190px; aspect-ratio: 4/5; background: var(--yellow); border-radius: 3px; box-shadow: var(--sh);
+    display: grid; place-items: center; cursor: pointer; position: relative; transform: rotate(-3deg); transition: transform 150ms; margin-top: 24px; }
+  .note:hover { transform: rotate(0) scale(1.03); }
+  .note::before { content: ""; position: absolute; top: -10px; right: 12%; width: 54px; height: 18px; background: rgba(188,216,238,.8); transform: rotate(28deg); box-shadow: 0 1px 2px rgba(90,74,66,.2); }
+  .note .hand { font-size: 28px; line-height: 32px; text-align: center; }
+  .howto { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: min(420px, 80vw); background: var(--paper); border: 2px solid var(--ink); border-radius: 16px; padding: 24px; z-index: 5; font-size: 18px; line-height: 28px; box-shadow: 0 16px 32px rgba(90,74,66,.25); }
+  .howto ol { margin: 8px 0 0; padding-left: 24px; } .howto b { display: block; font-family: var(--hand); font-size: 32px; line-height: 36px; }
+
+  /* ---------- Doorway + pleated curtain ---------- */
+  .doorway { position: relative; margin: 24px 8px; border-radius: 8px; overflow: hidden; touch-action: pan-y;
+    background: radial-gradient(80% 50% at 50% 60%, #6a5750 0%, var(--dark) 70%); box-shadow: inset 0 0 0 10px var(--metal-dark), inset 0 0 60px rgba(0,0,0,.5), 12px 18px 28px rgba(90,74,66,.22); }
+  .peek { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 30%; }
+  .peek .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 36%; background: repeating-linear-gradient(90deg, #6b5a52 0 48px, #5c4d46 48px 96px); box-shadow: inset 0 6px 10px rgba(0,0,0,.4); }
+  .peek .floor::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: rgba(255,255,255,.08); }
+  .hint { position: absolute; left: 0; right: 0; bottom: 42%; text-align: center; font-size: 18px; line-height: 22px; color: var(--cream); font-family: var(--hand); text-shadow: 0 1px 2px rgba(0,0,0,.7); pointer-events: none; }
+  .hint svg { width: 48px; height: 24px; display: block; margin: 0 auto 2px; stroke: var(--cream); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .rod { position: absolute; left: 0; right: 0; top: 18px; height: 14px; background: linear-gradient(180deg, #fff, #d9d2c2 60%, #b9ae99); border-radius: 999px; z-index: 4; box-shadow: 0 3px 4px rgba(0,0,0,.35); margin: 0 6px; }
+  .rings { position: absolute; left: 20px; right: 20px; top: 14px; height: 22px; z-index: 5; pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, transparent 6px, #cfc5b0 6.5px, #fff 8px, #b9ae99 10px, transparent 10.5px) 0 0 / var(--fold) 100% repeat-x; }
+  .curtain { position: absolute; top: 26px; left: 14px; width: calc(100% - 28px); height: 74%; will-change: transform; cursor: grab; z-index: 2; transform-origin: left center;
+    filter: drop-shadow(8px 10px 10px rgba(0,0,0,.45)); }
+  .curtain:active { cursor: grabbing; }
+  .fabric { position: absolute; inset: 0; background-color: var(--paper);
+    background-image: repeating-linear-gradient(90deg, var(--blue) 0 14px, transparent 14px 28px, var(--pink) 28px 36px, transparent 36px 56px);
+    -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 14px) no-repeat, radial-gradient(14px at 50% 0, #000 97%, transparent 100%) bottom / 28px 14px repeat-x;
+            mask: linear-gradient(#000 0 0) top / 100% calc(100% - 14px) no-repeat, radial-gradient(14px at 50% 0, #000 97%, transparent 100%) bottom / 28px 14px repeat-x; }
+  .fabric::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 26px; background: var(--pink); border-bottom: 2px dashed rgba(90,74,66,.5); }
+  .art { position: absolute; left: 0; right: 0; top: 16%; height: 46%; z-index: 2; pointer-events: none; }
+  .art svg { width: 100%; height: 100%; display: block; }
+  .art[hidden] { display: none; }
+  /* pleat light and shadow, sits above the lettering so the letters catch the folds too */
+  .folds { position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: multiply;
+    background: repeating-linear-gradient(90deg, rgba(90,74,66,.00) 0, rgba(90,74,66,.00) calc(var(--fold) * .35), rgba(90,74,66,.22) calc(var(--fold) * .5), rgba(90,74,66,.30) calc(var(--fold) * .62), rgba(90,74,66,.06) calc(var(--fold) * .8), rgba(90,74,66,.00) var(--fold)); }
+  .sheen { position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,.0) 0, rgba(255,255,255,.35) calc(var(--fold) * .12), rgba(255,255,255,.0) calc(var(--fold) * .3), rgba(255,255,255,0) var(--fold)); }
+  .curtain.snap { transition: transform 420ms cubic-bezier(.2,.8,.2,1); }
+  .curtain.back { transition: transform 180ms ease-out; }
+  .curtain.wiggle { animation: wig 450ms ease-in-out; }
+  @keyframes wig { 0%,100% { transform: scaleX(1) } 30% { transform: scaleX(.96) } 70% { transform: scaleX(1.01) } }
+
+  /* ---------- Inside ---------- */
+  .inside { background: var(--cream); opacity: 0; pointer-events: none; transition: opacity 250ms; display: grid; grid-template-columns: 24px 1fr 24px; grid-template-rows: auto 1fr auto; gap: 16px 24px; padding: 24px; box-sizing: border-box; }
+  .inside.on { opacity: 1; pointer-events: auto; }
+  .topbar { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; }
+  .back { width: 48px; height: 48px; border-radius: 999px; background: var(--white); border: 2px solid #efe4cc; display: grid; place-items: center; cursor: pointer; box-shadow: var(--sh); }
+  .back svg { width: 22px; height: 22px; stroke: var(--ink); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .title { font-weight: 700; font-size: 24px; }
+  .tube { border-radius: 12px; background: linear-gradient(180deg, var(--white), var(--yellow)); box-shadow: 0 0 16px var(--yellow); opacity: .7; transition: opacity 250ms, box-shadow 250ms; }
+  .inside.lit .tube { opacity: 1; box-shadow: 0 0 32px var(--yellow), 0 0 64px rgba(253,232,166,.6); }
+  .bezel { background: var(--white); border: 3px solid var(--ink); border-radius: 32px; padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 0; box-shadow: var(--sh); }
+  .chips { display: flex; gap: 8px; }
+  .chip { height: 36px; padding: 0 16px; border-radius: 999px; font-size: 15px; line-height: 36px; font-weight: 600; background: var(--white); border: 1px solid #efe4cc; }
+  .chip.on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; overflow: auto; min-height: 0; }
+  .tile { aspect-ratio: 3/2; border-radius: 12px; position: relative; cursor: pointer; border: 3px solid transparent; }
+  .tile.sel { border-color: var(--pink-deep); }
+  .tile b { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: var(--pink); color: var(--ink); font-size: 13px; display: none; place-items: center; }
+  .tile.sel b { display: grid; }
+  .counter { grid-column: 1 / -1; display: flex; align-items: center; gap: 24px; padding: 16px 24px; background: var(--pink); border: 3px solid var(--ink); border-radius: 24px; box-shadow: var(--sh); }
+  .tray { flex: 1; height: 72px; border-radius: 12px; background: var(--dark); display: flex; gap: 12px; padding: 12px; box-sizing: border-box; box-shadow: inset 0 4px 8px rgba(0,0,0,.4); }
+  .tray .cell { flex: 1; border-radius: 8px; border: 2px dashed var(--cream); opacity: .5; }
+  .tray .cell.full { opacity: 1; border-style: solid; }
+  .btn { height: 56px; border-radius: 999px; padding: 0 32px; font-weight: 700; font-size: 17px; display: grid; place-items: center; background: var(--white); border: 2px solid #efe4cc; }
+  .btn.primary { background: var(--pink-deep); border-color: var(--pink-deep); color: var(--white); opacity: .5; min-width: 200px; }
+  .btn.primary.ready { opacity: 1; }
+
+  @media (max-width: 760px) { .front { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; } .locker { margin: 12px 0; } .door { flex-direction: row; flex-wrap: wrap; } .mirror, .polas, .vents.bottom { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .curtain, .inside, .tube { transition: none; } .curtain.wiggle { animation: none; } }
+</style>
+</head><body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="p1" viewBox="0 0 64 64"><rect width="64" height="64" fill="#cfe8c6"/><circle cx="32" cy="36" r="18" fill="#fff" stroke="#5a4a42" stroke-width="2"/><circle cx="20" cy="24" r="6" fill="#fff" stroke="#5a4a42" stroke-width="2"/><circle cx="44" cy="24" r="6" fill="#fff" stroke="#5a4a42" stroke-width="2"/><circle cx="26" cy="36" r="1.8" fill="#5a4a42"/><circle cx="38" cy="36" r="1.8" fill="#5a4a42"/><path d="M29 42 q3 3 6 0" stroke="#5a4a42" stroke-width="1.6" fill="none"/><circle cx="22" cy="41" r="3" fill="#f9c6cf"/><circle cx="42" cy="41" r="3" fill="#f9c6cf"/><path d="M50 30 l4 -10 M54 20 l3 1" stroke="#5a4a42" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="p2" viewBox="0 0 64 64"><rect width="64" height="64" fill="#bcd8ee"/><ellipse cx="32" cy="38" rx="19" ry="17" fill="#fff" stroke="#5a4a42" stroke-width="2"/><path d="M22 22 l-3 -14 l9 10 M42 22 l3 -14 l-9 10" fill="#fff" stroke="#5a4a42" stroke-width="2" stroke-linejoin="round"/><circle cx="25" cy="38" r="1.8" fill="#5a4a42"/><circle cx="39" cy="38" r="1.8" fill="#5a4a42"/><path d="M28 45 q4 4 8 0" stroke="#5a4a42" stroke-width="1.6" fill="none"/><circle cx="21" cy="43" r="3" fill="#f9c6cf"/><circle cx="43" cy="43" r="3" fill="#f9c6cf"/><path d="M8 40 l8 -6 M56 40 l-8 -6" stroke="#5a4a42" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="p3" viewBox="0 0 64 64"><rect width="64" height="64" fill="#fde8a6"/><circle cx="32" cy="36" r="18" fill="#fff" stroke="#5a4a42" stroke-width="2"/><path d="M14 30 a6 6 0 0 1 10 -6 M40 24 a6 6 0 0 1 10 6" fill="#fff" stroke="#5a4a42" stroke-width="2"/><path d="M24 34 q2 -3 4 0 M36 34 q2 -3 4 0" stroke="#5a4a42" stroke-width="1.8" fill="none"/><ellipse cx="32" cy="43" rx="4" ry="3" fill="#f29cb0"/><circle cx="21" cy="40" r="3" fill="#f9c6cf"/><circle cx="43" cy="40" r="3" fill="#f9c6cf"/></symbol>
+    <symbol id="p4" viewBox="0 0 64 64"><rect width="64" height="64" fill="#ddd0ea"/><circle cx="32" cy="38" r="18" fill="#fff" stroke="#5a4a42" stroke-width="2"/><circle cx="20" cy="26" r="6" fill="#fff" stroke="#5a4a42" stroke-width="2"/><circle cx="44" cy="26" r="6" fill="#fff" stroke="#5a4a42" stroke-width="2"/><path d="M24 36 h4 M36 36 h4" stroke="#5a4a42" stroke-width="2" stroke-linecap="round"/><path d="M29 44 q3 -3 6 0" stroke="#5a4a42" stroke-width="1.6" fill="none"/><path d="M50 50 l6 -14 M8 50 l6 -14" stroke="#5a4a42" stroke-width="2" stroke-linecap="round"/><circle cx="22" cy="42" r="3" fill="#f9c6cf"/><circle cx="42" cy="42" r="3" fill="#f9c6cf"/></symbol>
+    <pattern id="satin" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(60)"><rect width="4" height="4" fill="#7a665c"/><rect width="1.4" height="4" fill="#a08c80"/></pattern>
+    <pattern id="satinPatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(60)"><rect width="4" height="4" fill="#f29cb0"/><rect width="1.4" height="4" fill="#f9c6cf"/></pattern>
+  </defs>
+</svg>
+
+<div class="stage">
+
+  <div class="switch" role="group" aria-label="Lettering variant">
+    <button data-v="print" aria-pressed="false">1 · Print</button>
+    <button data-v="patch" aria-pressed="false">2 · Patch</button>
+    <button data-v="stitch" aria-pressed="true">3 · Stitch, recoloured</button>
+  </div>
+
+  <section class="view front" id="front">
+
+    <div class="locker left"><div class="door">
+      <div class="hinge"></div>
+      <div class="plate">No. 04</div>
+      <div class="vents"><i></i><i></i><i></i></div>
+      <div class="mirror"></div>
+      <div class="polas">
+        <div class="pola tape"><svg><use href="#p1"/></svg></div>
+        <div class="pola"><svg><use href="#p2"/></svg></div>
+        <div class="pola"><svg><use href="#p3"/></svg></div>
+        <div class="pola tape"><svg><use href="#p4"/></svg></div>
+      </div>
+      <div class="vents bottom"><i></i><i></i><i></i></div>
+      <div class="handle"></div><div class="lock"></div>
+    </div></div>
+
+    <div class="doorway" id="doorway">
+      <div class="peek">
+        <div class="hint" id="hint"><svg viewBox="0 0 48 24"><path d="M40 12 H6 M14 4 L6 12 L14 20"/></svg>Swipe the curtain to enter · 滑開簾子進入</div>
+        <div class="floor"></div>
+      </div>
+      <div class="rod"></div><div class="rings"></div>
+      <div class="curtain" id="curtain">
+        <div class="fabric"></div>
+
+        <!-- 1 · printed letters, one palette colour each, like the LOVE curtain -->
+        <div class="art" data-v="print"><svg viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
+          <g font-family="Patrick Hand, cursive" font-size="70" font-weight="700" text-anchor="middle" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">
+            <text x="200" y="72"><tspan fill="#f29cb0" stroke="#f29cb0">p</tspan><tspan fill="#8fb8dd" stroke="#8fb8dd">o</tspan><tspan fill="#f6cf6a" stroke="#f6cf6a">s</tspan><tspan fill="#9ccb8c" stroke="#9ccb8c">e</tspan><tspan fill="#fff" stroke="#fff"> </tspan><tspan fill="#b79fd6" stroke="#b79fd6">m</tspan><tspan fill="#f29cb0" stroke="#f29cb0">a</tspan><tspan fill="#8fb8dd" stroke="#8fb8dd">t</tspan><tspan fill="#f6cf6a" stroke="#f6cf6a">c</tspan><tspan fill="#9ccb8c" stroke="#9ccb8c">h</tspan></text>
+            <text x="200" y="150"><tspan fill="#b79fd6" stroke="#b79fd6">p</tspan><tspan fill="#f29cb0" stroke="#f29cb0">h</tspan><tspan fill="#8fb8dd" stroke="#8fb8dd">o</tspan><tspan fill="#f6cf6a" stroke="#f6cf6a">t</tspan><tspan fill="#9ccb8c" stroke="#9ccb8c">o</tspan><tspan fill="#b79fd6" stroke="#b79fd6">b</tspan><tspan fill="#f29cb0" stroke="#f29cb0">o</tspan><tspan fill="#8fb8dd" stroke="#8fb8dd">o</tspan><tspan fill="#f6cf6a" stroke="#f6cf6a">t</tspan><tspan fill="#9ccb8c" stroke="#9ccb8c">h</tspan></text>
+          </g>
+        </svg></div>
+
+        <!-- 2 · a sewn-on patch -->
+        <div class="art" data-v="patch" hidden><svg viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
+          <rect x="34" y="18" width="332" height="144" rx="28" fill="#fffdf5" stroke="#5a4a42" stroke-width="2"/>
+          <rect x="42" y="26" width="316" height="128" rx="22" fill="none" stroke="#5a4a42" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <g font-family="Patrick Hand, cursive" font-size="56" text-anchor="middle">
+            <text x="200" y="80" fill="url(#satinPatch)" stroke="#d9748f" stroke-width="2.5" stroke-dasharray="3 2" paint-order="stroke">pose match</text>
+            <text x="200" y="138" fill="url(#satinPatch)" stroke="#d9748f" stroke-width="2.5" stroke-dasharray="3 2" paint-order="stroke">photobooth</text>
+          </g>
+        </svg></div>
+
+        <!-- 3 · embroidered straight on the fabric, brown thread -->
+        <div class="art" data-v="stitch" hidden><svg viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
+          <g font-family="Patrick Hand, cursive" font-size="64" text-anchor="middle">
+            <text x="200" y="70" fill="url(#satin)" stroke="#5a4a42" stroke-width="3" stroke-dasharray="3 2" stroke-linejoin="round" paint-order="stroke">pose match</text>
+            <text x="200" y="146" fill="url(#satin)" stroke="#5a4a42" stroke-width="3" stroke-dasharray="3 2" stroke-linejoin="round" paint-order="stroke">photobooth</text>
+          </g>
+        </svg></div>
+
+        <div class="folds"></div><div class="sheen"></div>
+      </div>
+    </div>
+
+    <div class="locker right"><div class="door">
+      <div class="hinge"></div>
+      <div class="plate">No. 05</div>
+      <div class="vents"><i></i><i></i><i></i></div>
+      <div class="note" id="note"><span class="hand">how<br>to<br>use</span></div>
+      <div class="vents bottom"><i></i><i></i><i></i></div>
+      <div class="handle"></div><div class="lock"></div>
+    </div></div>
+
+    <div class="howto" id="howto" hidden>
+      <b>How to use</b>
+      <ol><li>Add cartoon poses</li><li>Pick 4</li><li>Shoot and decorate</li></ol>
+    </div>
+    <div class="grain"></div>
+  </section>
+
+  <section class="view inside" id="inside">
+    <div class="topbar">
+      <div class="back" id="back" role="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="title" id="ititle">Pick 0 of 4</div>
+    </div>
+    <div class="tube"></div>
+    <div class="bezel">
+      <div class="chips"><span class="chip on">All</span><span class="chip">1 person</span><span class="chip">2 people</span></div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="tube"></div>
+    <div class="counter">
+      <div class="tray" id="tray"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+      <div class="btn">Add pictures</div><div class="btn primary" id="start">Start shooting</div>
+    </div>
+    <div class="grain"></div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  // lettering variant switcher
+  var arts=document.querySelectorAll('.art'), btns=document.querySelectorAll('.switch button');
+  function setV(v){ [].forEach.call(arts,function(a){ a.hidden=a.dataset.v!==v; }); [].forEach.call(btns,function(b){ b.setAttribute('aria-pressed', b.dataset.v===v?'true':'false'); }); try{ localStorage.setItem('booth-letter', v); }catch(e){} }
+  [].forEach.call(btns,function(b){ b.addEventListener('click', function(){ setV(b.dataset.v); }); });
+  var v0='stitch'; try{ v0=localStorage.getItem('booth-letter')||v0; }catch(e){} setV(v0);
+
+  // curtain: drag left, it folds like an accordion towards the left edge. Past half, it snaps to a 10% stack and the Library appears.
+  var curtain=document.getElementById('curtain'), doorway=document.getElementById('doorway'),
+      inside=document.getElementById('inside'), hint=document.getElementById('hint'),
+      note=document.getElementById('note'), howto=document.getElementById('howto'), back=document.getElementById('back');
+  var startX=null, dx=0, open=false, moved=false, MIN=0.1;
+  function w(){ return curtain.offsetWidth; }
+  function setS(s, cls){ curtain.className='curtain'+(cls?' '+cls:''); curtain.style.transform='scaleX('+s+')'; }
+  function prog(){ return Math.min(1, -dx / w()); }
+  curtain.addEventListener('pointerdown', function(e){ if(open) return; startX=e.clientX; dx=0; moved=false; curtain.setPointerCapture(e.pointerId); setS(1,''); });
+  curtain.addEventListener('pointermove', function(e){ if(startX===null) return; dx=Math.min(0, e.clientX-startX); if(Math.abs(dx)>4) moved=true; setS(1-(1-MIN)*prog(),''); });
+  function end(){
+    if(startX===null) return; startX=null;
+    if(!moved){ setS(1,'wiggle'); setTimeout(function(){ setS(1,''); },450); return; }
+    if(prog() > .5){ open=true; setS(MIN,'snap'); hint.hidden=true; setTimeout(function(){ inside.classList.add('on'); },300); }
+    else { setS(1,'back'); }
+  }
+  curtain.addEventListener('pointerup', end); curtain.addEventListener('pointercancel', end);
+  back.addEventListener('click', function(){ inside.classList.remove('on'); open=false; hint.hidden=false; setTimeout(function(){ setS(1,'snap'); },150); });
+  note.addEventListener('click', function(){ howto.hidden=!howto.hidden; });
+  howto.addEventListener('click', function(){ howto.hidden=true; });
+
+  var colors=['#f9c6cf','#bcd8ee','#fde8a6','#cfe8c6','#ddd0ea','#fbd9c3','#f9c6cf','#bcd8ee','#fde8a6','#cfe8c6','#ddd0ea','#fbd9c3'];
+  var grid=document.getElementById('grid'), tray=document.getElementById('tray').children, start=document.getElementById('start'), title=document.getElementById('ititle');
+  var picked=[];
+  colors.forEach(function(c,i){ var t=document.createElement('div'); t.className='tile'; t.style.background=c; t.innerHTML='<b></b>';
+    t.addEventListener('click', function(){ var k=picked.indexOf(i); if(k>=0) picked.splice(k,1); else if(picked.length<4) picked.push(i); render(); }); grid.appendChild(t); });
+  function render(){
+    [].forEach.call(grid.children,function(t,i){ var k=picked.indexOf(i); t.classList.toggle('sel',k>=0); t.firstChild.textContent=k>=0?k+1:''; });
+    [].forEach.call(tray,function(c,i){ var p=picked[i]; c.classList.toggle('full',p!==undefined); c.style.background=p!==undefined?colors[p]:''; });
+    title.textContent='Pick '+picked.length+' of 4'; start.classList.toggle('ready',picked.length===4); inside.classList.toggle('lit',picked.length===4);
+  }
+})();
+</script>
+
+</body></html>

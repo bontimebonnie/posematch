@@ -50,12 +50,14 @@
     "title": "Crop",
     "title_n": "Crop {{index}} of {{total}}",
     "cut_count": "{{count}} cut",
-    "hint": "Drag and pinch to frame the part you want",
+    "hint": "Drag the box to move it, pull the corner to resize",
     "cut_another": "Cut another from this picture",
     "keep_whole": "Keep whole",
     "enough": "That's all",
     "cut_next": "Cut and continue",
-    "finish": "Finish"
+    "finish": "Finish",
+    "tag": "3 : 2 · same as a strip cell",
+    "cut_so_far": "Cut so far"
   },
   "shoot": {
     "title": "Shot {{index}} of {{total}}",

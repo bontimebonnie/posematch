@@ -355,3 +355,36 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 - [ ] 拖簾感覺係摺布；Back 簾返；phone 寬 Library 不變
 - [x] 字體：系統 cursive（Bonnie 2026-10-28）
 - [ ] 睇 mock v9 決定 §3b 要唔要 → Phase C.1
+
+# Post Match — Phase C.1 Tasks（照 mock v9 §3b，Bonnie 2026-10-28 試完 C.0 後指示「跟 mock 再 code 過」）
+
+Bonnie 試 C.0 嘅回報：(1) how-to 彈窗要置中 ✓ 已改；(2) 語言掣搬去 landing ✓ 已改；(3) 外框被 crop（待截圖確認）；(4) Crop 要拉框唔係 zoom、加圖時要見到已裁嘅相（即原本放低嘅 Task 35／36）。
+
+- [x] Task 45: Crop 拉框 + 已裁預覽列（取代 Task 35／36）
+  - Acceptance: 圖片成張顯示，上面一個 3:2 框：拖框移位、拉右下角圓點改大細（比例鎖死、唔出界）、框外變暗、三分線、tag「3 : 2 · 同拼圖格一樣」；下面一列已裁嘅相，每張有 ✕；`react-easy-crop` 移除（唔再用，冇新 dependency）；`cropImage()` 輸出不變
+  - Verify: `cropBox.test.ts` 9 個幾何測試；pane 拖框、拉角、裁兩張見到預覽列
+  - Files: `app/src/cropBox.ts`, `app/src/ui/CropBox.tsx`, `app/src/screens/Crop.tsx`, `app/package.json`, `locales/*`
+  - Size: M
+
+- [ ] Task 46: Booth 外殼抽做 `BoothChrome`，Crop／Shoot／Result 喺 desktop 都入 booth
+  - Acceptance: `BoothInterior` 拆成 `BoothChrome({ glass, actions, tray })`（牆、管燈、bezel、櫃台、tray 共用）；Library 照舊；Crop 嘅圖 + 框喺玻璃入面，掣喺櫃台；Shoot 參考圖（左 30%）同取景框（右）並排喺玻璃，倒數／快門喺櫃台，每影一張 tray 右格填上；Result 條 strip 喺玻璃，重新拍攝・裝飾・儲存喺櫃台；<760px 全部同今日 phone 版一樣
+  - Verify: pane 1280 寬逐頁截圖對 mock v9；pane 390 寬同 phone 版逐像素對；`npm test`
+  - Files: `app/src/booth/BoothChrome.tsx`（新）, `BoothInterior.tsx`, `app/src/screens/{Crop,Shoot,Result}.tsx`, `app/src/App.tsx`, `booth.css`
+  - Size: L · Depends: Task 45
+
+- [ ] Task 47: Result 顯影 reveal + tray 彈出
+  - Acceptance: Result 開頁時 strip 1.6s 由 sepia 低對比淡入到正常（`--duration-reveal`）；desktop 櫃台 tray 嘅 strip 向上彈出印出口（700ms）；`prefers-reduced-motion` 即時顯示；輸出 byte 不變（C0 snapshot 測試）
+  - Verify: 截圖序列；snapshot 測試
+  - Files: `app/src/screens/Result.tsx`, `booth.css`, `app/src/__tests__/strip-snapshot.test.ts`（新）
+  - Size: S · Depends: Task 46
+
+- [ ] Task 48: Decorate（框 + 貼紙，第一版照 mock v9 簡化：4 色紙 swatch、6 個貼紙點一下落）
+  - Acceptance: 見 DECOR-SPEC §4（inset 幾何）+ mock v9 §3b；由 Result「裝飾」入，取消／完成返 Result；無框輸出 byte 不變
+  - Verify: `decor.test.ts`；pane 截圖
+  - Files: `app/src/decor/*`, `app/src/screens/Decorate.tsx`, `strip.ts`（加 inset）
+  - Size: L · Depends: Task 47
+
+- [ ] Task 49: 外框被 crop（Bonnie 回報 #3，等截圖定位：懷疑係矮視窗下 locker 門內容溢出被 `overflow:hidden` 切走）
+  - Size: S
+
+### Checkpoint: Bonnie desktop + phone 真機

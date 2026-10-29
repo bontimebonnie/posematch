@@ -50,12 +50,14 @@
     "title": "裁切",
     "title_n": "裁切 {{index}} / {{total}}",
     "cut_count": "已裁 {{count}} 張",
-    "hint": "拖曳並用兩指縮放，框住想要的範圍",
+    "hint": "拖曳框框移位，拉右下角改大小",
     "cut_another": "從這張再裁一張",
     "keep_whole": "保留整張",
     "enough": "完成這張",
     "cut_next": "裁切並繼續",
-    "finish": "完成"
+    "finish": "完成",
+    "tag": "3 : 2 · 同拼圖格一樣",
+    "cut_so_far": "已裁的圖"
   },
   "shoot": {
     "title": "第 {{index}} / {{total}} 張",

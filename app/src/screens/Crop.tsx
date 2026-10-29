@@ -1,15 +1,16 @@
-import { Check, NavArrowRight, Plus } from 'iconoir-react'
-import { useCallback, useMemo, useState } from 'react'
+import { Check, NavArrowRight, Plus, Xmark } from 'iconoir-react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Cropper, { type Area } from 'react-easy-crop'
 import type { ImportItem } from '../db'
 import { CELL_RATIO, cropImage } from '../image'
-import { Button, Header } from '../ui'
+import { Button, CropBox, FitImage, Header, IconButton, type PixelCrop } from '../ui'
 import { useObjectUrls } from '../useObjectUrls'
 
-// Walks through each incoming file. From one source the user can cut as
-// many 3:2 pieces as they like ("cut another"), skip cropping entirely, or
-// cut once and move on. Everything cut from one file shares a sourceId.
+// Walks through each incoming file. The picture is shown whole with a 3:2
+// box to drag and resize (Task 45). From one source the user can cut as
+// many pieces as they like ("cut another"), skip cropping entirely, or cut
+// once and move on. Everything cut so far shows in a row underneath, each
+// removable. Everything cut from one file shares a sourceId.
 export default function Crop({
   files,
   onBack,
@@ -23,16 +24,15 @@ export default function Crop({
   const [index, setIndex] = useState(0)
   const [items, setItems] = useState<ImportItem[]>([])
   const [cutsFromThis, setCutsFromThis] = useState(0)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [area, setArea] = useState<Area | null>(null)
+  const [area, setArea] = useState<PixelCrop | null>(null)
   const [busy, setBusy] = useState(false)
   const sourceIds = useMemo(() => files.map(() => crypto.randomUUID()), [files])
   const urls = useObjectUrls(files)
+  const cutBlobs = useMemo(() => items.map((i) => i.blob), [items])
+  const cutUrls = useObjectUrls(cutBlobs)
 
   const file = files[index]
   const last = index === files.length - 1
-  const onCropComplete = useCallback((_: Area, pixels: Area) => setArea(pixels), [])
 
   const advance = (next: ImportItem[]) => {
     if (last) {
@@ -41,15 +41,17 @@ export default function Crop({
     }
     setIndex(index + 1)
     setCutsFromThis(0)
-    setCrop({ x: 0, y: 0 })
-    setZoom(1)
     setArea(null)
   }
 
   const cut = async (): Promise<ImportItem | null> => {
     if (!area) return null
-    const blob = await cropImage(file, { x: area.x, y: area.y, width: area.width, height: area.height })
+    const blob = await cropImage(file, area)
     return { blob, sourceId: sourceIds[index] }
+  }
+  const removeCut = (i: number) => {
+    if (items[i].sourceId === sourceIds[index]) setCutsFromThis((n) => Math.max(0, n - 1))
+    setItems((prev) => prev.filter((_, j) => j !== i))
   }
 
   const cutAnother = async () => {
@@ -86,22 +88,21 @@ export default function Crop({
         right={cutsFromThis > 0 ? <span className="text-label text-fg-muted">{t('crop.cut_count', { count: cutsFromThis })}</span> : null}
       />
       <div className="relative mx-4 flex-1 overflow-hidden rounded-card bg-dark">
-        {urls[index] && (
-          <Cropper
-            image={urls[index]}
-            crop={crop}
-            zoom={zoom}
-            aspect={CELL_RATIO}
-            objectFit="contain"
-            minZoom={1}
-            maxZoom={5}
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
-            onCropComplete={onCropComplete}
-          />
-        )}
+        {urls[index] && <CropBox src={urls[index]} ratio={CELL_RATIO} tag={t('crop.tag')} onChange={setArea} />}
       </div>
       <p className="px-4 pt-2 text-center text-body text-fg-muted">{t('crop.hint')}</p>
+      {items.length > 0 && (
+        <ul className="-my-1 flex gap-2 overflow-x-auto px-4 py-1" aria-label={t('crop.cut_so_far')}>
+          {items.map((item, i) => (
+            <li key={item.sourceId + i} className="relative shrink-0">
+              <FitImage src={cutUrls[i]} className="aspect-[3/2] h-16 rounded-card ring-1 ring-line" />
+              <IconButton variant="scrim" size="sm" onClick={() => removeCut(i)} aria-label={t('common.remove')} className="absolute -top-1 -right-1">
+                <Xmark width={16} height={16} strokeWidth={3} />
+              </IconButton>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="space-y-2 px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Button variant="secondary" onClick={cutAnother} disabled={busy || !area} className="w-full">
           <Plus width={20} height={20} strokeWidth={2.2} />

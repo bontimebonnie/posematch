@@ -314,15 +314,15 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Files: `app/src/screens/Booth.tsx`, `app/src/booth/booth.css`, `app/src/booth/LockerDoor.tsx`（新）, `app/public/booth/pose-{1..4}.svg`（新 placeholder）, `locales/*`（howto 三步、便條字）
   - Size: L · Depends: Task 38
 
-- [ ] Task 40: 門口 + 簾（靜態）
+- [x] Task 40: 門口 + 簾（靜態）
   - Acceptance: 門口 radial 深色 + 10px 金屬內框 + 內影；底 30% 地板（48px 木板）；桿 14px 高 top 18 + 每 36px 一個環；簾一塊布 74% 高、左右 14px：直條紋（藍 14・空 14・粉 8・空 20）、26px 粉紅頭帶 + 虛線車縫、14px 半圓波浪底、36px 摺影（multiply）+ 亮線（screen）疊喺字上面；「pose match／photobooth」SVG text 手寫體、棕線 satin fill + 3px 虛線 ink 描邊，佔簾高 16%–62%；下面提示「Swipe the curtain to enter · 滑開簾子進入」+ 箭咀
   - Verify: 截圖對 mock；`prefers-reduced-motion` 唔影響靜態；`npm test`
   - Files: `app/src/booth/Doorway.tsx`（新）, `app/src/booth/Curtain.tsx`（新）, `app/src/booth/booth.css`, `locales/*`
   - Size: M · Depends: Task 38
 
 ### Checkpoint: 靜態 Booth
-- [ ] 1280 寬截圖 ×1 入 `docs/design/booth-closed.png`
-- [ ] `npm test`、build、lint 綠
+- [x] 1280 寬截圖 ×1 入 `docs/design/booth-closed.jpg`
+- [x] `npm test`、build、lint 綠
 
 ## Phase 2: 動
 

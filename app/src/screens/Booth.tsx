@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Curtain } from '../booth/Curtain'
+import { Doorway } from '../booth/Doorway'
 import { LockerDoor, Polaroids } from '../booth/LockerDoor'
 import { Button, Sheet } from '../ui'
 import '../booth/booth.css'
 
 // The front door: two locker doors and a curtained doorway
-// (docs/design/booth-landing.md §2). Doorway + curtain come in Task 40 and
-// the drag in Task 41; until then a temporary button enters.
+// (docs/design/booth-landing.md §2). The drag comes in Task 41; until then a
+// temporary button enters.
 export default function Booth({ onEnter }: { onEnter: () => void }) {
   const { t } = useTranslation()
   const [howto, setHowto] = useState(false)
@@ -17,11 +19,13 @@ export default function Booth({ onEnter }: { onEnter: () => void }) {
         <Polaroids />
       </LockerDoor>
 
-      <div className="booth-doorway">
-        <Button onClick={onEnter} className="absolute bottom-8 left-1/2 -translate-x-1/2">
+      <Doorway>
+        <Curtain />
+        {/* temporary until the drag lands in Task 41 */}
+        <Button onClick={onEnter} size="md" className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2">
           {t('booth.enter')}
         </Button>
-      </div>
+      </Doorway>
 
       <LockerDoor number="No. 05">
         <button type="button" className="booth-note" onClick={() => setHowto(true)}>

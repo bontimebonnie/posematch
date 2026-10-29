@@ -6,8 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { cameraErrorKey } from '../camera'
 import { getMirror, setMirror } from '../settings'
 import { useObjectUrls } from '../useObjectUrls'
-import { useViewfinderRatio } from '../useViewfinderRatio'
-import { Button, Chip, Countdown, FitImage, Header, Scrim } from '../ui'
+import { Button, Chip, Countdown, FitImage, Header } from '../ui'
 
 type Facing = 'user' | 'environment'
 const COUNTDOWN_SECONDS = 3
@@ -41,10 +40,8 @@ export default function Shoot({
   const [countdown, setCountdown] = useState<number | null>(null)
   const previewBlobs = useMemo(() => (preview ? [preview] : []), [preview])
   const previewUrls = useObjectUrls(previewBlobs)
-  const viewRatio = useViewfinderRatio()
-  // Fraction of the viewfinder height that the 3:2 capture keeps.
-  // (a 3:2 band inside a 4:3 box is 4/3 ÷ 3/2 = 89% of its height)
-  const keptFraction = viewRatio / CELL_RATIO
+  // The frame on screen is exactly the cell that prints: the reference and
+  // the viewfinder are both 3:2, no band, no crop (Bonnie's rule, Task 44).
 
   const index = photos.length
   // Mirroring only makes sense for the selfie camera; the preference is
@@ -141,11 +138,11 @@ export default function Shoot({
           src={cartoonUrls[index]}
           alt={t('shoot.reference_alt')}
           className="w-full rounded-card ring-1 ring-line"
-          style={{ aspectRatio: viewRatio }}
+          style={{ aspectRatio: CELL_RATIO }}
         />
 
         {/* Camera (or the captured preview) below */}
-        <div className="relative overflow-hidden rounded-card bg-dark" style={{ aspectRatio: viewRatio }}>
+        <div className="relative overflow-hidden rounded-card bg-dark" style={{ aspectRatio: CELL_RATIO }}>
           <video
             ref={video}
             autoPlay
@@ -154,7 +151,6 @@ export default function Shoot({
             className={`h-full w-full object-cover ${mirror ? '-scale-x-100' : ''} ${preview ? 'invisible' : ''}`}
           />
           {preview && <img src={previewUrls[0]} className="absolute inset-0 h-full w-full object-contain" alt="" />}
-          {!preview && <Scrim keptFraction={keptFraction} />}
           {countdown !== null && <Countdown seconds={countdown} />}
           {cameraError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center text-body text-on-dark">

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { canPasteImage, imagesFromPasteEvent, readImagesFromClipboard } from '../clipboard'
 import { db, deleteImages, listCharacterNames, SHOTS_PER_SET, type StoredImage } from '../db'
 import { getLibraryFilter, setLanguage, setLibraryFilter, type Language, type LibraryFilter } from '../settings'
-import { Button, Chip, EmptyState, Header, Tile, Toast, Tray } from '../ui'
+import { Button, Chip, ConfirmSheet, EmptyState, Header, Tile, Toast, Tray } from '../ui'
 import { EditSheet } from './EditSheet'
 import { useObjectUrls } from '../useObjectUrls'
 
@@ -32,6 +32,7 @@ export default function Library({
   const [mode, setMode] = useState<Mode>('browse')
   const [selected, setSelected] = useState<number[]>([]) // select: any order; pick: shoot order
   const [editing, setEditing] = useState<StoredImage | null>(null)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const [toast, setToast] = useState<string | null>(null)
   useEffect(() => {
@@ -95,8 +96,8 @@ export default function Library({
       return next
     })
   const removeSelected = async () => {
-    if (!confirm(t('library.confirm_delete', { count: selected.length }))) return
     await deleteImages(selected)
+    setConfirmingDelete(false)
     leaveMode()
   }
   const traySlots = useMemo(() => {
@@ -147,7 +148,7 @@ export default function Library({
           ))}
         </div>
         {names.length > 0 && (
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+          <div className="-mx-4 -my-1 flex gap-2 overflow-x-auto px-4 py-1">
             <Chip selected={activeName === null} onClick={() => setFilter({ ...filter, characterName: null })}>
               {t('library.filter_all_characters')}
             </Chip>
@@ -204,7 +205,7 @@ export default function Library({
           </div>
         )}
         {mode === 'select' && (
-          <Button variant="danger" onClick={removeSelected} disabled={selected.length === 0} className="w-full">
+          <Button variant="danger" onClick={() => setConfirmingDelete(true)} disabled={selected.length === 0} className="w-full">
             <Trash width={20} height={20} strokeWidth={2.2} />
             {t('library.delete_count', { count: selected.length })}
           </Button>
@@ -234,6 +235,15 @@ export default function Library({
       />
 
       {editing && <EditSheet image={editing} names={names} onClose={() => setEditing(null)} />}
+      {confirmingDelete && (
+        <ConfirmSheet
+          title={t('library.confirm_delete_title', { count: selected.length })}
+          body={t('library.confirm_delete_body')}
+          confirmLabel={t('library.delete_count', { count: selected.length })}
+          onConfirm={removeSelected}
+          onClose={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   )
 }

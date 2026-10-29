@@ -1,6 +1,7 @@
 export { Badge } from './Badge'
 export { Button } from './Button'
 export { Chip } from './Chip'
+export { ConfirmSheet } from './ConfirmSheet'
 export { FitImage } from './FitImage'
 export { Header } from './Header'
 export { IconButton } from './IconButton'

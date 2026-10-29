@@ -74,6 +74,29 @@
 
   /* 4.6 motion */
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-curtain: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-curtain: 420ms;
+
+  /* 4.8 decor — booth only (docs/design/booth-landing.md §2 palette).
+     Used from booth/booth.css via var(--color-decor-*); never in components. */
+  --color-decor-cream: #fff8e7;
+  --color-decor-paper: #fffdf5;
+  --color-decor-ink: #5a4a42;
+  --color-decor-pink: #f9c6cf;
+  --color-decor-pink-deep: #f29cb0;
+  --color-decor-blue: #bcd8ee;
+  --color-decor-blue-deep: #8fb8dd;
+  --color-decor-yellow: #fde8a6;
+  --color-decor-yellow-deep: #f6cf6a;
+  --color-decor-mint: #cfe8c6;
+  --color-decor-lilac: #ddd0ea;
+  --color-decor-peach: #fbd9c3;
+  --color-decor-metal: #f3eee2;
+  --color-decor-metal-dark: #d9d2c2;
+  --color-decor-metal-deep: #b9ae99;
+  --color-decor-dark: #4a3b36;
+  --color-decor-thread: #7a665c;
+  --color-decor-floor: #6b5a52;
 
   /* 4.7 shadow */
   --shadow-sheet: 0 -8px 24px rgb(61 54 50 / 0.12);

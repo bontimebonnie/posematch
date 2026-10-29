@@ -84,5 +84,8 @@
     "copied": "已複製，可以直接貼到 Instagram。",
     "copy_failed": "無法複製，請改用「儲存」。",
     "copy_unsupported": "這個瀏覽器不支援複製圖片，請使用「儲存」。"
+  },
+  "booth": {
+    "enter": "進入"
   }
 }

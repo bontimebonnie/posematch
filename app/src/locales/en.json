@@ -84,5 +84,8 @@
     "copied": "Copied. Paste it straight into Instagram.",
     "copy_failed": "Couldn't copy. Use Save instead.",
     "copy_unsupported": "This browser can't copy images. Use Save."
+  },
+  "booth": {
+    "enter": "Enter"
   }
 }

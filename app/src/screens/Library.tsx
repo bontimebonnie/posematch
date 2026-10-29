@@ -12,9 +12,11 @@ import { useObjectUrls } from '../useObjectUrls'
 type Mode = 'browse' | 'select' | 'pick'
 
 export default function Library({
+  onBooth,
   onImport,
   onShoot,
 }: {
+  onBooth?: () => void // back to the booth front; absent when decor is off
   onImport: (files: File[]) => void
   onShoot: (cartoons: Blob[]) => void
 }) {
@@ -120,7 +122,7 @@ export default function Library({
     <div className="flex h-full flex-col">
       <Header
         title={title}
-        onBack={mode === 'browse' ? undefined : leaveMode}
+        onBack={mode === 'browse' ? onBooth : leaveMode}
         right={
           mode === 'browse' ? (
             <div className="flex gap-2">

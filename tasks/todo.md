@@ -302,7 +302,7 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
 
 ## Phase 1: 殼
 
-- [ ] Task 38: decor token + booth flag + routing
+- [x] Task 38: decor token + booth flag + routing
   - Acceptance: `index.css` 加 `--color-decor-*`（14 色）、`--duration-curtain`、`--ease-curtain`；新 `app/src/booth/booth.css`（空殼）+ `__tests__/booth-css.test.ts` 掃 booth.css 冇 hex／rgb 字面色；`App.tsx` 加 `booth` screen，launch 預設 booth，`VITE_DECOR=0` 或 share-target launch 直落 Library／Crop；Library header 有 Back → booth；App 外層寬度改 per-screen（booth／library full width，其餘 `max-w-xl`）；Booth 畫面暫時係三欄空框 + 一個「進入」臨時掣
   - Verify: `npm test` 全綠（含新 CSS 掃描、App routing 測試：預設 booth、flag 關、share 跳過）；pane 開 app 見三欄空框，撳臨時掣入 Library，Back 返 booth
   - Files: `app/src/index.css`, `app/src/App.tsx`, `app/src/screens/Library.tsx`, `app/src/screens/Booth.tsx`（新）, `app/src/booth/booth.css`（新）, `app/src/__tests__/booth-css.test.ts`（新）, `app/src/__tests__/app-routing.test.tsx`（新）
@@ -351,5 +351,6 @@ Task 9（真機修正）併入 Task 10–12。每個 task 做完：`cd app && np
   - Size: S
 
 ### Checkpoint: Bonnie desktop 真 Chrome
+- [x] 決定：booth 每次 launch 都出（Bonnie 2026-10-28）；字體未答，先用系統 cursive
 - [ ] 拖簾感覺係摺布；Back 簾返；phone 寬 Library 不變
 - [ ] 答 plan.md Open Questions 1–2；睇 mock v8 決定 §3b 要唔要 → Phase C.1

@@ -1,0 +1,39 @@
+/* Booth landing + booth interior (docs/design/booth-landing.md).
+   Everything here is bespoke scenery, so it lives outside the 8pt utility
+   scale on purpose. Rules, checked by __tests__/booth-css.test.ts:
+   - colours only via var(--color-decor-*) (plus white/black alpha for light),
+   - no hex / rgb() literals.
+   Class prefix: .booth-* */
+
+.booth {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(340px, 1.15fr) minmax(220px, 1fr);
+  padding: 0 24px;
+  box-sizing: border-box;
+  background: var(--color-decor-cream);
+  color: var(--color-decor-ink);
+}
+
+.booth-locker {
+  position: relative;
+  margin: 24px 0;
+  border-radius: 8px;
+  background: var(--color-decor-metal-dark);
+}
+
+.booth-doorway {
+  position: relative;
+  margin: 24px 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-decor-dark);
+}
+
+@media (max-width: 760px) {
+  .booth { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+  .booth-locker { margin: 12px 0; min-height: 80px; }
+}

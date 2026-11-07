@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pose Match Skills 清單</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Patrick+Hand&display=swap">
+<style>
+  /* One visual world: the app's own booth palette. A working sheet: step rows first, then install, then prompts. */
+  :root {
+    color-scheme: light;
+    --paper: #fffdf5;
+    --cream: #fff8e7;
+    --ink: #5a4a42;
+    --muted: #7d6e66;
+    --line: #e4dac5;
+    --pink: #f9c6cf;
+    --pink-deep: #b84a68;
+    --blue: #bcd8ee;
+    --blue-deep: #2f6a99;
+    --yellow: #fde8a6;
+    --code: #4a3b36;
+    --font-body: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+    --font-hand: "Patrick Hand", "Chalkboard SE", cursive;
+    --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--cream); color: var(--ink); font: 400 16px/1.7 var(--font-body); }
+  a { color: var(--blue-deep); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--blue-deep); outline-offset: 2px; border-radius: 4px; }
+
+  .curtain { height: 32px; background: repeating-linear-gradient(90deg, var(--blue) 0 14px, var(--paper) 14px 28px, var(--pink) 28px 36px, var(--paper) 36px 56px); border-bottom: 2px dashed var(--ink); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; display: grid; gap: 48px; }
+
+  header { display: grid; gap: 8px; }
+  h1 { margin: 0; font: 400 48px/1.1 var(--font-hand); text-wrap: balance; }
+  .lede { margin: 0; max-width: 62ch; }
+  .cta { justify-self: start; margin-top: 8px; padding: 8px 20px; background: var(--pink); color: var(--ink); border-radius: 999px; font-weight: 700; text-decoration: none; }
+  .cta:hover { background: #f5b4c0; }
+
+  section { display: grid; gap: 16px; }
+  h2 { margin: 0; font-size: 22px; line-height: 1.4; font-weight: 700; text-wrap: balance; }
+  .note { margin: 0; color: var(--muted); font-size: 15px; max-width: 70ch; }
+
+  .sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 14px; font-weight: 700; padding: 12px 16px; background: #f6efdd; border-bottom: 2px solid var(--line); }
+  td { padding: 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  td.num { width: 56px; font: 400 28px/1 var(--font-hand); font-variant-numeric: tabular-nums; }
+  td.step { width: 24%; font-weight: 700; }
+  td.did { width: 34%; }
+  .skills { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .skills li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+  .tag { flex-shrink: 0; padding: 0 8px; border-radius: 999px; font-size: 12px; line-height: 20px; font-weight: 700; }
+  .tag.main { background: var(--pink); }
+  .tag.ref { background: var(--blue); }
+  .tag.tool { background: var(--yellow); }
+  .tag.drop { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+  .none { color: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; }
+  .legend span { display: inline-flex; align-items: baseline; gap: 8px; }
+
+  .block { position: relative; background: var(--code); color: var(--cream); border-radius: 12px; padding: 16px; display: grid; gap: 12px; }
+  .block pre { margin: 0; overflow-x: auto; font: 400 14px/1.7 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .block .prompt { font-family: var(--font-body); font-size: 15px; }
+  .copy { justify-self: start; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--cream); color: var(--ink); font: 700 14px var(--font-body); cursor: pointer; }
+  .copy:hover { background: var(--yellow); }
+
+  .prompts { display: grid; gap: 24px; }
+  .prompt-item { display: grid; gap: 8px; }
+  h3 { margin: 0; font-size: 17px; line-height: 1.5; font-weight: 700; }
+  .prompt-item p { margin: 0; max-width: 70ch; color: var(--muted); font-size: 15px; }
+
+  footer { color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 24px 16px 48px; gap: 40px; }
+    h1 { font-size: 40px; }
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    tr { display: grid; grid-template-columns: 48px 1fr; padding: 16px; gap: 8px 0; border-bottom: 1px solid var(--line); }
+    tr:last-child { border-bottom: 0; }
+    td, td.step, td.did, td.num { display: block; width: auto; padding: 0; border: 0; }
+    td.did, td.use { grid-column: 2; }
+  }
+</style>
+</head>
+<body>
+<div class="curtain" aria-hidden="true"></div>
+<div class="wrap">
+
+  <header>
+    <h1>Pose Match</h1>
+    <p class="lede">用 Claude Code 從零做一個卡通姿勢拍貼 App 的完整紀錄：每一步做了什麼、實際用到哪些 skills、去哪裡拿，以及幾則關鍵 prompt。</p>
+    <a class="cta" href="https://posematch-rose.vercel.app">試玩 Pose Match</a>
+  </header>
+
+  <section aria-labelledby="steps">
+    <h2 id="steps">製作步驟與用到的 skills</h2>
+    <div class="legend">
+      <span><b class="tag main">主力</b>實際載入，照著它的流程做</span>
+      <span><b class="tag ref">參考</b>讀過，取用部分做法</span>
+      <span><b class="tag tool">工具</b>不是 skill，但這一步靠它</span>
+      <span><b class="tag drop">試過</b>用了一段，後來放棄</span>
+    </div>
+    <div class="sheet">
+      <table>
+        <thead><tr><th scope="col">#</th><th scope="col">步驟</th><th scope="col">做了什麼</th><th scope="col">Skill／工具與連結</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="num">1</td>
+            <td class="step">把想法講清楚</td>
+            <td class="did">描述 App 流程，請 Claude 建議框架、拆步驟，並反問不清楚的地方。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag ref">參考</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine">idea-refine</a></li>
+              <li><b class="tag ref">參考</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me">interview-me</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">2</td>
+            <td class="step">先寫規格</td>
+            <td class="did">把目標、範圍和成功標準寫成文件，確認後才開始動工。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag main">主力</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/spec-driven-development">spec-driven-development</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">3</td>
+            <td class="step">拆成計畫和任務</td>
+            <td class="did">把規格拆成小任務，一個任務一個 commit，每到檢查點就停下來等我測試。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag main">主力</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">planning-and-task-breakdown</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">4</td>
+            <td class="step">先把功能做完</td>
+            <td class="did">做出上傳、拍攝和輸出拼圖，部署成 PWA，用 iPhone 實測後再修改。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag tool">工具</b><a href="https://code.claude.com/docs">Claude Code</a></li>
+              <li><b class="tag tool">工具</b><a href="https://vercel.com">Vercel</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">5</td>
+            <td class="step">中英文案</td>
+            <td class="did">訂出語氣規則和用詞表，再做繁體中文與英文兩個版本。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag main">主力</b><a href="https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/ux-copy">ux-copy</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">6</td>
+            <td class="step">建立設計規範</td>
+            <td class="did">訂出 8pt 格線、色彩和字級，先統一元件，再參考真實 App 的版面。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag main">主力</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/spec-driven-development">spec-driven-development</a></li>
+              <li><b class="tag ref">參考</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/frontend-ui-engineering">frontend-ui-engineering</a></li>
+              <li><b class="tag ref">參考</b><a href="https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design">frontend-design</a></li>
+              <li><b class="tag ref">參考</b><a href="https://github.com/anthropics/knowledge-work-plugins/tree/main/design">design-system</a></li>
+              <li><b class="tag tool">工具</b><a href="https://mobbin.com">Mobbin</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">7</td>
+            <td class="step">研究同類產品</td>
+            <td class="did">讓 Claude 實際走一遍三個拍貼網站的流程，比較我們少了哪些畫面、值得學什麼。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag tool">工具</b>Claude Code 內建瀏覽器</li>
+              <li><a href="https://photobooth.nashallery.com/">Nashallery</a> · <a href="https://wheephotobooth.com/">Whee!</a> · <a href="https://mysketchbooth.com/">MySketchBooth</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">8</td>
+            <td class="step">做場景 mockup</td>
+            <td class="did">從我的手繪草圖做成可互動的網頁 mockup，反覆修改到滿意。也試過轉進 Figma，但碰到免費方案的呼叫上限，就改成直接照 mockup 寫程式。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag drop">試過</b><a href="https://developers.figma.com/docs/figma-mcp-server/">Figma MCP</a></li>
+              <li><b class="tag drop">試過</b><a href="https://github.com/figma/mcp-server-guide">figma-use · figma-generate-design</a></li>
+            </ul></td>
+          </tr>
+          <tr>
+            <td class="num">9</td>
+            <td class="step">實作與驗收</td>
+            <td class="did">照 mockup 寫出每個畫面，一邊試玩一邊用語音回報問題，最後用驗收表逐項檢查。</td>
+            <td class="use"><ul class="skills">
+              <li><b class="tag main">主力</b><a href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">planning-and-task-breakdown</a></li>
+              <li><b class="tag tool">工具</b><a href="https://www.typeless.com">Typeless</a></li>
+            </ul></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">idea-refine、interview-me、spec-driven-development、planning-and-task-breakdown 和 frontend-ui-engineering 都來自 <a href="https://github.com/addyosmani/agent-skills">addyosmani/agent-skills</a>。這個套件有 25 個 skills，這裡只列出這次真正用到的。</p>
+  </section>
+
+  <section aria-labelledby="install">
+    <h2 id="install">安裝指令</h2>
+    <p class="note">在專案資料夾裡執行。ux-copy 和 frontend-design 屬於外掛，請依上方連結的說明加入。Mobbin 需要帳號。</p>
+    <div class="block">
+      <pre id="cmd-skills">npx skills add addyosmani/agent-skills</pre>
+      <button class="copy" type="button" data-copy="cmd-skills">複製指令</button>
+    </div>
+    <div class="block">
+      <pre id="cmd-mobbin">claude mcp add mobbin --scope user --transport http https://api.mobbin.com/mcp</pre>
+      <button class="copy" type="button" data-copy="cmd-mobbin">複製指令</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="prompts">
+    <h2 id="prompts">關鍵 prompt</h2>
+    <p class="note">以下是我當時實際輸入的原文，所以是粵語和英文。App 原名叫 Post Match，換成你自己的點子就可以用。</p>
+    <div class="prompts">
+
+      <div class="prompt-item">
+        <h3>1. 開場：說清楚流程，並請它反問</h3>
+        <p>不必先想好技術，把使用者流程講完整，再請它指出不清楚的地方。</p>
+        <div class="block">
+          <pre class="prompt" id="p1">我想要整一個 App，叫做「Post Match」。成個流程我會想知道我哋要用咩 framework 去整。我想完成個製成品之後，佢可以用電腦、手機或者平板玩到，可以係一個 Web App，但佢應該用咩 framework 去做？
+
+佢嘅流程應該會係咁：
+1. 開咗 App 之後，一係 upload 自己搵嘅卡通相，一係喺現有 library 入面重新揀之前 upload 過、save 咗落嚟嘅卡通相。
+2. 喺揀相之前要揀幾多個人影。因為如果兩個人影，卡通相應該得兩個 character；三個人影就會有三個 character。我哋先整咗兩個 character 嘅 basic function 先，定係整唔整選擇住？你話畀我聽我應該點整。
+3. 揀咗人數、upload 咗相之後，就去到影相嘅部分：
+(a) 想參考嘅卡通示意圖喺畫面嘅上面，而我哋個 camera 就喺畫面嘅下面。
+(b) 一次淨係影一張相，影完如果唔滿意可以重影，直到影得好為止。
+(c) 影得好之後就去下一張，total 會影四張。
+4. 出嚟嘅成果就好似我畀你嘅圖咁，一邊係卡通、一邊係真人，平排咁樣出，最後會有個 four-strip 嘅 layout。框框嗰啲嘢我哋先唔整住。
+
+我哋先整咗咁多先。你話畀我聽咁樣可唔可行？又或者我應該分啲咩 step 去做到呢一樣嘢？
+
+如果中間有咩問題，你想要再了解多啲關於呢個 App，你就話畀我聽，我再解答你嘅問題，等我哋可以好順暢咁 build 到個 App。</pre>
+          <button class="copy" type="button" data-copy="p1">複製 prompt</button>
+        </div>
+      </div>
+
+      <div class="prompt-item">
+        <h3>2. 定順序和標準：功能先，設計後（節錄）</h3>
+        <p>告訴它「成功」的樣子和審美底線，後面的規格才有依據。</p>
+        <div class="block">
+          <pre class="prompt" id="p2">至於「成功」係點樣？我覺得最主要係可以整到個靚靚嘅 app。所謂靚，喺我自己嘅美觀標準上，要有一定嘅 design guideline、唔同嘅 aspect，同埋 spacing 一定要跟 8-grid spacing。
+
+如果返去頭先跳過咗嘅 step，我哋係咪可以跟返應有嘅步驟去做？先試晒啲 basic function，跟住先再做 design？</pre>
+          <button class="copy" type="button" data-copy="p2">複製 prompt</button>
+        </div>
+      </div>
+
+      <div class="prompt-item">
+        <h3>3. 研究：走完別人的流程，找出自己缺什麼</h3>
+        <p>給它實際的網站，比泛泛地問「拍貼 App 應該有什麼」有用得多。</p>
+        <div class="block">
+          <pre class="prompt" id="p3">https://photobooth.nashallery.com/ https://wheephotobooth.com/ https://mysketchbooth.com/ get all the flows and see what screen we are missing. and what we can learn from those.</pre>
+          <button class="copy" type="button" data-copy="p3">複製 prompt</button>
+        </div>
+      </div>
+
+      <div class="prompt-item">
+        <h3>4. 開工節奏：每次只做一段，到點就停</h3>
+        <p>這句我用了整個專案。任務編號換成你計畫裡的就好。</p>
+        <div class="block">
+          <pre class="prompt" id="p4">Tasks 46–48 開工，每個 task 一個 commit，到 checkpoint 停</pre>
+          <button class="copy" type="button" data-copy="p4">複製 prompt</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>玩完發現問題或想要什麼功能，歡迎留言告訴我。</footer>
+</div>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    var label = btn.textContent;
+    btn.addEventListener('click', function () {
+      var text = document.getElementById(btn.dataset.copy).textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = '已複製';
+      }).catch(function () {
+        var range = document.createRange();
+        range.selectNodeContents(document.getElementById(btn.dataset.copy));
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        btn.textContent = '已選取，請手動複製';
+      }).finally(function () {
+        setTimeout(function () { btn.textContent = label; }, 2000);
+      });
+    });
+  });
+</script>
+</body>
+</html>

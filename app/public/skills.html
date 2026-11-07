@@ -93,6 +93,8 @@
     td.did, td.use { grid-column: 2; }
     .glossary tr { grid-template-columns: 1fr; gap: 4px; }
     .glossary td:first-child { white-space: normal; }
+    .glossary td:nth-child(3)::before { content: "用途："; color: var(--muted); }
+    .glossary td:nth-child(4)::before { content: "要準備嗎："; }
   }
 </style>
 </head>

@@ -4,9 +4,9 @@ import type { ReactNode } from 'react'
 // structure: hinge on the right, handle + padlock on the left, number plate,
 // vents top and bottom. `children` is the door's extras (mirror + polaroids,
 // or the how-to note).
-export function LockerDoor({ number, children }: { number: string; children: ReactNode }) {
+export function LockerDoor({ number, inert, children }: { number: string; inert?: boolean; children: ReactNode }) {
   return (
-    <div className="booth-locker">
+    <div className="booth-locker" inert={inert}>
       <div className="booth-door">
         <div className="booth-hinge" aria-hidden />
         <div className="booth-plate booth-hand">{number}</div>

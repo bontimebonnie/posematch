@@ -15,7 +15,7 @@ after:   Booth (new) ──drag curtain──▶ Library (inside the booth) ─�
 
 - Booth shows once per launch. Back from Library goes to Booth; Back from Shoot still goes to Library.
 - Shoot and Result are untouched this round.
-- Desktop/web first (Bonnie's words: the drawing "takes up the whole page on web"). Phone layout is a follow-up; the mock collapses below 760 px to one column and hides the mirror and polaroids.
+- Desktop/web first (Bonnie's words: the drawing "takes up the whole page on web"). Phones (760 px wide or less): the doorway and both lockers sit side by side, each a panel with 44 px of its neighbour showing, and the view slides between them. The doorway is the start view and owns every swipe, so only the bottom pills ("‹ No. 04", "how to use ›") and the locker edges move to a locker; on a locker, a pill, an edge tap or a swipe towards the doorway comes back. Corners of the note and a polaroid peek from the edges. The how-to note stays on No. 05. On short phones (620 px high or less) No. 04 drops the mirror.
 
 ## 2. Screen A: Booth (landing)
 

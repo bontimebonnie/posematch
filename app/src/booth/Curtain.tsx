@@ -1,12 +1,12 @@
-import type { HTMLAttributes } from 'react'
+import type { ComponentProps } from 'react'
 
 // The pleated striped curtain (booth-landing.md §2 "Doorway + curtain"):
 // one continuous piece hanging 74% of the doorway, blue/pink stripes on
 // paper, pink header band with a stitch line, wavy hem, and the embroidered
 // lettering in brown thread. Pleat shadow + sheen sit above the letters so
 // they catch the folds too. The drag lives in useCurtainDrag; its props
-// (class, transform, pointer handlers) are spread here.
-export function Curtain(props: HTMLAttributes<HTMLDivElement>) {
+// (ref, class, transform, settle handlers) are spread here.
+export function Curtain(props: ComponentProps<'div'>) {
   return (
     <div {...props}>
       <div className="booth-fabric" />

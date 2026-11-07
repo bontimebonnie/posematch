@@ -7,8 +7,9 @@ const OPEN_DELAY = 300 // ms after the snap before the library shows
 const SETTLE_MS: Partial<Record<CurtainState['phase'], number>> = { snapping: 420 + 60, springing: 180 + 60, squeeze: 450 + 60 }
 
 // Pointer Events → curtainReducer → one `transform: scaleX()` on the curtain.
-// Finger and mouse share the same path; `touch-action: pan-y` on the doorway
-// keeps vertical scrolling free. The CSS class per phase carries the
+// Finger and mouse share the same path; `surface` goes on the doorway so a swipe
+// can start anywhere in it, and `touch-action: pan-y` there keeps vertical
+// scrolling free. The CSS class per phase carries the
 // transition (snap 420ms, spring 180ms, squeeze keyframes); `transitionend`
 // and `animationend` feed `settled` back in. With prefers-reduced-motion the
 // transitions are 0ms (global rule in index.css) so it simply jumps.
@@ -18,6 +19,7 @@ export function useCurtainDrag({ initiallyOpen = false, onOpen }: { initiallyOpe
   const moved = useRef(false)
   const width = useRef(1)
   const active = useRef(false) // a press is in progress (pointer capture is best-effort)
+  const curtainRef = useRef<HTMLDivElement>(null)
 
   // Back from the library: mount folded, then unfold.
   useEffect(() => {
@@ -43,7 +45,8 @@ export function useCurtainDrag({ initiallyOpen = false, onOpen }: { initiallyOpe
   const onPointerDown = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
     startX.current = e.clientX
     moved.current = false
-    width.current = e.currentTarget.getBoundingClientRect().width / Math.max(curtainScale(e.currentTarget), 0.01)
+    const curtain = curtainRef.current
+    width.current = curtain ? curtain.getBoundingClientRect().width / Math.max(curtainScale(curtain), 0.01) : e.currentTarget.getBoundingClientRect().width
     active.current = true
     try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* synthetic or already-released pointer */ }
     dispatch({ type: 'down' })
@@ -65,13 +68,16 @@ export function useCurtainDrag({ initiallyOpen = false, onOpen }: { initiallyOpe
   const style: CSSProperties = { transform: `scaleX(${state.scale})` }
   return {
     state,
-    props: {
-      style,
-      className: `booth-curtain booth-curtain-${state.phase}`,
+    surface: {
       onPointerDown,
       onPointerMove,
       onPointerUp,
       onPointerCancel: onPointerUp,
+    },
+    props: {
+      ref: curtainRef,
+      style,
+      className: `booth-curtain booth-curtain-${state.phase}`,
       onTransitionEnd: onSettled,
       onAnimationEnd: onSettled,
     },

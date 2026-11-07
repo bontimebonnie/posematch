@@ -42,6 +42,11 @@
   .cta:hover { background: #f5b4c0; }
 
   section { display: grid; gap: 16px; }
+  .glossary th, .glossary td { width: auto; }
+  .glossary td:first-child { font-weight: 700; white-space: nowrap; }
+  .glossary td:last-child { color: var(--muted); }
+  .start { margin: 0; padding-left: 24px; display: grid; gap: 8px; max-width: 70ch; }
+  .playnote { margin: 0; padding: 12px 16px; background: var(--yellow); border-radius: 12px; font-weight: 700; }
   h2 { margin: 0; font-size: 22px; line-height: 1.4; font-weight: 700; text-wrap: balance; }
   .note { margin: 0; color: var(--muted); font-size: 15px; max-width: 70ch; }
 
@@ -86,6 +91,8 @@
     tr:last-child { border-bottom: 0; }
     td, td.step, td.did, td.num { display: block; width: auto; padding: 0; border: 0; }
     td.did, td.use { grid-column: 2; }
+    .glossary tr { grid-template-columns: 1fr; gap: 4px; }
+    .glossary td:first-child { white-space: normal; }
   }
 </style>
 </head>
@@ -98,6 +105,32 @@
     <p class="lede">用 Claude Code 從零做一個卡通姿勢拍貼 App 的完整紀錄：每一步做了什麼、實際用到哪些 skills、去哪裡拿，以及幾則關鍵 prompt。</p>
     <a class="cta" href="https://posematch-rose.vercel.app">試玩 Pose Match</a>
   </header>
+
+  <section aria-labelledby="beginner">
+    <h2 id="beginner">第一次接觸？先看這裡</h2>
+    <p class="playnote">只想玩 App，什麼都不用裝，點上面的連結就好。</p>
+    <p class="note">想自己做一個的話，下面這些名詞會常常看到。</p>
+    <div class="sheet">
+      <table class="glossary">
+        <thead><tr><th scope="col">名詞</th><th scope="col">白話解釋</th><th scope="col">在這個專案的用途</th><th scope="col">需要自己準備嗎？</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td>會幫你寫程式的 AI 助手</td><td>寫出整個 App</td><td>想自己做才需要</td></tr>
+          <tr><td>Skill</td><td>一份教 AI 照特定流程做事的說明書</td><td>讓它先寫規格、再拆任務</td><td>想照著做才需要</td></tr>
+          <tr><td>MCP</td><td>讓 AI 連接其他服務的接口</td><td>連到 Mobbin 查設計範例</td><td>不一定</td></tr>
+          <tr><td>Prompt</td><td>你對 AI 說的話</td><td>下方四則關鍵指令</td><td>自己寫就好</td></tr>
+          <tr><td>GitHub</td><td>存放程式碼和每次修改紀錄的地方</td><td>保存程式碼</td><td>想自己做才需要</td></tr>
+          <tr><td>Vercel</td><td>把 App 放上網路的服務</td><td>產生大家點開的連結</td><td>想公開 App 才需要</td></tr>
+          <tr><td>PWA</td><td>可以加到手機主畫面的網頁 App</td><td>讓 Pose Match 用起來像 App</td><td>不用</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>想做自己的 App，從這裡開始</h3>
+    <ol class="start">
+      <li>照 <a href="https://code.claude.com/docs/en/quickstart">Claude Code 官方入門指南</a>安裝，再開一個空資料夾。需要的方案和帳號，指南裡都有說明。</li>
+      <li>貼上下方的第 1 則 prompt，把內容換成你的點子。</li>
+      <li>想公開時，再請 Claude 帶你把程式碼放上 GitHub 和 Vercel。</li>
+    </ol>
+  </section>
 
   <section aria-labelledby="steps">
     <h2 id="steps">製作步驟與用到的 skills</h2>
@@ -200,7 +233,7 @@
 
   <section aria-labelledby="install">
     <h2 id="install">安裝指令</h2>
-    <p class="note">在專案資料夾裡執行。ux-copy 和 frontend-design 屬於外掛，請依上方連結的說明加入。Mobbin 需要帳號。</p>
+    <p class="note">在專案資料夾裡執行，第一行需要先裝好 <a href="https://nodejs.org">Node.js</a>。ux-copy 和 frontend-design 屬於外掛，請依上方連結的說明加入。Mobbin 需要帳號。</p>
     <div class="block">
       <pre id="cmd-skills">npx skills add addyosmani/agent-skills</pre>
       <button class="copy" type="button" data-copy="cmd-skills">複製指令</button>

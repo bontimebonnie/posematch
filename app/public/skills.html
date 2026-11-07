@@ -28,7 +28,7 @@
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; background: var(--cream); color: var(--ink); font: 400 16px/1.7 var(--font-body); }
+  body { margin: 0; background: var(--cream); color: var(--ink); font: 400 16px/1.7 var(--font-body); word-break: auto-phrase; text-wrap: pretty; }
   a { color: var(--blue-deep); text-underline-offset: 3px; }
   a:focus-visible, button:focus-visible { outline: 3px solid var(--blue-deep); outline-offset: 2px; border-radius: 4px; }
 
@@ -37,7 +37,7 @@
 
   header { display: grid; gap: 8px; }
   h1 { margin: 0; font: 400 48px/1.1 var(--font-hand); text-wrap: balance; }
-  .lede { margin: 0; max-width: 62ch; }
+  .lede { margin: 0; }
   .cta { justify-self: start; margin-top: 8px; padding: 8px 20px; background: var(--pink); color: var(--ink); border-radius: 999px; font-weight: 700; text-decoration: none; }
   .cta:hover { background: #f5b4c0; }
 
@@ -45,10 +45,10 @@
   .glossary th, .glossary td { width: auto; }
   .glossary td:first-child { font-weight: 700; white-space: nowrap; }
   .glossary td:last-child { color: var(--muted); }
-  .start { margin: 0; padding-left: 24px; display: grid; gap: 8px; max-width: 70ch; }
+  .start { margin: 0; padding-left: 24px; display: grid; gap: 8px; }
   .playnote { margin: 0; padding: 12px 16px; background: var(--yellow); border-radius: 12px; font-weight: 700; }
   h2 { margin: 0; font-size: 22px; line-height: 1.4; font-weight: 700; text-wrap: balance; }
-  .note { margin: 0; color: var(--muted); font-size: 15px; max-width: 70ch; }
+  .note { margin: 0; color: var(--muted); font-size: 15px; }
 
   .sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   table { width: 100%; border-collapse: collapse; }
@@ -71,7 +71,7 @@
   .legend span { display: inline-flex; align-items: baseline; gap: 8px; }
 
   .block { position: relative; background: var(--code); color: var(--cream); border-radius: 12px; padding: 16px; display: grid; gap: 12px; }
-  .block pre { margin: 0; overflow-x: auto; font: 400 14px/1.7 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .block pre { margin: 0; overflow-x: auto; font: 400 14px/1.7 var(--font-mono); white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere; }
   .block .prompt { font-family: var(--font-body); font-size: 15px; }
   .copy { justify-self: start; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--cream); color: var(--ink); font: 700 14px var(--font-body); cursor: pointer; }
   .copy:hover { background: var(--yellow); }
@@ -79,7 +79,7 @@
   .prompts { display: grid; gap: 24px; }
   .prompt-item { display: grid; gap: 8px; }
   h3 { margin: 0; font-size: 17px; line-height: 1.5; font-weight: 700; }
-  .prompt-item p { margin: 0; max-width: 70ch; color: var(--muted); font-size: 15px; }
+  .prompt-item p { margin: 0; color: var(--muted); font-size: 15px; }
 
   footer { color: var(--muted); font-size: 14px; }
 
